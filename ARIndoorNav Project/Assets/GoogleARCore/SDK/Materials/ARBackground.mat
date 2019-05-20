@@ -75,5 +75,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _UvBottomLeftRight: {r: 0, g: 0.8238095, b: 0, a: 0.17619044}
-    - _UvTopLeftRight: {r: 1, g: 0.8238095, b: 1, a: 0.17619044}
+    - _UvBottomLeftRight: {r: 0, g: 0, b: 0, a: 0}
+    - _UvTopLeftRight: {r: 0, g: 0, b: 0, a: 0}

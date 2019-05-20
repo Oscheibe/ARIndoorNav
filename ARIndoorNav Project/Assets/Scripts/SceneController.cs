@@ -40,9 +40,13 @@ public class SceneController : MonoBehaviour
             floorHeight = floorPlane.CenterPose.position.y;
         }
         //navigation.DrawPathLine(floorHeight);
-        navigation.DrawNextPathCorner(floorHeight);
+        
+        if(navigation !=null)
+        {
+            navigation.DrawNextPathCorner(floorHeight);
+        } 
 
-        debugText.text = Frame.Pose.position.ToString();
+        //debugText.text = Frame.Pose.position.ToString();
 
     }
 
