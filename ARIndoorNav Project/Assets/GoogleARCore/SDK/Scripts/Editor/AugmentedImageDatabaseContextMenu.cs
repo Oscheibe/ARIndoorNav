@@ -44,7 +44,7 @@ namespace GoogleARCoreInternal
             ".psd", ".tiff", ".tga", ".gif", ".bmp", ".iff", ".pict"
         };
 
-        [MenuItem("Assets/Create/GoogleARCore/AugmentedImageDatabase", false, 2)]
+        [MenuItem("Assets/Create/Google ARCore/AugmentedImageDatabase", false, 2)]
         private static void AddAssetsToNewAugmentedImageDatabase()
         {
             var selectedImagePaths = new List<string>();
@@ -53,11 +53,19 @@ namespace GoogleARCoreInternal
             selectedImagePaths = _GetSelectedImagePaths(out unsupportedImagesSelected);
             if (unsupportedImagesSelected)
             {
-                var message = string.Format("Some selected images could not be added to the AugmentedImageDatabase because " +
-                    "they are not in a supported format.  Supported image formats are {0}.",
+                var message = string.Format(
+                    "Some selected images could not be added to the AugmentedImageDatabase " +
+                    "because they are not in a supported format.  Supported image formats are {0}.",
                     k_SupportedImageFormatListMessage);
                 Debug.LogWarningFormat(message);
                 EditorUtility.DisplayDialog("Unsupported Images Selected", message, "Ok");
+            }
+            else if (selectedImagePaths.Count == 0)
+            {
+                var message = "Please select one or more images before using 'Create > " +
+                    "Google ARCore > AugmentedImageDatabase'.";
+                Debug.LogWarningFormat(message);
+                EditorUtility.DisplayDialog("No Image Selected", message, "Ok");
             }
 
             if (selectedImagePaths.Count > 0)
@@ -87,7 +95,8 @@ namespace GoogleARCoreInternal
                 }
                 else if (Path.GetExtension(selectedPath) != string.Empty)
                 {
-                    selectedPath = selectedPath.Replace(Path.GetFileName(selectedPath), string.Empty);
+                    selectedPath =
+                        selectedPath.Replace(Path.GetFileName(selectedPath), string.Empty);
                 }
 
                 var newAssetPath = AssetDatabase.GenerateUniqueAssetPath(
@@ -96,13 +105,6 @@ namespace GoogleARCoreInternal
                 EditorUtility.FocusProjectWindow();
                 Selection.activeObject = newDatabase;
             }
-        }
-
-        [MenuItem("Assets/Create/GoogleARCore/AugmentedImageDatabase", true, 2)]
-        private static bool AddAssetsToNewAugmentedImageDatabaseValidation()
-        {
-            bool unsupportedSelected;
-            return _GetSelectedImagePaths(out unsupportedSelected).Count > 0;
         }
 
         private static List<string> _GetSelectedImagePaths(out bool unsupportedImagesSelected)

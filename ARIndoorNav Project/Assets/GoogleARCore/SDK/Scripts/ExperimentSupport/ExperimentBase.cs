@@ -39,6 +39,14 @@ namespace GoogleARCoreInternal
         }
 
         /// <summary>
+        /// Called before lifecycle manager call ArPresto_update to update session features
+        /// that requre session recreation.
+        /// </summary>
+        public virtual void OnUpdateSessionFeatures()
+        {
+        }
+
+        /// <summary>
         /// Called at the beginnging of the frame.
         /// </summary>
         public virtual void OnEarlyUpdate()
@@ -48,7 +56,8 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// Called to check if the experiment configuration is dirty.
         /// </summary>
-        /// <returns><c>true</c> if the experiment configuration is dirty, otherwise <c>false</c>.</returns>
+        /// <returns><c>true</c> if the experiment configuration is dirty, otherwise
+        /// <c>false</c>.</returns>
         public virtual bool IsConfigurationDirty()
         {
             return false;
@@ -67,10 +76,22 @@ namespace GoogleARCoreInternal
         /// Called to check if an unknown trackable type is managed by an experiment.
         /// </summary>
         /// <param name="trackableType">The unknown trackable type.</param>
-        /// <returns><c>true</c> if the subsriber manages the type, otherwise <c>false</c>.</returns>
+        /// <returns><c>true</c> if the subsriber manages the type, otherwise
+        /// <c>false</c>.</returns>
         public virtual bool IsManagingTrackableType(int trackableType)
         {
             return false;
+        }
+
+        /// <summary>
+        /// Called to retrieve TrackableHitFlags associated with the trackable managed by the
+        /// experiment.
+        /// </summary>
+        /// <param name="trackableType">The trackable type.</param>
+        /// <returns>TrackableHitFlags value for the associated trackable.</returns>
+        public virtual TrackableHitFlags GetTrackableHitFlags(int trackableType)
+        {
+            return TrackableHitFlags.None;
         }
 
         /// <summary>

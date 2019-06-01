@@ -23,6 +23,11 @@ namespace GoogleARCore.Examples.ObjectManipulation
     using GoogleARCore.Examples.ObjectManipulationInternal;
     using UnityEngine;
 
+#if UNITY_EDITOR
+    // Set up touch input propagation while using Instant Preview in the editor.
+    using Input = GoogleARCore.InstantPreviewInput;
+#endif
+
     /// <summary>
     /// Gesture for when the user performs a drag motion on the touch screen.
     /// </summary>
@@ -90,7 +95,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             {
                 Vector2 pos = touch.position;
                 float diff = (pos - StartPosition).magnitude;
-                if (GestureTouchesUtility.PixelsToInches(diff) >= (m_Recognizer as DragGestureRecognizer).m_SlopInches)
+                if (GestureTouchesUtility.PixelsToInches(diff) >=
+                    (m_Recognizer as DragGestureRecognizer).m_SlopInches)
                 {
                     return true;
                 }

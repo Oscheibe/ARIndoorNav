@@ -45,6 +45,13 @@ namespace GoogleARCoreInternal
         public IntPtr Create()
         {
             IntPtr cameraConfigHandle = IntPtr.Zero;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("create ARCamera config");
+                return cameraConfigHandle;
+            }
+
             ExternApi.ArCameraConfig_create(m_NativeSession.SessionHandle, ref cameraConfigHandle);
             return cameraConfigHandle;
         }
@@ -59,7 +66,14 @@ namespace GoogleARCoreInternal
             width = 0;
             height = 0;
 
-            ExternApi.ArCameraConfig_getImageDimensions(m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access ARCamera image dimensions");
+                return;
+            }
+
+            ExternApi.ArCameraConfig_getImageDimensions(
+                m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
         }
 
         public void GetTextureDimensions(IntPtr cameraConfigHandle, out int width, out int height)
@@ -67,7 +81,31 @@ namespace GoogleARCoreInternal
             width = 0;
             height = 0;
 
-            ExternApi.ArCameraConfig_getTextureDimensions(m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage(
+                    "access ARCamera texture dimensions");
+                return;
+            }
+
+            ExternApi.ArCameraConfig_getTextureDimensions(
+                m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
+        }
+
+        public ApiCameraConfigFacingDirection GetFacingDirection(IntPtr cameraConfigHandle)
+        {
+            ApiCameraConfigFacingDirection direction = ApiCameraConfigFacingDirection.Back;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access ARCamera facing direction");
+                return direction;
+            }
+
+            ExternApi.ArCameraConfig_getFacingDirection(
+                m_NativeSession.SessionHandle, cameraConfigHandle, ref direction);
+
+            return direction;
         }
 
         private struct ExternApi
@@ -91,6 +129,11 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfig_getTextureHeight(IntPtr sessionHandle,
                 IntPtr cameraConfigHandle, ref int height);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArCameraConfig_getFacingDirection(
+                IntPtr sessionHandle, IntPtr cameraConfigHandle,
+                ref ApiCameraConfigFacingDirection facingDirection);
 #pragma warning restore 626
         }
     }
