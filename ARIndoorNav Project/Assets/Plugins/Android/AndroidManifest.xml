@@ -16,8 +16,6 @@
       </intent-filter>
       <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
     </activity>
-    <!-- The minimal version code of ARCore APK required for an app using this SDK. -->
-    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="190120000" />
     <!-- This activity is critical for installing ARCore when it is not already present. -->
     <activity android:name="com.google.ar.core.InstallActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTop" android:theme="@android:style/Theme.Material.Light.Dialog.Alert" />
     <meta-data android:name="com.google.ar.core" android:value="required" />
