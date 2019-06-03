@@ -12,9 +12,8 @@ public class PoseController : MonoBehaviour
     public bool testMode = false;
 
     private readonly List<AugmentedImage> _images = new List<AugmentedImage>();
-    private readonly Dictionary<int, Anchor> _anchors = new Dictionary<int, Anchor>();
     private float updateSpeed = 4f;
-    private bool meshIsBacked = true;
+    private bool meshIsBaked = true;
 
     void Start()
     {
@@ -31,7 +30,7 @@ public class PoseController : MonoBehaviour
         {
             return;
         }
-        Session.GetTrackables<AugmentedImage>(_images, TrackableQueryFilter.Updated);
+        Session.GetTrackables(_images, TrackableQueryFilter.Updated);
 
         if (testMode)
         {
@@ -56,11 +55,10 @@ public class PoseController : MonoBehaviour
         {
             if (image.TrackingState == TrackingState.Tracking)
             {
-                // Use TrackingMethod introduced in SDK v1.9.0
-                Debug.Log("DOG found!");
-                debugText.text = "DOG found!";
-
-                AlignScenePose(image);
+                if(image.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
+                {
+                    AlignScenePose(image);
+                }               
             }
             else if (image.TrackingState == TrackingState.Stopped || image.TrackingState == TrackingState.Paused)
             {
@@ -75,32 +73,33 @@ public class PoseController : MonoBehaviour
      */
     private void AlignScenePose(AugmentedImage image)
     {
+
         // Searches the Scene for the image target to align position.
         // Immediatly returns if no image target could be found. Place a corresponding unity object in scene if that happens
-        var targetMarker = GameObject.Find(image.Name);
-        if (targetMarker == null)
+        var targetPlate = GameObject.Find(image.Name);
+        if (targetPlate == null)
         {
             Debug.Log("Augmented Image with the name: " + image.Name + " could not be found.");
             return;
         }
         // Calculate the target position and rotation that is used to move the ARScene GameObject
-        var targetPoint = (image.CenterPose.position - targetMarker.transform.position) + _arScene.transform.position;
-        var targetRotation = Quaternion.Inverse(image.CenterPose.rotation) * targetMarker.transform.rotation;
+        var targetPosition = (image.CenterPose.position - targetPlate.transform.position) + _arScene.transform.position;
+        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.CenterPose.rotation);
+        // Rotate over the X axis by 90° to account for AugmentedImage detection
+        targetRotation = targetRotation * Quaternion.Euler(90,0,0);
 
-        if (targetMarker.transform.position != image.CenterPose.position || targetMarker.transform.rotation != image.CenterPose.rotation)
+        if (targetPlate.transform.position != image.CenterPose.position || targetPlate.transform.rotation != image.CenterPose.rotation)
         {
             // Align the virtual marker with the real-world marker by rotating and moving all GameObjects within Unity
-            meshIsBacked = false;
-            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPoint, Time.deltaTime * updateSpeed);
-            _arScene.transform.RotateAround(targetMarker.transform.position, new Vector3(1, 0, 0), targetRotation.x);
-            _arScene.transform.RotateAround(targetMarker.transform.position, new Vector3(0, 1, 0), targetRotation.y);
-            _arScene.transform.RotateAround(targetMarker.transform.position, new Vector3(0, 0, 1), targetRotation.z);
+            meshIsBaked = false;
+            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation,Time.deltaTime * updateSpeed);
+            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
         }
         else
         {
             // After the ARScene has been moved, the NavMesh has to be rebaked in order to recalculate the navigation path.
             BackeMesh();
-            meshIsBacked = true;
+            meshIsBaked = true;
         }
     }
 
@@ -108,27 +107,32 @@ public class PoseController : MonoBehaviour
      */
     private void TestAlignScenePose()
     {
-        var targetMarker = GameObject.Find("Dog Marker");
-        var arMarker = GameObject.Find("Dog Target");
-        if (targetMarker == null)
+        var targetPlate = GameObject.Find("Dog Plate");
+        var image = GameObject.Find("ARDog Marker");
+        if (targetPlate == null)
         {
-            Debug.Log("Augmented Image with the name: " + "Dog Marker" + " could not be found.");
+            Debug.Log("Target Plate with the name: " + "Dog Plate" + " could not be found.");
             return;
         }
-        var targetPoint = (arMarker.transform.position - targetMarker.transform.position) + _arScene.transform.position;
-        var targetRotation = Quaternion.Inverse(arMarker.transform.rotation) * targetMarker.transform.rotation;
-        if (targetMarker.transform.position != arMarker.transform.position || targetMarker.transform.rotation != arMarker.transform.rotation)
+        var targetPosition = (image.transform.position - targetPlate.transform.position) + _arScene.transform.position;
+        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.transform.rotation );
+        targetRotation =  targetRotation *Quaternion.Euler(90,0,0);
+
+        if (targetPlate.transform.position != image.transform.position || targetPlate.transform.rotation != image.transform.rotation)
         {
-            meshIsBacked = false;
-            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPoint, Time.deltaTime * updateSpeed);
-            _arScene.transform.RotateAround(targetMarker.transform.position, new Vector3(1, 0, 0), targetRotation.x);
-            _arScene.transform.RotateAround(targetMarker.transform.position, new Vector3(0, 1, 0), targetRotation.y);
-            _arScene.transform.RotateAround(targetMarker.transform.position, new Vector3(0, 0, 1), targetRotation.z);
+            meshIsBaked = false;
+            //_arScene.transform.rotation = targetRotation;
+            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation,Time.deltaTime * updateSpeed);
+            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
+            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(1, 0, 0), targetRotation.x);
+            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 1, 0), targetRotation.y);
+            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 0, 1), targetRotation.z);
+
         }
         else
         {
             //BackeMesh();
-            meshIsBacked = true;
+            meshIsBaked = true;
         }
     }
 
