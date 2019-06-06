@@ -820,6 +820,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _destination: {fileID: 258703222}
+  surface: {fileID: 0}
   _navMeshAgent: {fileID: 476792922}
   cornerObject: {fileID: 1496191373788737196, guid: a1ed5b2ba7f6a8b4cb8230a4b062fea4,
     type: 3}
@@ -839,7 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _arScene: {fileID: 1854618357}
   debugText: {fileID: 1712228210}
-  testMode: 0
+  testMode: 1
 --- !u!1 &1126360984
 GameObject:
   m_ObjectHideFlags: 0

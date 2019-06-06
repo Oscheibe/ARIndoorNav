@@ -11,54 +11,30 @@ public class PoseController : MonoBehaviour
     public Text debugText;
     public bool testMode = false;
 
-    private readonly List<AugmentedImage> _images = new List<AugmentedImage>();
     private float updateSpeed = 4f;
     private bool meshIsBaked = true;
-
-    void Start()
-    {
-        Debug.Log("Starting Pose Controller");
-    }
-
-    /*  Quit when ARCore is not tracking. 
-        Update _images list with all tracked AugementedImages within the ARCore frame.
-        Change the ARScene to match up with the position of the tracked images.
-    */
-    void Update()
-    {
-        if (Session.Status != SessionStatus.Tracking)
-        {
-            return;
-        }
-        Session.GetTrackables(_images, TrackableQueryFilter.Updated);
-
-        if (testMode)
-        {
-            TestAlignScenePose();
-        }
-        else
-        {
-            UpdateARScene();
-        }
-
-
-    }
 
     /*  Each tracked image represents a marker in the real world. To match the position of the marker within the ARCore space
         the unity space changes its position and rotation accordingly.
         The center of the marker is used and matched with an database that has the position of it within unity. 
         After the ARScene has been moved, the NavMesh has to rebaked
     */
-    private void UpdateARScene()
+    public void UpdateARScene(List<AugmentedImage> _images)
     {
+        if (testMode)
+        {
+            TestAlignScenePose();
+            return;
+        }
+
         foreach (var image in _images)
         {
             if (image.TrackingState == TrackingState.Tracking)
             {
-                if(image.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
+                if (image.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
                 {
                     AlignScenePose(image);
-                }               
+                }
             }
             else if (image.TrackingState == TrackingState.Stopped || image.TrackingState == TrackingState.Paused)
             {
@@ -86,13 +62,13 @@ public class PoseController : MonoBehaviour
         var targetPosition = (image.CenterPose.position - targetPlate.transform.position) + _arScene.transform.position;
         var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.CenterPose.rotation);
         // Rotate over the X axis by 90° to account for AugmentedImage detection
-        targetRotation = targetRotation * Quaternion.Euler(90,0,0);
+        targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
 
         if (targetPlate.transform.position != image.CenterPose.position || targetPlate.transform.rotation != image.CenterPose.rotation)
         {
             // Align the virtual marker with the real-world marker by rotating and moving all GameObjects within Unity
             meshIsBaked = false;
-            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation,Time.deltaTime * updateSpeed);
+            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation, Time.deltaTime * updateSpeed);
             _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
         }
         else
@@ -115,14 +91,14 @@ public class PoseController : MonoBehaviour
             return;
         }
         var targetPosition = (image.transform.position - targetPlate.transform.position) + _arScene.transform.position;
-        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.transform.rotation );
-        targetRotation =  targetRotation *Quaternion.Euler(90,0,0);
+        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.transform.rotation);
+        targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
 
         if (targetPlate.transform.position != image.transform.position || targetPlate.transform.rotation != image.transform.rotation)
         {
             meshIsBaked = false;
             //_arScene.transform.rotation = targetRotation;
-            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation,Time.deltaTime * updateSpeed);
+            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation, Time.deltaTime * updateSpeed);
             _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
             //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(1, 0, 0), targetRotation.x);
             //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 1, 0), targetRotation.y);
