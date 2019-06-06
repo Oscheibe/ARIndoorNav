@@ -41,12 +41,16 @@ public class SceneController : MonoBehaviour
         {
             poseController.UpdateARScene(_detectedImages);
         }
+        
+        // TODO: Decide on logic when to rebake the mesh after UpdateARScene
+        // Function: navigationController.BakeMesh();
 
         // Draw navigation elements into the scene
         if (navigationController != null)
         {
             navigationController.DrawNextPathCorner(_detectedPlanes);
         }
+
     }
 
     /* Most of tracking related processes require the ground floor as a reference point. 

@@ -31,22 +31,6 @@ public class NavigationController : MonoBehaviour
         }
     }
 
-    public void DrawPathLine(float floorHeight)
-    {
-        var line = this.GetComponent<LineRenderer>();
-        if (line == null)
-        {
-            line = this.gameObject.AddComponent<LineRenderer>();
-            line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.red };
-            line.startWidth = 0.3f;
-            line.endWidth = 0.2f;
-            line.startColor = new Color(1, 0, 0, 0.5f);
-            line.endColor = new Color(1, 0, 0, 0.5f);
-        }
-        line.SetPosition(0, new Vector3(_navMeshAgent.nextPosition.x, floorHeight, _navMeshAgent.nextPosition.z));
-        line.SetPosition(1, GetNextCorner());
-    }
-
     /* The NavMesh path is made out of a list of corner positions.
      * The 1st corner is the agent itself, the 2nd is the next corner.
      * This 2nd corner is used to show display the way towards the destination.
@@ -116,7 +100,7 @@ public class NavigationController : MonoBehaviour
         // Initializing as null because error handling includes this case.
         // Needs to be optimized in the future
         DetectedPlane floorPlane = null;
-        for(int i = 0; i < detectedPlanes.Count; i++)
+        for (int i = 0; i < detectedPlanes.Count; i++)
         {
             if (detectedPlanes[i].PlaneType == DetectedPlaneType.HorizontalUpwardFacing)
             {
@@ -198,5 +182,20 @@ public class NavigationController : MonoBehaviour
         SetDestination();
     }
 
-
+    // Old function to draw the nav mesh path with just a line. Might be useful later
+    public void DrawPathLine(float floorHeight)
+    {
+        var line = this.GetComponent<LineRenderer>();
+        if (line == null)
+        {
+            line = this.gameObject.AddComponent<LineRenderer>();
+            line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.red };
+            line.startWidth = 0.3f;
+            line.endWidth = 0.2f;
+            line.startColor = new Color(1, 0, 0, 0.5f);
+            line.endColor = new Color(1, 0, 0, 0.5f);
+        }
+        line.SetPosition(0, new Vector3(_navMeshAgent.nextPosition.x, floorHeight, _navMeshAgent.nextPosition.z));
+        line.SetPosition(1, GetNextCorner());
+    }
 }

@@ -19,7 +19,7 @@ public class PoseController : MonoBehaviour
         The center of the marker is used and matched with an database that has the position of it within unity. 
         After the ARScene has been moved, the NavMesh has to rebaked
     */
-    public void UpdateARScene(List<AugmentedImage> _images)
+    public void UpdateARScene(List<AugmentedImage> images)
     {
         if (testMode)
         {
@@ -27,7 +27,8 @@ public class PoseController : MonoBehaviour
             return;
         }
 
-        foreach (var image in _images)
+        debugText.text = "Tracked images: " + images.Count;
+        foreach (var image in images)
         {
             if (image.TrackingState == TrackingState.Tracking)
             {
@@ -58,10 +59,12 @@ public class PoseController : MonoBehaviour
             Debug.Log("Augmented Image with the name: " + image.Name + " could not be found.");
             return;
         }
+        debugText.text += "\nPlate "+ image.Name+ ": " + image.CenterPose;
+        debugText.text += "\nUnity: "+targetPlate.transform.position;
         // Calculate the target position and rotation that is used to move the ARScene GameObject
         var targetPosition = (image.CenterPose.position - targetPlate.transform.position) + _arScene.transform.position;
         var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.CenterPose.rotation);
-        // Rotate over the X axis by 90° to account for AugmentedImage detection
+        // Rotate over the X axis by 90° to account for AugmentedImage detection angles (Might change later, hopefully not)
         targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
 
         if (targetPlate.transform.position != image.CenterPose.position || targetPlate.transform.rotation != image.CenterPose.rotation)

@@ -840,7 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _arScene: {fileID: 1854618357}
   debugText: {fileID: 1712228210}
-  testMode: 1
+  testMode: 0
 --- !u!1 &1126360984
 GameObject:
   m_ObjectHideFlags: 0
