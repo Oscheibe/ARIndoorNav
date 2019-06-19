@@ -12,19 +12,19 @@ public class PoseController : MonoBehaviour
     public bool testMode = false;
 
     private float updateSpeed = 4f;
-    private bool meshIsBaked = true;
+    private bool meshNeedsBaking = false;
 
     /*  Each tracked image represents a marker in the real world. To match the position of the marker within the ARCore space
         the unity space changes its position and rotation accordingly.
         The center of the marker is used and matched with an database that has the position of it within unity. 
         After the ARScene has been moved, the NavMesh has to rebaked
+        Returns true if the scene has updated and the NavMesh needs to be baked
     */
-    public void UpdateARScene(List<AugmentedImage> images)
+    public bool UpdateARScene(List<AugmentedImage> images)
     {
         if (testMode)
         {
-            TestAlignScenePose();
-            return;
+            return TestAlignScenePose();
         }
 
         debugText.text = "Tracked images: " + images.Count;
@@ -34,7 +34,7 @@ public class PoseController : MonoBehaviour
             {
                 if (image.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
                 {
-                    AlignScenePose(image);
+                    return AlignScenePose(image);
                 }
             }
             else if (image.TrackingState == TrackingState.Stopped || image.TrackingState == TrackingState.Paused)
@@ -42,13 +42,16 @@ public class PoseController : MonoBehaviour
                 // TODO: Decide on logic
             }
         }
+        // If no images are tracked, the mesh does not need to be baked
+        return false;
     }
 
     /*  Aligns a real-world marker's position with the corresponding virtual Unity marker.
         The real-world marker is an AugmentedImage detected by ARCore.
         The virtual (target) marker are GameObjects within Unity with unique names to identify them.
+        Returns true if the scene has updated and the NavMesh needs to be baked
      */
-    private void AlignScenePose(AugmentedImage image)
+    private bool AlignScenePose(AugmentedImage image)
     {
 
         // Searches the Scene for the image target to align position.
@@ -57,66 +60,107 @@ public class PoseController : MonoBehaviour
         if (targetPlate == null)
         {
             Debug.Log("Augmented Image with the name: " + image.Name + " could not be found.");
-            return;
+            return false;
         }
-        debugText.text += "\nPlate "+ image.Name+ ": " + image.CenterPose;
-        debugText.text += "\nUnity: "+targetPlate.transform.position;
-        // Calculate the target position and rotation that is used to move the ARScene GameObject
-        var targetPosition = (image.CenterPose.position - targetPlate.transform.position) + _arScene.transform.position;
-        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.CenterPose.rotation);
-        // Rotate over the X axis by 90° to account for AugmentedImage detection angles (Might change later, hopefully not)
-        targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
 
-        if (targetPlate.transform.position != image.CenterPose.position || targetPlate.transform.rotation != image.CenterPose.rotation)
+        // Rotate first because the rotation changes the position of the object.
+        // Rotate over the X axis by 90° to account for AugmentedImage detection angles (Might change later, hopefully not)
+        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.CenterPose.rotation);
+        targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
+        if (_arScene.transform.rotation != targetRotation) // Math.Abs(targetPlate.transform.rotation.eulerAngles.y - image.CenterPose.rotation.eulerAngles.y) >= 0.1
         {
-            // Align the virtual marker with the real-world marker by rotating and moving all GameObjects within Unity
-            meshIsBaked = false;
-            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation, Time.deltaTime * updateSpeed);
-            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
+            meshNeedsBaking = true;
+            _arScene.transform.rotation = targetRotation;
+        }
+        else
+        {
+            meshNeedsBaking = false;
+        }
+        // Calculate the new position of the _arScene center, based on relative distance between unity and ARCore plates
+        // Calculation needs to be done after changing the rotation.
+        var targetPosition = (image.CenterPose.position - targetPlate.transform.position) + _arScene.transform.position;
+        if (targetPlate.transform.position != image.CenterPose.position)
+        {
+            meshNeedsBaking = true;
+            _arScene.transform.position = targetPosition;
         }
         else
         {
             // After the ARScene has been moved, the NavMesh has to be rebaked in order to recalculate the navigation path.
-            BackeMesh();
-            meshIsBaked = true;
+            meshNeedsBaking = false;
         }
+        // Return true if the mesh needs baking 
+        return meshNeedsBaking;
     }
 
     /* This is only for testing purposes. Do not use!
      */
-    private void TestAlignScenePose()
+    private bool TestAlignScenePose()
     {
-        var targetPlate = GameObject.Find("Dog Plate");
-        var image = GameObject.Find("ARDog Marker");
+        var targetPlate = GameObject.Find("3.219");
+        var image = GameObject.Find("Debug Virtual AR Image");
         if (targetPlate == null)
         {
             Debug.Log("Target Plate with the name: " + "Dog Plate" + " could not be found.");
-            return;
+            return false;
         }
-        var targetPosition = (image.transform.position - targetPlate.transform.position) + _arScene.transform.position;
         var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.transform.rotation);
         targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
-
-        if (targetPlate.transform.position != image.transform.position || targetPlate.transform.rotation != image.transform.rotation)
+        if (_arScene.transform.rotation != targetRotation) // Math.Abs(targetPlate.transform.rotation.eulerAngles.y - image.CenterPose.rotation.eulerAngles.y) >= 0.1
         {
-            meshIsBaked = false;
-            //_arScene.transform.rotation = targetRotation;
-            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation, Time.deltaTime * updateSpeed);
-            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
-            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(1, 0, 0), targetRotation.x);
-            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 1, 0), targetRotation.y);
-            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 0, 1), targetRotation.z);
-
+            meshNeedsBaking = true;
+            _arScene.transform.rotation = targetRotation;
         }
         else
         {
-            //BackeMesh();
-            meshIsBaked = true;
+            meshNeedsBaking = false;
         }
-    }
+        // Calculate the new position of the _arScene center, based on relative distance between unity and ARCore plates
+        // Calculation needs to be done after changing the rotation.
+        var targetPosition = (image.transform.position - targetPlate.transform.position) + _arScene.transform.position;
+        if (targetPlate.transform.position != image.transform.position)
+        {
+            meshNeedsBaking = true;
+            _arScene.transform.position = targetPosition;
+        }
+        else
+        {
+            // After the ARScene has been moved, the NavMesh has to be rebaked in order to recalculate the navigation path.
+            meshNeedsBaking = false;
+        }
+        // Return true if the mesh needs baking 
+        return meshNeedsBaking;
 
-    private void BackeMesh()
-    {
-        throw new NotImplementedException();
+
+
+
+
+
+
+
+
+
+
+
+        /*
+        var targetPosition = (image.transform.position - targetPlate.transform.position) + _arScene.transform.position;
+        var targetRotation = _arScene.transform.rotation * (Quaternion.Inverse(targetPlate.transform.rotation) * image.transform.rotation);
+        targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
+        if (targetPlate.transform.position != image.transform.position || Math.Abs(targetPlate.transform.rotation.eulerAngles.y - image.transform.rotation.eulerAngles.y) >= 0.1)
+        {
+            meshNeedsBaking = true;
+            //_arScene.transform.rotation = targetRotation;
+            _arScene.transform.rotation = Quaternion.Lerp(_arScene.transform.rotation, targetRotation, Time.deltaTime * updateSpeed);
+            _arScene.transform.position = Vector3.Lerp(_arScene.transform.position, targetPosition, Time.deltaTime * updateSpeed);
+            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(1,1,1), Time.deltaTime * updateSpeed);
+            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 1, 0),Time.deltaTime * ((float)100/360) * (targetPlate.transform.rotation.eulerAngles.y - targetRotation.eulerAngles.y) );
+            //_arScene.transform.RotateAround(targetPlate.transform.position, new Vector3(0, 0, 1),Time.deltaTime * ((float)100/360) * (targetPlate.transform.rotation.eulerAngles.z - targetRotation.eulerAngles.z) );
+        }
+        else
+        {
+            meshNeedsBaking = false;
+        }
+        return meshNeedsBaking;
+        */
     }
 }

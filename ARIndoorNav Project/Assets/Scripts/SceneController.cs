@@ -10,6 +10,8 @@ public class SceneController : MonoBehaviour
 {
     public Camera firstPersonCamera;
     public Text debugText;
+    public GameObject floor;
+    public Material invisibleMaterial;
 
     private NavigationController navigationController;
     private PoseController poseController;
@@ -22,6 +24,8 @@ public class SceneController : MonoBehaviour
         QuitOnConnectionErrors();
         navigationController = GetComponent<NavigationController>();
         poseController = GetComponent<PoseController>();
+        // Make everything invisible!
+        floor.GetComponent<Renderer>().material = invisibleMaterial;
     }
 
 
@@ -30,7 +34,7 @@ public class SceneController : MonoBehaviour
         ProcessTouches();
 
         // If tracking failed, no calculations can be made.
-        // Any code below this point relies on a sucessful tracking.
+        // !!! Any code below this point relies on sucessful tracking !!!
         if (ProcessTracking() == false)
         {
             return;
@@ -39,7 +43,10 @@ public class SceneController : MonoBehaviour
         // Align the real world data with the virtual one
         if (poseController != null)
         {
-            poseController.UpdateARScene(_detectedImages);
+            if(poseController.UpdateARScene(_detectedImages))
+            {
+                navigationController.BakeMesh();
+            }
         }
         
         // TODO: Decide on logic when to rebake the mesh after UpdateARScene
