@@ -12,11 +12,14 @@ public class SceneController : MonoBehaviour
     public Text debugText;
     public GameObject floor;
     public Material invisibleMaterial;
+    public Image EdgeDetectionBackgroundImage;
 
     private NavigationController navigationController;
     private PoseController poseController;
     private readonly List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private readonly List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
+    private byte[] m_EdgeDetectionResultImage = null;
+    private Texture2D m_EdgeDetectionBackgroundTexture = null;
 
     // QuitOnConnectionErrors checks the state of the ARCore Session.
     void Start()
@@ -32,6 +35,7 @@ public class SceneController : MonoBehaviour
     void Update()
     {
         ProcessTouches();
+        DrawSobelEdges();
 
         // If tracking failed, no calculations can be made.
         // !!! Any code below this point relies on sucessful tracking !!!
@@ -43,12 +47,12 @@ public class SceneController : MonoBehaviour
         // Align the real world data with the virtual one
         if (poseController != null)
         {
-            if(poseController.UpdateARScene(_detectedImages))
+            if (poseController.UpdateARScene(_detectedImages))
             {
                 navigationController.BakeMesh();
             }
         }
-        
+
         // TODO: Decide on logic when to rebake the mesh after UpdateARScene
         // Function: navigationController.BakeMesh();
 
@@ -58,6 +62,48 @@ public class SceneController : MonoBehaviour
             navigationController.DrawNextPathCorner(_detectedPlanes);
         }
 
+    }
+
+    /** A debugging function that detects and draws edges to an given texture
+    
+     */
+    private void DrawSobelEdges()
+    {
+        var image = Frame.CameraImage.AcquireCameraImageBytes();
+        if(!image.IsAvailable)
+        {
+            return;
+        }
+        var inputImage = image.Y;
+        var width = image.Width;
+        var height = image.Height;
+        var rowStride = image.YRowStride;
+        var m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
+        m_EdgeDetectionResultImage = new byte[width * height];
+        // Detect edges within the image.
+        //if (SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
+        if (GoogleARCore.Examples.ComputerVision.EdgeDetector.Detect(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
+        {
+            // Update the rendering texture with the edge image.     
+            m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);
+            m_EdgeDetectionBackgroundTexture.Apply();
+            EdgeDetectionBackgroundImage.material.SetTexture(
+                "_ImageTex", m_EdgeDetectionBackgroundTexture);
+
+            const string TOP_LEFT_RIGHT = "_UvTopLeftRight";
+            const string BOTTOM_LEFT_RIGHT = "_UvBottomLeftRight";
+            EdgeDetectionBackgroundImage.material.SetVector(TOP_LEFT_RIGHT, new Vector4(
+                m_CameraImageToDisplayUvTransformation.TopLeft.x,
+                m_CameraImageToDisplayUvTransformation.TopLeft.y,
+                m_CameraImageToDisplayUvTransformation.TopRight.x,
+                m_CameraImageToDisplayUvTransformation.TopRight.y));
+            EdgeDetectionBackgroundImage.material.SetVector(BOTTOM_LEFT_RIGHT, new Vector4(
+                m_CameraImageToDisplayUvTransformation.BottomLeft.x,
+                m_CameraImageToDisplayUvTransformation.BottomLeft.y,
+                m_CameraImageToDisplayUvTransformation.BottomRight.x,
+                m_CameraImageToDisplayUvTransformation.BottomRight.y));
+
+        }
     }
 
     /* Most of tracking related processes require the ground floor as a reference point. 
