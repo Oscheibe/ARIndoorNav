@@ -31,7 +31,6 @@ public class TestUIController : MonoBehaviour
         float textFieldHeight = 129;//textField.GetComponent<Collider>().bounds.size.y;
         Vector3 position;
         float lastY = this.transform.position.y + (containerRectTrans.sizeDelta.y) / 2;
-        Debug.Log("textFieldHeight: " + textFieldHeight);
 
         for (int i = 0; i < textFieldSize; i++) // Loop has to start at 1 because another TextField was added before
         {
@@ -40,9 +39,11 @@ public class TestUIController : MonoBehaviour
 
             //textField.GetComponent("TextFieldManager").changeText("Test");
 
-            var newTextField = Instantiate(textField, position, Quaternion.identity, transform);
+            var newTextField = Instantiate(this.textField, position, Quaternion.identity, transform);
+            newTextField.name = i.ToString();
             SetTextFieldText(newTextField, "PlateText", i.ToString());
             SetTextFieldText(newTextField, "NameText", "ne");
+            newTextField.SetActive(true);
             textFieldList.Add(newTextField);
             lastY -= textFieldHeight;
             containerRectTrans.sizeDelta = new Vector2(containerRectTrans.sizeDelta.x, containerRectTrans.sizeDelta.y + textFieldHeight);

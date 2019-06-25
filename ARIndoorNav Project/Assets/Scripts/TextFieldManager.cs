@@ -7,6 +7,6 @@ public class TextFieldManager : MonoBehaviour
 {
     public void changeText(string text)
     {
-        GameObject.Find("Text").GetComponent<TextMeshProUGUI>().text = text;
+        //GameObject.Find("Text").GetComponent<TextMeshProUGUI>().text = text;
     }
 }
