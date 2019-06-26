@@ -27,7 +27,7 @@ public class PoseController : MonoBehaviour
             return TestAlignScenePose();
         }
 
-        debugText.text = "Tracked images: " + images.Count;
+        //debugText.text = "Tracked images: " + images.Count;
         foreach (var image in images)
         {
             if (image.TrackingState == TrackingState.Tracking)

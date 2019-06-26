@@ -43,7 +43,6 @@ public class NavigationController : MonoBehaviour
         Vector3 currentCorner, nextCorner;
         if (cornerObjectInstance == null)
         {
-            Debug.Log("Creating Corner GameObject in: " + gameObject.name);
             cornerObjectInstance = Instantiate(cornerObject, GetNextCorner(), Quaternion.identity, transform);
             /*
             nextCorner = GameObject.CreatePrimitive(PrimitiveType.Sphere);

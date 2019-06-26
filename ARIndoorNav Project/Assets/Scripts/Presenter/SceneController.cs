@@ -10,6 +10,7 @@ public class SceneController : MonoBehaviour
 {
     public Camera firstPersonCamera;
     public Text debugText;
+    public Text debugTextHough;
     public GameObject floor;
     public Material invisibleMaterial;
     public Image EdgeDetectionBackgroundImage;
@@ -35,7 +36,7 @@ public class SceneController : MonoBehaviour
     void Update()
     {
         ProcessTouches();
-        //DrawSobelEdges();
+        DrawSobelEdges();
 
         // If tracking failed, no calculations can be made.
         // !!! Any code below this point relies on sucessful tracking !!!
@@ -47,7 +48,8 @@ public class SceneController : MonoBehaviour
         // Align the real world data with the virtual one
         if (poseController != null)
         {
-            if (poseController.UpdateARScene(_detectedImages))
+            var hasUpdated = poseController.UpdateARScene(_detectedImages);
+            if (hasUpdated)
             {
                 navigationController.BakeMesh();
             }
@@ -67,6 +69,7 @@ public class SceneController : MonoBehaviour
     public void UpdateDestination(string plateNumber)
     {
         Debug.Log("Destination changed to: " + plateNumber);
+        debugText.text = "Destination: " + plateNumber;
         navigationController.ChangeDestination(plateNumber);
     }
 
@@ -75,9 +78,15 @@ public class SceneController : MonoBehaviour
      */
     private void DrawSobelEdges()
     {
-        var image = Frame.CameraImage.AcquireCameraImageBytes();
-        if(!image.IsAvailable)
+        if(Application.isEditor)
         {
+            return;
+        }
+
+        var image = Frame.CameraImage.AcquireCameraImageBytes();
+        if (!image.IsAvailable)
+        {
+            //debugText.text = "Image not available";
             return;
         }
         var inputImage = image.Y;
@@ -86,11 +95,30 @@ public class SceneController : MonoBehaviour
         var rowStride = image.YRowStride;
         var m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
         m_EdgeDetectionResultImage = new byte[width * height];
+        var hougAccoumulator = SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride);
+        if(hougAccoumulator != null)
+        {
+            debugTextHough.text = "Hough size: " + hougAccoumulator.GetLength(0) + ", " + hougAccoumulator.GetLength(1);
+            foreach (var line in hougAccoumulator)
+            {
+                if(line > 0)
+                {
+                    debugTextHough.text += line + ", ";
+                }
+            }
+        }
+        else 
+        {
+            debugTextHough.text = "Hough not found :(";
+        }
         // Detect edges within the image.
         //if (SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
-        if (GoogleARCore.Examples.ComputerVision.EdgeDetector.Detect(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
+        //if (GoogleARCore.Examples.ComputerVision.EdgeDetector.Detect(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
+        /*
+        if (SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
         {
             // Update the rendering texture with the edge image.     
+            
             m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);
             m_EdgeDetectionBackgroundTexture.Apply();
             EdgeDetectionBackgroundImage.material.SetTexture(
@@ -108,8 +136,13 @@ public class SceneController : MonoBehaviour
                 m_CameraImageToDisplayUvTransformation.BottomLeft.y,
                 m_CameraImageToDisplayUvTransformation.BottomRight.x,
                 m_CameraImageToDisplayUvTransformation.BottomRight.y));
+                
+            //Debug.Log(m_EdgeDetectionResultImage);
+            //debugText.text = m_EdgeDetectionResultImage.ToString();
+            
 
-        }
+        } 
+        */
     }
 
     /* Most of tracking related processes require the ground floor as a reference point. 

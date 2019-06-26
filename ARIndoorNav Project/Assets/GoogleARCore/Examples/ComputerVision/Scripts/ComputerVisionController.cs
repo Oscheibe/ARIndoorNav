@@ -26,10 +26,10 @@ namespace GoogleARCore.Examples.ComputerVision
     using UnityEngine;
     using UnityEngine.UI;
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     // Set up touch input propagation while using Instant Preview in the editor.
     using Input = InstantPreviewInput;
-    #endif  // UNITY_EDITOR
+#endif  // UNITY_EDITOR
 
     /// <summary>
     /// Controller for the ComputerVision example that accesses the CPU camera image (i.e. image
@@ -37,6 +37,8 @@ namespace GoogleARCore.Examples.ComputerVision
     /// </summary>
     public class ComputerVisionController : MonoBehaviour
     {
+        public Text debugText;
+
         /// <summary>
         /// The ARCoreSession monobehavior that manages the ARCore session.
         /// </summary>
@@ -266,8 +268,10 @@ namespace GoogleARCore.Examples.ComputerVision
             if (EdgeDetector.Detect(
                 m_EdgeDetectionResultImage, pixelBuffer, width, height, rowStride))
             {
+
                 // Update the rendering texture with the edge image.
                 m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);
+                
                 m_EdgeDetectionBackgroundTexture.Apply();
                 EdgeDetectionBackgroundImage.material.SetTexture(
                     "_ImageTex", m_EdgeDetectionBackgroundTexture);

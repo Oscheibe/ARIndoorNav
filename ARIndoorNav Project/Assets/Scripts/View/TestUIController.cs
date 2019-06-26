@@ -25,30 +25,17 @@ public class TestUIController : MonoBehaviour
     private void GetNamePlateInfo(out List<TextField> roomPlateList)
     {
         roomPlateList = new List<TextField>();
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
         
+        roomPlateList.Add(new TextField("3.215", "Dr. Dr. Oliver Scheibert"));
+        roomPlateList.Add(new TextField("3.216", "Dr. Dr. Oliver Scheibert"));
+        roomPlateList.Add(new TextField("3.217 ", "Dr. Dr. Oliver Scheibert"));
+        roomPlateList.Add(new TextField("3.218", "Dr. Dr. Oliver Scheibert"));
         roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        roomPlateList.Add(new TextField("3.219", "Dr. Benjamin Meyer, Florian Herborn"));
-        
         roomPlateList.Add(new TextField("3.220", "Dr. Dr. Oliver Scheibert"));
-        
+        roomPlateList.Add(new TextField("3.221", "Dr. Dr. Oliver Scheibert"));
+        roomPlateList.Add(new TextField("3.222", "Dr. Dr. Oliver Scheibert"));
+        roomPlateList.Add(new TextField("3.222a", "Dr. Dr. Oliver Scheibert"));
+
     }
 
     // Update is called once per frame

@@ -7,14 +7,17 @@ public class SobelEdgeDetector : MonoBehaviour
 {
     private static byte[] s_ImageBuffer = new byte[0];
     private static int s_ImageBufferSize = 0;
+    private static int[,] houghAccumulator;
 
-    public static bool Sobel(byte[] outputImage, IntPtr inputImage, int width, int height, int rowStride)
+    public static int[,] Sobel(byte[] outputImage, IntPtr inputImage, int width, int height, int rowStride)
     {
+        var maxLineLength =  (int)Mathf.Ceil(Mathf.Sqrt(Mathf.Pow(width, 2) + Mathf.Pow(height, 2)));
+        houghAccumulator = new int[180, maxLineLength];
 
         if (outputImage.Length < width * height)
         {
             Debug.Log("Input buffer is too small!");
-            return false;
+            return null;
         }
 
         // Adjust buffer size if necessary.
@@ -31,12 +34,12 @@ public class SobelEdgeDetector : MonoBehaviour
         // Detect edges.
         int threshold = 128 * 128;
 
-        for (int j = 1; j < height - 1; j++)
+        for (int y = 1; y < height - 1; y++)
         {
-            for (int i = 1; i < width - 1; i++)
+            for (int x = 1; x < width - 1; x++)
             {
                 // Offset of the pixel at [i, j] of the input image.
-                int offset = (j * rowStride) + i;
+                int offset = (y * rowStride) + x;
 
                 // Neighbour pixels around the pixel at [i, j].
                 int a00 = s_ImageBuffer[offset - rowStride - 1];
@@ -62,15 +65,21 @@ public class SobelEdgeDetector : MonoBehaviour
 
                 if ((xSum * xSum) + (ySum * ySum) > threshold)
                 {
-                    outputImage[(j * width) + i] = 0xFF;
+                    for (int theta = 30; theta <= 120; theta += 30)
+                    {
+                        var rho = (int)Mathf.Ceil(x * Mathf.Cos(theta) + y * Mathf.Sin(theta));
+                        houghAccumulator[theta, rho] += 1;
+                    }
+
+                    outputImage[(y * width) + x] = 0xFF;
                 }
                 else
                 {
-                    outputImage[(j * width) + i] = 0x1F;
+                    outputImage[(y * width) + x] = 0x1F;
                 }
             }
         }
         
-        return true;
+        return houghAccumulator;
     }
 }
