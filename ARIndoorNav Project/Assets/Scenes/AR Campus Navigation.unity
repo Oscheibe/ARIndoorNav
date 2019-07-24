@@ -6909,7 +6909,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPersonCamera: {fileID: 23711068}
   debugText: {fileID: 1712228210}
-  debugTextHough: {fileID: 0}
+  debugTextHough: {fileID: 1962947981}
   floor: {fileID: 1606883021}
   invisibleMaterial: {fileID: 2100000, guid: d2bbe9e59ee28224c9f39aab16bc0dc4, type: 2}
   EdgeDetectionBackgroundImage: {fileID: 1177642055}

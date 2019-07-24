@@ -21,6 +21,7 @@ public class SceneController : MonoBehaviour
     private readonly List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
     private byte[] m_EdgeDetectionResultImage = null;
     private Texture2D m_EdgeDetectionBackgroundTexture = null;
+    private WebCamTexture cameraTest;
 
     // QuitOnConnectionErrors checks the state of the ARCore Session.
     void Start()
@@ -30,24 +31,29 @@ public class SceneController : MonoBehaviour
         poseController = GetComponent<PoseController>();
         // Make everything invisible!
         floor.GetComponent<Renderer>().material = invisibleMaterial;
-    }
 
+        cameraTest = new WebCamTexture();
+        cameraTest.deviceName = WebCamTexture.devices[0].name;
+    }
 
     void Update()
     {
         ProcessTouches();
         DrawSobelEdges();
 
+        debugText.text = "Tracked images: " + _detectedImages.Count;
         // If tracking failed, no calculations can be made.
         // !!! Any code below this point relies on sucessful tracking !!!
         if (ProcessTracking() == false)
         {
             return;
         }
+        
 
         // Align the real world data with the virtual one
         if (poseController != null)
         {
+            
             var hasUpdated = poseController.UpdateARScene(_detectedImages);
             if (hasUpdated)
             {
@@ -78,38 +84,43 @@ public class SceneController : MonoBehaviour
      */
     private void DrawSobelEdges()
     {
-        if(Application.isEditor)
+        if (Application.isEditor)
         {
             return;
         }
 
-        var image = Frame.CameraImage.AcquireCameraImageBytes();
-        if (!image.IsAvailable)
+        
+        using (var image = Frame.CameraImage.AcquireCameraImageBytes())
         {
-            //debugText.text = "Image not available";
-            return;
-        }
-        var inputImage = image.Y;
-        var width = image.Width;
-        var height = image.Height;
-        var rowStride = image.YRowStride;
-        var m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
-        m_EdgeDetectionResultImage = new byte[width * height];
-        var hougAccoumulator = SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride);
-        if(hougAccoumulator != null)
-        {
-            debugTextHough.text = "Hough size: " + hougAccoumulator.GetLength(0) + ", " + hougAccoumulator.GetLength(1);
-            foreach (var line in hougAccoumulator)
+            if (!image.IsAvailable)
             {
-                if(line > 0)
+                debugTextHough.text = "Camera: " + cameraTest.name + "  image not available! Size: " + cameraTest.GetPixels().Length;
+                //debugText.text = "Image not available";
+                return;
+            }
+            IntPtr inputImage = image.Y;
+            int width = image.Width;
+            int height = image.Height;
+            int rowStride = image.YRowStride;
+            DisplayUvCoords m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
+            m_EdgeDetectionResultImage = new byte[width * height];
+
+            int[,] hougAccoumulator = SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride);
+            if (hougAccoumulator != null)
+            {
+                debugTextHough.text = "Hough size: " + hougAccoumulator.GetLength(0) + ", " + hougAccoumulator.GetLength(1);
+                foreach (var line in hougAccoumulator)
                 {
-                    debugTextHough.text += line + ", ";
+                    if (line > 0)
+                    {
+                        debugTextHough.text += line + ", ";
+                    }
                 }
             }
-        }
-        else 
-        {
-            debugTextHough.text = "Hough not found :(";
+            else
+            {
+                debugTextHough.text = "Hough not found :(";
+            }
         }
         // Detect edges within the image.
         //if (SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
