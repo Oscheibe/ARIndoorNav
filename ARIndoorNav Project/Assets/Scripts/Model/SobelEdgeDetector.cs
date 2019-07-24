@@ -4,11 +4,11 @@ using UnityEngine;
 using System;
 
 public class SobelEdgeDetector : MonoBehaviour
-{
+{    
     private static byte[] s_ImageBuffer = new byte[0];
     private static int s_ImageBufferSize = 0;
     private static int[,] houghAccumulator;
-
+    
     public static int[,] Sobel(byte[] outputImage, IntPtr inputImage, int width, int height, int rowStride)
     {
         var maxLineLength =  (int)Mathf.Ceil(Mathf.Sqrt(Mathf.Pow(width, 2) + Mathf.Pow(height, 2)));
