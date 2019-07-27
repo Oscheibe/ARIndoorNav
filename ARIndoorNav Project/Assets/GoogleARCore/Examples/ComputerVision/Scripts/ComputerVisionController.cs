@@ -37,6 +37,9 @@ namespace GoogleARCore.Examples.ComputerVision
     /// </summary>
     public class ComputerVisionController : MonoBehaviour
     {
+        public Text debugText;
+        
+        
         /// <summary>
         /// The ARCoreSession monobehavior that manages the ARCore session.
         /// </summary>
@@ -263,8 +266,10 @@ namespace GoogleARCore.Examples.ComputerVision
             }
 
             // Detect edges within the image.
-            if (EdgeDetector.Detect(
-                m_EdgeDetectionResultImage, pixelBuffer, width, height, rowStride))
+            var loopCount = EdgeDetector2.Detect(
+                m_EdgeDetectionResultImage, pixelBuffer, width, height, rowStride);
+            debugText.text = "Width: "+width + " / Height: " + height + " / Loop count: " + loopCount;
+            if (loopCount >= 0)
             {
                 // Update the rendering texture with the edge image.
                 m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);

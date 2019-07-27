@@ -11,6 +11,7 @@ public class SceneController : MonoBehaviour
     public Camera firstPersonCamera;
     public Text debugText;
     public Text debugTextHough;
+    public Text debugTextTrackingState;
     public GameObject floor;
     public Material invisibleMaterial;
     public Image EdgeDetectionBackgroundImage;
@@ -22,6 +23,7 @@ public class SceneController : MonoBehaviour
     private byte[] m_EdgeDetectionResultImage = null;
     private Texture2D m_EdgeDetectionBackgroundTexture = null;
     private WebCamTexture cameraTest;
+    private int trackingCount = 0;
 
     // QuitOnConnectionErrors checks the state of the ARCore Session.
     void Start()
@@ -41,14 +43,23 @@ public class SceneController : MonoBehaviour
         ProcessTouches();
         DrawSobelEdges();
 
-        debugText.text = "Tracked images: " + _detectedImages.Count;
         // If tracking failed, no calculations can be made.
         // !!! Any code below this point relies on sucessful tracking !!!
         if (ProcessTracking() == false)
         {
+            debugTextTrackingState.text = "Tracking state: Tracking failed " + ++trackingCount;
             return;
         }
+        else
+        {
+            trackingCount = 0;
+        }
         
+        debugTextTrackingState.text = "Tracking state: \nTracking Images: " + _detectedImages.Count + " Detected Planes: " + _detectedPlanes.Count;
+        if(_detectedImages.Count > 0)
+        {
+            debugTextTrackingState.text += " (Name:" + _detectedImages[0].Name+  ") ";
+        }
 
         // Align the real world data with the virtual one
         if (poseController != null)
@@ -109,6 +120,8 @@ public class SceneController : MonoBehaviour
             if (hougAccoumulator != null)
             {
                 debugTextHough.text = "Hough size: " + hougAccoumulator.GetLength(0) + ", " + hougAccoumulator.GetLength(1);
+                
+                /* Debugging purposes only!
                 foreach (var line in hougAccoumulator)
                 {
                     if (line > 0)
@@ -116,6 +129,7 @@ public class SceneController : MonoBehaviour
                         debugTextHough.text += line + ", ";
                     }
                 }
+                */
             }
             else
             {
@@ -174,6 +188,7 @@ public class SceneController : MonoBehaviour
             //Resets the screen timeout after tracking is lost.
             int lostTrackingSleepTimeout = 15;
             Screen.sleepTimeout = lostTrackingSleepTimeout;
+            debugTextTrackingState.text = "Tracking state: Tracking failed. Reason is SessionStatus not Tracking!";
             return false;
         }
         //Adjusting screen timeout so that the screen stays on when tracking

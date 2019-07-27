@@ -68,7 +68,7 @@ public class SobelEdgeDetector : MonoBehaviour
                     for (int theta = 30; theta <= 120; theta += 30)
                     {
                         var rho = (int)Mathf.Ceil(x * Mathf.Cos(theta) + y * Mathf.Sin(theta));
-                        houghAccumulator[theta, rho] += 1;
+                        houghAccumulator[theta, Mathf.Abs(rho)] += 1;
                     }
 
                     outputImage[(y * width) + x] = 0xFF;
