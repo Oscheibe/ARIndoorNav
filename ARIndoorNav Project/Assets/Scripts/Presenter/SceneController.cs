@@ -14,15 +14,13 @@ public class SceneController : MonoBehaviour
     public Text debugTextTrackingState;
     public GameObject floor;
     public Material invisibleMaterial;
-    public Image EdgeDetectionBackgroundImage;
+    public GameObject EdgeDetectionBackground;
 
     private NavigationController navigationController;
     private PoseController poseController;
     private readonly List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private readonly List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
-    private byte[] m_EdgeDetectionResultImage = null;
     private Texture2D m_EdgeDetectionBackgroundTexture = null;
-    private WebCamTexture cameraTest;
     private int trackingCount = 0;
 
     // QuitOnConnectionErrors checks the state of the ARCore Session.
@@ -33,15 +31,12 @@ public class SceneController : MonoBehaviour
         poseController = GetComponent<PoseController>();
         // Make everything invisible!
         floor.GetComponent<Renderer>().material = invisibleMaterial;
-
-        cameraTest = new WebCamTexture();
-        cameraTest.deviceName = WebCamTexture.devices[0].name;
     }
 
     void Update()
     {
         ProcessTouches();
-        DrawSobelEdges();
+        //DrawSobelEdges();
 
         // If tracking failed, no calculations can be made.
         // !!! Any code below this point relies on sucessful tracking !!!
@@ -54,17 +49,17 @@ public class SceneController : MonoBehaviour
         {
             trackingCount = 0;
         }
-        
+
         debugTextTrackingState.text = "Tracking state: \nTracking Images: " + _detectedImages.Count + " Detected Planes: " + _detectedPlanes.Count;
-        if(_detectedImages.Count > 0)
+        if (_detectedImages.Count > 0)
         {
-            debugTextTrackingState.text += " (Name:" + _detectedImages[0].Name+  ") ";
+            debugTextTrackingState.text += " (Name:" + _detectedImages[0].Name + ") ";
         }
 
         // Align the real world data with the virtual one
         if (poseController != null)
         {
-            
+
             var hasUpdated = poseController.UpdateARScene(_detectedImages);
             if (hasUpdated)
             {
@@ -100,12 +95,11 @@ public class SceneController : MonoBehaviour
             return;
         }
 
-        
         using (var image = Frame.CameraImage.AcquireCameraImageBytes())
         {
             if (!image.IsAvailable)
             {
-                debugTextHough.text = "Camera: " + cameraTest.name + "  image not available! Size: " + cameraTest.GetPixels().Length;
+                debugTextHough.text = "Camera image not available!";
                 //debugText.text = "Image not available";
                 return;
             }
@@ -114,27 +108,26 @@ public class SceneController : MonoBehaviour
             int height = image.Height;
             int rowStride = image.YRowStride;
             DisplayUvCoords m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
-            m_EdgeDetectionResultImage = new byte[width * height];
+            var sobelAccessGO = EdgeDetectionBackground.GetComponent<SobelEdgeDetector>();
 
-            int[,] hougAccoumulator = SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride);
-            if (hougAccoumulator != null)
+            string houghAccoumulatorMedian = null;
+            //sobelAccessGO.TestLineDraing();
+            houghAccoumulatorMedian = sobelAccessGO.DrawHoughLines2(inputImage, width, height, rowStride);
+            //houghAccoumulatorMedian = sobelAccessGO.CalculateHoughLinesMedian2(inputImage, width, height, rowStride);
+            //sobelAccessGO.DrawHoughLines2(inputImage, width, height, rowStride);
+            if (houghAccoumulatorMedian != null)
             {
-                debugTextHough.text = "Hough size: " + hougAccoumulator.GetLength(0) + ", " + hougAccoumulator.GetLength(1);
-                
-                /* Debugging purposes only!
-                foreach (var line in hougAccoumulator)
-                {
-                    if (line > 0)
-                    {
-                        debugTextHough.text += line + ", ";
-                    }
-                }
-                */
+                debugTextHough.text = "Hough Median: " + houghAccoumulatorMedian;
+                //debugTextHough.text = "Hough size: " + houghAccoumulatorMedian.GetLength(0) + ", " + houghAccoumulatorMedian.GetLength(1);                
             }
             else
             {
-                debugTextHough.text = "Hough not found :(";
+                debugTextHough.text = "Hough not found";
             }
+            
+            
+
+
         }
         // Detect edges within the image.
         //if (SobelEdgeDetector.Sobel(m_EdgeDetectionResultImage, inputImage, width, height, rowStride))
