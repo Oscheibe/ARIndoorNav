@@ -60,13 +60,13 @@ public class SobelEdgeDetector : MonoBehaviour
 
     }
 
-    public int CalculateHoughLinesMedian2(IntPtr inputImage, int width, int height, int rowStride)
+    public string CalculateHoughLinesMedian2(IntPtr inputImage, int width, int height, int rowStride)
     {
         int[] sobelResult = Sobel2(inputImage, width, height, rowStride);
         int maxValue = 0;
         if (sobelResult == null)
         {
-            return -1;
+            return ""+-1;
         }
         List<int> allValues = new List<int>();
         //houghAccumulator[theta, Mathf.Abs(rho)] += 1;
@@ -79,8 +79,8 @@ public class SobelEdgeDetector : MonoBehaviour
             allValues.Add(accu);
         }
 
-        return maxValue;
-        //return allValues[allValues.Count / 2];
+        //return ""+maxValue;
+        return "Median: "+allValues[allValues.Count / 2] + ", Max: " + maxValue;
     }
 
     public string DrawHoughLines(IntPtr inputImage, int width, int height, int rowStride)
@@ -134,7 +134,7 @@ public class SobelEdgeDetector : MonoBehaviour
 
 
         int[] sobelResult = Sobel2(inputImage, width, height, rowStride); // size: 163080
-        int houghThreshold = 40;
+        int houghThreshold = 60;
         ClearLineList();
         if (sobelResult == null)
         {
@@ -236,7 +236,7 @@ public class SobelEdgeDetector : MonoBehaviour
                 if ((xSum * xSum) + (ySum * ySum) > threshold)
                 {
                     // Hough line filter with rho = x*cos(theta) + y*sin(theta) 
-                    for (int theta = 0; theta < 180; theta++)
+                    for (int theta = 0; theta < 180; theta += 4)
                     {
                         var rho = ((x - xCenter) * Mathf.Cos(theta * Mathf.Deg2Rad)) +
                                     ((y - yCenter) * Mathf.Sin(theta * Mathf.Deg2Rad));
@@ -320,6 +320,11 @@ public class SobelEdgeDetector : MonoBehaviour
 
     private void DrawLine(Vector3 pointA, Vector3 pointB)
     {
+        int maxCount = 50;
+        if(lineList.Count >= maxCount)
+        {
+            return;
+        }
         Vector3 differenceVector = pointB - pointA;
         var newObject = Instantiate(line, new Vector3(400, 400, 0), Quaternion.identity, transform);
         lineList.Add(newObject);
@@ -336,9 +341,9 @@ public class SobelEdgeDetector : MonoBehaviour
     {
         if (lineList.Count > 0)
         {
-            foreach (GameObject img in lineList)
+            foreach (GameObject line in lineList)
             {
-                DestroyImmediate(img);
+                DestroyImmediate(line);
             }
             lineList.Clear();
         }

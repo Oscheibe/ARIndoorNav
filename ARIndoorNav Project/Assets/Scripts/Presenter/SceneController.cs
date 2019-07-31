@@ -36,7 +36,7 @@ public class SceneController : MonoBehaviour
     void Update()
     {
         ProcessTouches();
-        //DrawSobelEdges();
+        DrawSobelEdges();
 
         // If tracking failed, no calculations can be made.
         // !!! Any code below this point relies on sucessful tracking !!!
