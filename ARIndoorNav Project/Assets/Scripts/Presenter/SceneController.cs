@@ -15,6 +15,7 @@ public class SceneController : MonoBehaviour
     public GameObject floor;
     public Material invisibleMaterial;
     public GameObject EdgeDetectionBackground;
+    public GameObject canvas;
 
     private NavigationController navigationController;
     private PoseController poseController;
@@ -112,7 +113,10 @@ public class SceneController : MonoBehaviour
 
             string houghAccoumulatorMedian = null;
             //sobelAccessGO.TestLineDraing();
-            houghAccoumulatorMedian = sobelAccessGO.DrawHoughLines2(inputImage, width, height, rowStride);
+            RectTransform detectionRect = EdgeDetectionBackground.GetComponent<RectTransform>();
+
+            houghAccoumulatorMedian = sobelAccessGO.DrawHoughLines2(inputImage, width, height, rowStride, (int)detectionRect.rect.width, (int)detectionRect.rect.height);
+            
             //houghAccoumulatorMedian = sobelAccessGO.CalculateHoughLinesMedian2(inputImage, width, height, rowStride);
             //sobelAccessGO.DrawHoughLines2(inputImage, width, height, rowStride);
             if (houghAccoumulatorMedian != null)

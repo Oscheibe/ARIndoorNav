@@ -11,10 +11,11 @@ public class SobelEdgeDetector : MonoBehaviour
 
     private Image lineImage;
     private GameObject line;
+    private List<GameObject> lineList = new List<GameObject>();
     private Vector3 pointA = new Vector3(400, 400, 0);
     private Vector3 pointB = new Vector3(200, 200, 0);
-    private int width = 2;
-    private List<GameObject> lineList = new List<GameObject>();
+    private int lineWidth = 2;
+
 
     void Start()
     {
@@ -62,11 +63,12 @@ public class SobelEdgeDetector : MonoBehaviour
 
     public string CalculateHoughLinesMedian2(IntPtr inputImage, int width, int height, int rowStride)
     {
-        int[] sobelResult = Sobel2(inputImage, width, height, rowStride);
+        int[,] sobelResult = Sobel2(inputImage, width, height, rowStride);
+
         int maxValue = 0;
         if (sobelResult == null)
         {
-            return ""+-1;
+            return "" + -1;
         }
         List<int> allValues = new List<int>();
         //houghAccumulator[theta, Mathf.Abs(rho)] += 1;
@@ -80,7 +82,7 @@ public class SobelEdgeDetector : MonoBehaviour
         }
 
         //return ""+maxValue;
-        return "Median: "+allValues[allValues.Count / 2] + ", Max: " + maxValue;
+        return "Median: " + allValues[allValues.Count / 2] + ", Max: " + maxValue;
     }
 
     public string DrawHoughLines(IntPtr inputImage, int width, int height, int rowStride)
@@ -125,15 +127,15 @@ public class SobelEdgeDetector : MonoBehaviour
         return result;
     }
 
-    public string DrawHoughLines2(IntPtr inputImage, int width, int height, int rowStride)
+    public string DrawHoughLines2(IntPtr inputImage, int width, int height, int rowStride, int canvasWidth, int canvasHeight)
     {
-        var houghHeight = Mathf.Ceil((Mathf.Sqrt(2) * (height > width ? height : width)) / 2); //453
-        var accumulatorHeight = houghHeight * 2; //906
-        var accumulatorWidth = 180;
+        //var houghHeight = Mathf.Ceil((Mathf.Sqrt(2) * (height > width ? height : width)) / 2); //453
+        //var maxHeight = (height > width ? height : width);
+        var maxLineLength = (int)Mathf.Ceil(Mathf.Sqrt(Mathf.Pow(width, 2) + Mathf.Pow(height, 2)));
         string result = "";
 
 
-        int[] sobelResult = Sobel2(inputImage, width, height, rowStride); // size: 163080
+        int[,] sobelResult = Sobel2(inputImage, width, height, rowStride); // size: 163080
         int houghThreshold = 60;
         ClearLineList();
         if (sobelResult == null)
@@ -142,12 +144,12 @@ public class SobelEdgeDetector : MonoBehaviour
         }
 
         // Iterating over Hough accumulator and recalculating points
-        for (int rho = 0; rho < accumulatorHeight; rho++)
+        for (int rho = 0; rho < sobelResult.GetLength(1); rho++)
         {
-            for (int theta = 0; theta < accumulatorWidth; theta++)
+            for (int theta = 0; theta < 180; theta++)
             {
                 // Threshold used for line detection
-                if (sobelResult[(rho * accumulatorWidth) + theta] >= houghThreshold)
+                if (sobelResult[theta, rho] >= houghThreshold)
                 {
                     int x1, x2, y1, y2;
 
@@ -156,21 +158,30 @@ public class SobelEdgeDetector : MonoBehaviour
                         //y = (r - x cos(t)) / sin(t)  
                         x1 = 0;
 
-                        y1 = (int)Mathf.Ceil(((rho - (accumulatorHeight / 2)) - ((x1 - (width / 2)) * Mathf.Cos(theta * Mathf.Deg2Rad)) ) /
-                                           Mathf.Sin(theta * Mathf.Deg2Rad) + (height / 2));
-                        x2 = width;
-                        y2 = (int)Mathf.Ceil(((rho - (accumulatorHeight / 2)) - ((x2 - (width / 2)) * Mathf.Cos(theta * Mathf.Deg2Rad)) ) /
-                                           Mathf.Sin(theta * Mathf.Deg2Rad) + (height / 2));    
+                        var xCos1 = x1 * Mathf.Cos(theta * Mathf.Deg2Rad);
+                        var sin1 = Mathf.Sin(theta * Mathf.Deg2Rad);
+
+                        y1 = (int)Mathf.Ceil((rho - maxLineLength - xCos1) / sin1);
+
+                        x2 = canvasWidth;
+
+                        var xCos2 = x2 * Mathf.Cos(theta * Mathf.Deg2Rad);
+                        var sin2 = Mathf.Sin(theta * Mathf.Deg2Rad);
+
+                        y2 = (int)Mathf.Ceil((rho - maxLineLength - xCos2) / sin2);
                     }
                     else
                     {
                         //x = (r - y sin(t)) / cos(t);  
                         y1 = 0;
-                        x1 = (int)Mathf.Ceil(((rho - (accumulatorHeight / 2)) - ((y1 - (height / 2)) * Mathf.Sin(theta * Mathf.Deg2Rad)) ) /
-                                           Mathf.Cos(theta * Mathf.Deg2Rad) + (width / 2));
-                        y2 = width;
-                        x2 = (int)Mathf.Ceil(((rho - (accumulatorHeight / 2)) - ((y2 - (height / 2)) * Mathf.Sin(theta * Mathf.Deg2Rad)) ) /
-                                           Mathf.Cos(theta * Mathf.Deg2Rad) + (width / 2));
+                        var ySin1 = y1 * Mathf.Sin(theta * Mathf.Deg2Rad);
+                        var cos1 = Mathf.Cos(theta * Mathf.Deg2Rad);
+                        x1 = (int)Mathf.Ceil((rho - maxLineLength - ySin1) / cos1);
+
+                        y2 = canvasHeight;
+                        var ySin2 = y2 * Mathf.Sin(theta * Mathf.Deg2Rad);
+                        var cos2 = Mathf.Cos(theta * Mathf.Deg2Rad);
+                        x2 = (int)Mathf.Ceil((rho - maxLineLength - ySin2) / cos2);
                     }
                     result += x1 + ", " + y1 + " / " + x2 + ", " + y2 + "\n";
                     DrawLine(new Vector3(x1, y1, 0), new Vector3(x2, y2, 0));
@@ -180,15 +191,20 @@ public class SobelEdgeDetector : MonoBehaviour
         return result;
     }
 
-    private int[] Sobel2(IntPtr inputImage, int width, int height, int rowStride)
+    private int[,] Sobel2(IntPtr inputImage, int width, int height, int rowStride)
     {
-        var houghHeight = Mathf.Ceil((Mathf.Sqrt(2) * (height > width ? height : width)) / 2);
-        var accumulatorHeight = houghHeight * 2;
+        //var houghHeight = Mathf.Ceil((Mathf.Sqrt(2) * (height > width ? height : width)) / 2);
+        //var accumulatorHeight = houghHeight * 2;
+        //var maxLineLength = (int)Mathf.Ceil(Mathf.Sqrt(Mathf.Pow(width, 2) + Mathf.Pow(height, 2))) * 2;
+        // Width = 180 due to maximum angle = 180°
         var accumulatorWidth = 180;
-        var xCenter = width / 2;
-        var yCenter = height / 2;
+        //var xCenter = width / 2;
+        //var yCenter = height / 2;
+        //var maxHeight = (height > width ? height : width);
+        var maxLineLength = (int)Mathf.Ceil(Mathf.Sqrt(Mathf.Pow(width, 2) + Mathf.Pow(height, 2)));
 
-        var houghAccumulator = new int[(int)Mathf.Ceil(accumulatorHeight * accumulatorWidth)];
+        int[,] houghAccumulator = new int[accumulatorWidth, maxLineLength * 2];
+        //var houghAccumulator = new int[(int)Mathf.Ceil(accumulatorHeight * accumulatorWidth)];
 
         // Adjust buffer size if necessary.
         int bufferSize = rowStride * height;
@@ -236,11 +252,22 @@ public class SobelEdgeDetector : MonoBehaviour
                 if ((xSum * xSum) + (ySum * ySum) > threshold)
                 {
                     // Hough line filter with rho = x*cos(theta) + y*sin(theta) 
-                    for (int theta = 0; theta < 180; theta += 4)
+                    for (int theta = 0; theta < 180; theta++)
                     {
-                        var rho = ((x - xCenter) * Mathf.Cos(theta * Mathf.Deg2Rad)) +
-                                    ((y - yCenter) * Mathf.Sin(theta * Mathf.Deg2Rad));
-                        houghAccumulator[(int)Mathf.Round(rho + houghHeight) * 180 + theta]++;
+                        var rho = (x * Mathf.Cos(theta * Mathf.Deg2Rad)) +
+                                    (y * Mathf.Sin(theta * Mathf.Deg2Rad));
+                        rho += maxLineLength;
+                        try
+                        {
+                            houghAccumulator[theta, (int)Mathf.Ceil(rho)] += 1;
+                        }
+                        catch (System.IndexOutOfRangeException)
+                        {
+                            Debug.Log(string.Format("Out of Bounds: x: {0}, y: {1}, theta: {2}, rho: {3}, height: {4}, width: {5}", x, y, theta, rho, height, width));
+                            throw;
+                        }
+
+                        //houghAccumulator[(int)Mathf.Round(rho + houghHeight) * 180 + theta]++;
                     }
                 }
             }
@@ -321,7 +348,7 @@ public class SobelEdgeDetector : MonoBehaviour
     private void DrawLine(Vector3 pointA, Vector3 pointB)
     {
         int maxCount = 50;
-        if(lineList.Count >= maxCount)
+        if (lineList.Count >= maxCount)
         {
             return;
         }
@@ -330,7 +357,7 @@ public class SobelEdgeDetector : MonoBehaviour
         lineList.Add(newObject);
 
         var newObjectRect = newObject.GetComponent<RectTransform>();
-        newObjectRect.sizeDelta = new Vector2(differenceVector.magnitude, width);
+        newObjectRect.sizeDelta = new Vector2(differenceVector.magnitude, lineWidth);
         newObjectRect.pivot = new Vector2(0, 0.5f);
         newObjectRect.position = pointA;
         float angle = Mathf.Atan2(differenceVector.y, differenceVector.x) * Mathf.Rad2Deg;
