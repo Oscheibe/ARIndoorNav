@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NavigationDrawerUIController : MonoBehaviour
+/**
+    Script to relay high-iportance messages to the user. 
+    Used for when the tracking state has degenerated too much and needs the user to react
+ */
+public class UserMessagesPresenter : MonoBehaviour
 {
-    [SerializeField] MenuUIController menuUIController;
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -18,9 +20,8 @@ public class NavigationDrawerUIController : MonoBehaviour
         
     }
 
-    public void OnTextFieldClick(string plateNumber)
+    public void SendWarningMessage(string warning)
     {
-        menuUIController.UpdateSelectedRoom(plateNumber);
-    }
 
+    }
 }

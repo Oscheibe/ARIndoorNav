@@ -11,7 +11,7 @@ public class PoseController : MonoBehaviour
     public Text debugText;
     public bool testMode = false;
 
-    private float updateSpeed = 4f;
+    //private float updateSpeed = 4f;
     private bool meshNeedsBaking = false;
 
     /*  Each tracked image represents a marker in the real world. To match the position of the marker within the ARCore space

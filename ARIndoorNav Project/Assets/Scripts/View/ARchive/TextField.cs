@@ -6,9 +6,9 @@ using UnityEngine.EventSystems;
 public class TextField : MonoBehaviour, IPointerClickHandler
 
 {
-	[SerializeField] Animator animator;
-	[SerializeField] int thisIndex;
-    [SerializeField] GameObject sceneControllerObject;
+	public Animator animator;
+	public int thisIndex;
+    public GameObject sceneControllerObject;
 
     private SceneController sceneController;
 

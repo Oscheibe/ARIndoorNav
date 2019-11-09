@@ -11,12 +11,14 @@ using GoogleARCore;
  */
 public class MarkerDetection : MonoBehaviour
 {
-    public List<Room> _roomList;
-    public PoseEstimation _poseEstimation;
+    public PoseEstimation _PoseEstimation;
+    public MarkerDatabase _MarkerDatabase;
 
     private bool _isTracking = false;
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
+    private List<Transform> _markerPositionList = new List<Transform>();
+    private readonly int _MaxTrackingCount = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -71,30 +73,22 @@ public class MarkerDetection : MonoBehaviour
             if (detectedMarker.TrackingState == TrackingState.Tracking &&
                 detectedMarker.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
             {
-                detectedMarkerPosition = GetMarkerPosition(detectedMarker.Name);
+                detectedMarkerPosition = _MarkerDatabase.RequestMarkerPosition(detectedMarker.Name);
             }
         }
 
+        //TODO median of detected marker
         if (detectedMarkerPosition != null)
         {
-            _poseEstimation.ReportPosition(detectedMarkerPosition);
+            _markerPositionList.Add(detectedMarkerPosition);
+        }
+
+        if(_markerPositionList.Count >= _MaxTrackingCount)
+        {
+            Transform calculatedMarkerPosition = HelperFunctions.CalculateAverageTransfrom(_markerPositionList);
+            _PoseEstimation.ReportPosition(calculatedMarkerPosition);
         }
     }
-
-    /**
-        Searches a list of all rooms for the location of a marker using its name
-        The marker name has to be the same as the room name
-        If no room is found, null is returned
-     */
-    private Transform GetMarkerPosition(string markerName)
-    {
-        Transform markerPosition = null;
-        Predicate<Room> roomFinder = (Room r) => { return r.roomName == markerName; };
-
-        markerPosition = _roomList.Find(roomFinder).transform;
-        return markerPosition;
-    }
-
 
 
 }

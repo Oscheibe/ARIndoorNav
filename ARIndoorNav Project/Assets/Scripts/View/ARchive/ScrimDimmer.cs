@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ScrimDimmer : MonoBehaviour
 {
-    [SerializeField] GameObject scrim;
+    public GameObject scrim;
 
     private Vector3 startPosition;
     private Vector3 lastPosition;

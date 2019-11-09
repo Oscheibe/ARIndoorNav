@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TrackingErrorHandling : MonoBehaviour
 {
-    public ARPositionTracking _ARPositionTracking;
+    public UserMessagesPresenter _UserMessagesPresenter;
     public PoseEstimation _PoseEstimation;
     
     // Start is called before the first frame update
@@ -28,4 +28,10 @@ public class TrackingErrorHandling : MonoBehaviour
     {
         //TODO
     }
+
+    private void ReportTrackingState()
+    {
+        // if.... _UserMessagesPresenter.SendWarningMessage("TODO");
+    }
+
 }

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PoseEstimation : MonoBehaviour
 {
-    public GameObject _userPosition;
-    public MarkerDetection _markerDetection;
+    public GameObject _LastUserPosition;
+    public MarkerDetection _MarkerDetection;
     
     
     // Start is called before the first frame update
@@ -31,8 +31,8 @@ public class PoseEstimation : MonoBehaviour
         //TODO: Save positions for future analysis and do some calculations with them
         calculatedPosition = reportedPosition;
 
-        _markerDetection.StopDetection();
-        UpdateUserPosition(calculatedPosition);
+        _MarkerDetection.StopDetection();
+        UpdateLastUserPosition(calculatedPosition);
     }
 
     /**
@@ -42,14 +42,14 @@ public class PoseEstimation : MonoBehaviour
      */
     public void RequestNewPosition()
     {
-        _markerDetection.StartDetection();
+        _MarkerDetection.StartDetection();
         //TODO: stop tracking and start scanning
     }
 
-    private void UpdateUserPosition(Transform reportedPosition)
+    private void UpdateLastUserPosition(Transform reportedPosition)
     {
         //TODO: change _userPosition
-        _userPosition.transform.Rotate(new Vector3(1,1,1));
+        _LastUserPosition.transform.Rotate(new Vector3(1,1,1));
     }
 
 }

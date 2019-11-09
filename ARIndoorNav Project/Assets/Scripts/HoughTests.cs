@@ -233,7 +233,7 @@ public class HoughTests : MonoBehaviour
     private int[] Sobel2(int[,] inputImage)
     {
 
-        int x1, x2, y1, y2;
+        //int x1, x2, y1, y2;
 
         var houghAccumulator = new int[(int)Mathf.Ceil(accumulatorHeight * accumulatorWidth)];
 

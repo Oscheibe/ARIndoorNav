@@ -2,26 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Room : MonoBehaviour
+
+public class Room
 {
-    public string roomName
+    private string name;
+    private string description;
+    private Transform location;
+
+    private Room() { }
+
+    //TODO Room tags?
+    public Room(string name, Transform location, string description)
     {
-        get
-        {
-            return roomName;
-        }
-        set
-        {
-            roomName = roomName;
-        }
+        Name = name;
+        Location = location;
+        Description = description;
     }
 
-    public Transform roomLocation
+    public string Name
     {
-        get
-        {
-            return this.transform;
-        }
+        get { return name; }
+        set { name = value; }
+
+    }
+
+    public Transform Location
+    {
+        get { return location; }
+        set { location = value; }
+    }
+
+    public string Description
+    {
+        get { return description; }
+        set { description = value; }
     }
 
 }

@@ -17,6 +17,7 @@ public class ARPositionTracking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Maybe FeaturePoint drift
         _TrackingErrorHandling.ReportTrackingState("TODO");
     }
 

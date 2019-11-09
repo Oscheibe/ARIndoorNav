@@ -21,7 +21,7 @@ public class SceneController : MonoBehaviour
     private PoseController poseController;
     private readonly List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private readonly List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
-    private Texture2D m_EdgeDetectionBackgroundTexture = null;
+    //private Texture2D m_EdgeDetectionBackgroundTexture = null;
     private int trackingCount = 0;
 
     // QuitOnConnectionErrors checks the state of the ARCore Session.

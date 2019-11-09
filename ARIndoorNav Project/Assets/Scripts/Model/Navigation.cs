@@ -12,20 +12,25 @@ using UnityEngine.AI;
  */
 public class Navigation : MonoBehaviour
 {
-    public NavMeshAgent _userPosition;
-    public NavMeshSurface _mapModelMesh;
+    public NavMeshAgent _NavMeshAgent;
+    public NavMeshSurface _MapModelMesh;
+    public NavigationPresenter _NavigationPresenter;
 
     private Room _destination;
-    
+
     // Start is called before the first frame update
     void Start()
     {
         // Bakes the mesh based on the, in the unity editor defined, navigation values
-        _mapModelMesh.BuildNavMesh();
+        _MapModelMesh.BuildNavMesh();
     }
 
-    // No update method needen because NavMesh does all the calulcations in the background
-    void Update(){}
+    // Sends periodic updates of the current navigation state
+    void Update()
+    {
+        if (_destination == null || _NavMeshAgent == null) return;
+        _NavigationPresenter.UpdateNavigationInformation(CalculateDistance(), GetPath());
+    }
 
     /** 
         Sets the destination of the NavMesh agent and updates the local variable _destination that 
@@ -34,7 +39,8 @@ public class Navigation : MonoBehaviour
     public void UpdateDestination(Room destination)
     {
         _destination = destination;
-        _userPosition.SetDestination(destination.transform.position);
+        _NavMeshAgent.SetDestination(destination.Location.position);
+        _NavigationPresenter.DisplayNavigationInformation(_destination.Name, CalculateDistance(), GetPath());
     }
 
     /**
@@ -43,7 +49,17 @@ public class Navigation : MonoBehaviour
      */
     public Vector3[] GetPath()
     {
-        return _userPosition.path.corners;
+        return _NavMeshAgent.path.corners;
+    }
+
+    private float CalculateDistance(Transform startPosition, Transform endPosition)
+    {
+        return Vector3.Distance(startPosition.position, endPosition.position);
+    }
+
+    private float CalculateDistance()
+    {
+        return Vector3.Distance(_NavMeshAgent.transform.position, _destination.Location.position);
     }
 
 }

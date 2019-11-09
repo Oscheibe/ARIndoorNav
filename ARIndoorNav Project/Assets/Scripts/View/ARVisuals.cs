@@ -2,22 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuUIController : MonoBehaviour
+public class ARVisuals : MonoBehaviour
 {
-    [SerializeField] SceneController sceneController;
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        
     }
-    public void UpdateSelectedRoom(string plateNumber)
+
+    //TODO
+    public void SendNaviagtionPath(Vector3[] path)
     {
-        sceneController.UpdateDestination(plateNumber);
+        Debug.Log("Path:");
+        foreach (var corner in path)
+        {
+            Debug.Log(corner);
+        }
     }
 }
