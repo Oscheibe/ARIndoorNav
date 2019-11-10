@@ -23,7 +23,7 @@ public class RecommendedUI : MonoBehaviour
     {
         foreach (var room in recommendedRoomList)
         {
-            Debug.Log(room.Name + " at: " + room.Location.position);
+            //Debug.Log(room.Name + " at: " + room.Location.position);
         }
     }
 

@@ -28,4 +28,9 @@ public class RoomPresenter : MonoBehaviour
     {
         _Navigation.UpdateDestination(destination);
     }
+
+    public void UpdateRoomList(List<Room> roomList)
+    {
+        _SearchUI.SendRoomList(roomList);
+    }
 }

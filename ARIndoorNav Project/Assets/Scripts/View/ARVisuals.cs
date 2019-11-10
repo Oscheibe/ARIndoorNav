@@ -19,10 +19,10 @@ public class ARVisuals : MonoBehaviour
     //TODO
     public void SendNaviagtionPath(Vector3[] path)
     {
-        Debug.Log("Path:");
+        //Debug.Log("Path:");
         foreach (var corner in path)
         {
-            Debug.Log(corner);
+            //Debug.Log(corner);
         }
     }
 }

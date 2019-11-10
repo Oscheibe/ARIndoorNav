@@ -6,10 +6,11 @@ using System;
 public class RoomDatabase : MonoBehaviour
 {
     public GameObject _RoomParentGameObject;
+    public RoomPresenter _RoomPresenter;
 
     private List<Room> _RoomList = new List<Room>();
     private string testDatabaseEntries =
-        "3.215;Test3215\n" +
+        "3.215;Test3215 V2\n" +
         "3.216;Test3216\n" +
         "3.217;Test3217\n" +
         "3.218;Test3218\n" +
@@ -23,6 +24,7 @@ public class RoomDatabase : MonoBehaviour
     void Start()
     {
         InitiateDatabase();
+        _RoomPresenter.UpdateRoomList(_RoomList);
     }
 
     // Update is called once per frame
@@ -73,4 +75,5 @@ public class RoomDatabase : MonoBehaviour
             
         }
     }
+
 }
