@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using GoogleARCore;
+using UnityEngine.UI;
 
 /**
     This script is used for the marker detection
@@ -14,10 +15,12 @@ public class MarkerDetection : MonoBehaviour
     public PoseEstimation _PoseEstimation;
     public MarkerDatabase _MarkerDatabase;
 
-    private bool _isTracking = false;
+    public Text _TrackingStateText;
+
+    public bool _isTracking = false;
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
-    private List<Transform> _markerPositionList = new List<Transform>();
+    private List<Pose> _WorldMarkerPositionList = new List<Pose>();
     private readonly int _MaxTrackingCount = 10;
 
     // Start is called before the first frame update
@@ -39,7 +42,9 @@ public class MarkerDetection : MonoBehaviour
      */
     public void StartDetection()
     {
+        Debug.Log("Started marker detection");
         _isTracking = true;
+        _TrackingStateText.text = "Is Tracking";
     }
 
     /**
@@ -48,7 +53,9 @@ public class MarkerDetection : MonoBehaviour
      */
     public void StopDetection()
     {
+        Debug.Log("Stopped marker detection");
         _isTracking = false;
+        _TrackingStateText.text = "Tracking stopped";
     }
 
     /**
@@ -57,8 +64,8 @@ public class MarkerDetection : MonoBehaviour
      */
     private void DetectMarker()
     {
-        AugmentedImage detectedMarker;
-        Transform detectedMarkerPosition = null;
+        AugmentedImage detectedWorldMarker = null;
+        Transform detectedVirtualMarkerPosition = null;
         // ARCore needs to be in a tracking state for it to find a marker
         if (Session.Status != SessionStatus.Tracking) return;
 
@@ -69,24 +76,29 @@ public class MarkerDetection : MonoBehaviour
 
         if (_detectedImages.Count == 1)
         {
-            detectedMarker = _detectedImages[0];
-            if (detectedMarker.TrackingState == TrackingState.Tracking &&
-                detectedMarker.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
+            detectedWorldMarker = _detectedImages[0];
+            if (detectedWorldMarker.TrackingState == TrackingState.Tracking &&
+                detectedWorldMarker.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
             {
-                detectedMarkerPosition = _MarkerDatabase.RequestMarkerPosition(detectedMarker.Name);
+                detectedVirtualMarkerPosition = _MarkerDatabase.RequestMarkerPosition(detectedWorldMarker.Name);
+                //_WorldMarkerPositionList.Add(detectedWorldMarker.CenterPose);
+                if(detectedVirtualMarkerPosition == null)
+                {
+                    Debug.Log("No matching marker found for Markername: " + detectedWorldMarker.Name);
+                }
+                else
+                {
+                     _PoseEstimation.ReportMarkerPosition(detectedVirtualMarkerPosition, detectedWorldMarker.CenterPose);
+                }
             }
         }
-
-        //TODO median of detected marker
-        if (detectedMarkerPosition != null)
+        
+        
+        if (_WorldMarkerPositionList.Count >= _MaxTrackingCount)
         {
-            _markerPositionList.Add(detectedMarkerPosition);
-        }
-
-        if(_markerPositionList.Count >= _MaxTrackingCount)
-        {
-            Transform calculatedMarkerPosition = HelperFunctions.CalculateAverageTransfrom(_markerPositionList);
-            _PoseEstimation.ReportPosition(calculatedMarkerPosition);
+            //Pose averageWorldMarkerPosition = HelperFunctions.CalculateAveragePose(_WorldMarkerPositionList);
+            //_PoseEstimation.ReportMarkerPosition(detectedVirtualMarkerPosition, );
+            //_WorldMarkerPositionList.Clear();
         }
     }
 

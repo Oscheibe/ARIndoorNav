@@ -29,11 +29,40 @@ public class HelperFunctions : MonoBehaviour
         return resultTransform;
     }
 
+        public static Pose CalculateAveragePose(List<Pose> poseList)
+    {
+        Pose resultPose = new Pose();
+
+        float x = 0f, y = 0f, z = 0f;
+        foreach (var pose in poseList)
+        {
+            x += pose.position.x;
+            y += pose.position.y;
+            z += pose.position.z;
+        }
+        resultPose.position = new Vector3(x / poseList.Count, y / poseList.Count, z / poseList.Count);
+        resultPose.rotation = AverageQuaternion(poseList);
+
+        return resultPose;
+    }
+
     public static Quaternion AverageQuaternion(List<Transform> transformList)
     {
         Quaternion qAverage = Quaternion.identity;
         float averageWeight = 1f/transformList.Count;
         foreach (var q in transformList)
+        {
+            qAverage *= Quaternion.Slerp(Quaternion.identity, q.rotation, averageWeight);
+        }
+
+        return qAverage;
+    }
+
+        public static Quaternion AverageQuaternion(List<Pose> poseList)
+    {
+        Quaternion qAverage = Quaternion.identity;
+        float averageWeight = 1f/poseList.Count;
+        foreach (var q in poseList)
         {
             qAverage *= Quaternion.Slerp(Quaternion.identity, q.rotation, averageWeight);
         }
