@@ -7,6 +7,11 @@ public class PoseEstimation : MonoBehaviour
     public Transform _LastMarkerTransform;
     public MarkerDetection _MarkerDetection;
 
+    public Transform _TestWorldMarker;
+    public Transform _TestVirtualMarker;
+    public bool _CalculateRotation = true;
+    public bool _CalculatePosition = true;
+
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +22,7 @@ public class PoseEstimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        TestUpdateLastMarkerPosition();
     }
 
     /**
@@ -44,28 +49,64 @@ public class PoseEstimation : MonoBehaviour
 
     private void UpdateLastMarkerPosition(Transform virtualMarkerTransform, Pose worldMarkerPose)
     {
-        // Rotate first because the rotation changes the position of the object.
-        // Rotate over the X axis by 90° to account for AugmentedImage detection angles (Might change later, hopefully not)
-        var targetRotation = _LastMarkerTransform.rotation * (Quaternion.Inverse(virtualMarkerTransform.rotation) * worldMarkerPose.rotation);
-        var targetRotation2 = _LastMarkerTransform.rotation * (Quaternion.Inverse(worldMarkerPose.rotation ) * virtualMarkerTransform.rotation);
-        
+        var virtualMarkerPosition = virtualMarkerTransform.position;
+        var virtualMarkerRotation = virtualMarkerTransform.rotation;
 
-        //targetRotation = targetRotation * Quaternion.Euler(90, 0, 0);
-        if (_LastMarkerTransform.rotation != targetRotation) // Math.Abs(targetPlate.transform.rotation.eulerAngles.y - image.CenterPose.rotation.eulerAngles.y) >= 0.1
+        var worldMarkerPosition = worldMarkerPose.position - _LastMarkerTransform.position;
+        var worldMarkerRotation = worldMarkerPose.rotation * Quaternion.Inverse(_LastMarkerTransform.rotation);
+
+        Vector3 targetPosition;
+        Quaternion targetRotation;
+
+        targetPosition = virtualMarkerPosition - _LastMarkerTransform.position - worldMarkerPosition; 
+        _LastMarkerTransform.position += targetPosition;
+
+        targetRotation = _LastMarkerTransform.rotation * (Quaternion.Inverse(virtualMarkerRotation) * worldMarkerRotation);
+        _LastMarkerTransform.rotation = targetRotation;
+
+    }
+
+
+    private void TestUpdateLastMarkerPosition()
+    {
+        var virtualMarkerPosition = _TestVirtualMarker.position;
+        var virtualMarkerRotation = _TestVirtualMarker.rotation;
+
+        var worldMarkerPosition = _TestWorldMarker.position - _LastMarkerTransform.position;
+        var worldMarkerRotation = _TestWorldMarker.rotation * Quaternion.Inverse(_LastMarkerTransform.rotation);
+
+        Debug.Log(string.Format("\nVirtual / World / Last\nPosition:{0} / {1} / {2}\nRotation:{3} / {4} / {5}",
+                                virtualMarkerPosition, worldMarkerPosition, _LastMarkerTransform.position,
+                                virtualMarkerRotation, worldMarkerRotation, _LastMarkerTransform.rotation));
+
+
+        Quaternion targetRotation;
+        Vector3 targetPosition;
+
+
+        if (_CalculatePosition)
         {
-            //_LastMarkerTransform.rotation = targetRotation2;
+            // Calculate the new position of the _arScene center, based on relative distance between unity and ARCore plates
+            // Calculation needs to be done after changing the rotation.
+            //var targetPosition = (worldMarkerPose.position - virtualMarkerPosition.position) + _LastMarkerPosition.transform.position;
+            targetPosition = virtualMarkerPosition - _LastMarkerTransform.position - worldMarkerPosition; // - _LastMarkerTransform.position
+
+            _LastMarkerTransform.position += targetPosition;
+            Debug.Log("Adjusted Position: " + targetPosition);
+        }
+        if (_CalculateRotation)
+        {
+            // Rotate first because the rotation changes the position of the object.
+            // Rotate over the X axis by 90° to account for AugmentedImage detection angles (Might change later, hopefully not)
+            targetRotation = _LastMarkerTransform.rotation * (Quaternion.Inverse(virtualMarkerRotation) *
+                worldMarkerRotation);
+            _LastMarkerTransform.rotation = targetRotation;
+            Debug.Log("Adjusted Rotation: " + targetRotation);
         }
 
-        // Calculate the new position of the _arScene center, based on relative distance between unity and ARCore plates
-        // Calculation needs to be done after changing the rotation.
-        Debug.Log("LastRotation: " + _LastMarkerTransform.rotation + " // VirtualMarker: " + virtualMarkerTransform.rotation + " // WorldMarker: " + worldMarkerPose.rotation);
-        //var targetPosition = (worldMarkerPose.position - virtualMarkerPosition.position) + _LastMarkerPosition.transform.position;
-        var targetPosition =  - worldMarkerPose.position + (virtualMarkerTransform.position); // - _LastMarkerTransform.position
-
-        _LastMarkerTransform.position = targetPosition;
 
 
-        Debug.Log("TargetRotation: " + targetRotation + " // Rotation2: " + targetRotation2);
     }
+
 
 }
