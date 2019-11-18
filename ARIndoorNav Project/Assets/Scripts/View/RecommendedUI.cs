@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RecommendedUI : MonoBehaviour
 {
-    public RoomPresenter _RoomPresenter;
+    public RoomListPresenter _RoomListPresenter;
     
     // Start is called before the first frame update
     void Start()
@@ -30,6 +30,6 @@ public class RecommendedUI : MonoBehaviour
     public void ChooseDestination(Room destination)
     {
 
-        _RoomPresenter.UpdateDestination(destination);
+        _RoomListPresenter.UpdateDestination(destination);
     }
 }

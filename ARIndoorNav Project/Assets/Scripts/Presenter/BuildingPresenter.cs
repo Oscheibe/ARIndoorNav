@@ -6,7 +6,7 @@ using UnityEngine;
     Interacts between a map UI display and the underlying mode
     It will call a function that makes a picture of the model and displays it within the UI
  */
-public class ModelPresenter : MonoBehaviour
+public class BuildingPresenter : MonoBehaviour
 {
     public MapUI _MapUI;
     

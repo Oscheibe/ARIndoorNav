@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SearchUI : MonoBehaviour
 {
-    public RoomPresenter _RoomPresenter;
+    public RoomListPresenter _RoomListPresenter;
     public GameObject _TextField;
     public Text _DestinationText;
 
@@ -55,7 +55,7 @@ public class SearchUI : MonoBehaviour
     public void ChooseDestination(Room destination)
     {
         _DestinationText.text = destination.Name;
-        _RoomPresenter.UpdateDestination(destination);
+        _RoomListPresenter.UpdateDestination(destination);
     }
 
 

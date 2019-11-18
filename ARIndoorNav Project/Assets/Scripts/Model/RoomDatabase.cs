@@ -6,7 +6,7 @@ using System;
 public class RoomDatabase : MonoBehaviour
 {
     public GameObject _RoomParentGameObject;
-    public RoomPresenter _RoomPresenter;
+    public RoomListPresenter _RoomListPresenter;
 
     private List<Room> _RoomList = new List<Room>();
     private string testDatabaseEntries =
@@ -23,7 +23,7 @@ public class RoomDatabase : MonoBehaviour
     void Start()
     {
         InitiateDatabase();
-        _RoomPresenter.UpdateRoomList(_RoomList);
+        _RoomListPresenter.UpdateRoomList(_RoomList);
     }
 
     // Update is called once per frame
