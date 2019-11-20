@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11481,9 +11481,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1619045853}
-  - component: {fileID: 1619045856}
   - component: {fileID: 1619045855}
   - component: {fileID: 1619045854}
+  - component: {fileID: 1619045856}
   m_Layer: 5
   m_Name: Plate List Viewport
   m_TagString: Untagged
