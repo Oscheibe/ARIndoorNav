@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class TargetDestinationUI : MonoBehaviour
 {
-    public Text _DestinationDistance;
+    public TMP_Text _DestinationDistance;
+    public TMP_Text _DestinationName;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -21,6 +17,12 @@ public class TargetDestinationUI : MonoBehaviour
 
     public void DisplayTargetInformation(string destinationName, string targetDistance)
     {
-        _DestinationDistance.text = targetDistance;
+        _DestinationName.text = destinationName;
+        _DestinationDistance.text = targetDistance + " m";
+    }
+
+    public void UpdateDistance(string targetDistance)
+    {
+        _DestinationDistance.text = targetDistance + " m";
     }
 }

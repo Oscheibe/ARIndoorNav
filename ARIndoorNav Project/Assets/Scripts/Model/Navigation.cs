@@ -29,7 +29,7 @@ public class Navigation : MonoBehaviour
     void Update()
     {
         if (_destination == null || _NavMeshAgent == null) return;
-        _NavigationPresenter.UpdateNavigationInformation(CalculateDistance(), GetPath());
+        _NavigationPresenter.UpdateNavigationInformation(CalculateDistance().ToString(), GetPath());
     }
 
     /** 
@@ -50,6 +50,14 @@ public class Navigation : MonoBehaviour
     public Vector3[] GetPath()
     {
         return _NavMeshAgent.path.corners;
+    }
+
+    /**
+        Returns the distance between the users next simulated position and the origin vector
+    */
+    public string GetDistanceToUser(Vector3 origin)
+    {
+        return Vector3.Distance(_NavMeshAgent.nextPosition, origin).ToString();
     }
 
     private float CalculateDistance(Transform startPosition, Transform endPosition)

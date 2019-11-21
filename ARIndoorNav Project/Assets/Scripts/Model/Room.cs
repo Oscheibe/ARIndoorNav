@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class Room
 {
     private string name;
     private string description;
     private Transform location;
+    private Image image;
+    private string distanceToUser;
 
     private Room() { }
 
@@ -36,6 +38,18 @@ public class Room
     {
         get { return description; }
         set { description = value; }
+    }
+
+    public Image Image
+    {
+        get { return image; }
+        set { image = value; }
+    }
+
+    public string DistanceToUser
+    {
+        get { return distanceToUser; }
+        set { distanceToUser = value; }
     }
 
 }

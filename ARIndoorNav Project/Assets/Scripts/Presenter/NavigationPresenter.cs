@@ -34,9 +34,9 @@ public class NavigationPresenter : MonoBehaviour
         _ARVisuals.SendNaviagtionPath(path);
     }
 
-    public void UpdateNavigationInformation(float destinationDistance, Vector3[] path)
+    public void UpdateNavigationInformation(string destinationDistance, Vector3[] path)
     {
-        _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance.ToString());
+        _TargetDestinationUI.UpdateDistance(destinationDistance);
         _ARVisuals.SendNaviagtionPath(path);
     }
 

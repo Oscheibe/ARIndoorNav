@@ -7,6 +7,7 @@ public class RoomDatabase : MonoBehaviour
 {
     public GameObject _RoomParentGameObject;
     public RoomListPresenter _RoomListPresenter;
+    public Navigation _Navigation;
 
     private List<Room> roomList = new List<Room>();
     private string testDatabaseEntries =
@@ -29,7 +30,7 @@ public class RoomDatabase : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        UpdateDistanceToUser();
     }
 
     /**
@@ -72,6 +73,17 @@ public class RoomDatabase : MonoBehaviour
             var newRoom = new Room(roomName, GetRoomPosition(roomName), roomDescription);
             roomList.Add(newRoom);
             
+        }
+    }
+
+    /**
+        Updates all the DistanceToUser values within the database
+    */
+    private void UpdateDistanceToUser()
+    {
+        foreach (var room in roomList)
+        {
+            room.DistanceToUser = _Navigation.GetDistanceToUser(room.Location.position);
         }
     }
 
