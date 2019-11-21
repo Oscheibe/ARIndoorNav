@@ -22,7 +22,7 @@ public class PoseEstimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TestUpdateLastMarkerPosition();
+        //TestUpdateLastMarkerPosition();
     }
 
     /**

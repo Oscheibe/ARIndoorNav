@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /**
     Script to relay high-iportance messages to the user. 
@@ -8,6 +9,8 @@ using UnityEngine;
  */
 public class SystemStatePresenter : MonoBehaviour
 {
+    public Text trackingStatusText;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -23,5 +26,10 @@ public class SystemStatePresenter : MonoBehaviour
     public void SendWarningMessage(string warning)
     {
 
+    }
+
+    public void DisplayTrackingStatus(string trackingStatus)
+    {
+        trackingStatusText.text = trackingStatus;
     }
 }

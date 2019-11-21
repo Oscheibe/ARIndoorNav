@@ -8,7 +8,7 @@ using UnityEngine;
  */
 public class RoomListPresenter : MonoBehaviour
 {
-    public SearchUI _SearchUI;
+    public RoomListUI _RoomListUI;
     public RecommendedUI _RecommendedUI;
     public Navigation _Navigation;
     public RoomDatabase _RoomDatabase;
@@ -31,6 +31,6 @@ public class RoomListPresenter : MonoBehaviour
 
     public void UpdateRoomList(List<Room> roomList)
     {
-        _SearchUI.SendRoomList(roomList);
+        _RoomListUI.SendRoomList(roomList);
     }
 }

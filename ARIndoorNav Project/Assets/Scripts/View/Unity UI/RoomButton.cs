@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Responsible for all UI related things
-public class ARCampusView : MonoBehaviour
+public class RoomButton : MonoBehaviour
 {
-    
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -18,4 +15,6 @@ public class ARCampusView : MonoBehaviour
     {
         
     }
+
+    
 }

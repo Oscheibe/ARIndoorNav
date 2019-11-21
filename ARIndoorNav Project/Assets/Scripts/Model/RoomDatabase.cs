@@ -8,7 +8,7 @@ public class RoomDatabase : MonoBehaviour
     public GameObject _RoomParentGameObject;
     public RoomListPresenter _RoomListPresenter;
 
-    private List<Room> _RoomList = new List<Room>();
+    private List<Room> roomList = new List<Room>();
     private string testDatabaseEntries =
         "3.215;Test3215 V2\n" +
         "3.216;Test3216\n" +
@@ -23,7 +23,7 @@ public class RoomDatabase : MonoBehaviour
     void Start()
     {
         InitiateDatabase();
-        _RoomListPresenter.UpdateRoomList(_RoomList);
+        _RoomListPresenter.UpdateRoomList(roomList);
     }
 
     // Update is called once per frame
@@ -51,7 +51,7 @@ public class RoomDatabase : MonoBehaviour
         Room room = null;
 
         Predicate<Room> roomFinder = (Room r) => { return r.Name == roomName; };
-        room = _RoomList.Find(roomFinder);
+        room = roomList.Find(roomFinder);
 
         return room;
     }
@@ -70,7 +70,7 @@ public class RoomDatabase : MonoBehaviour
             
             if (roomName == null || roomDescription == null) continue;
             var newRoom = new Room(roomName, GetRoomPosition(roomName), roomDescription);
-            _RoomList.Add(newRoom);
+            roomList.Add(newRoom);
             
         }
     }

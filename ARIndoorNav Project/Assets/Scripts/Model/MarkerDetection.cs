@@ -14,8 +14,7 @@ public class MarkerDetection : MonoBehaviour
 {
     public PoseEstimation _PoseEstimation;
     public MarkerDatabase _MarkerDatabase;
-
-    public Text _TrackingStateText;
+    public SystemStatePresenter _SystemStatePresenter;
 
     public bool _isTracking = false;
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
@@ -44,7 +43,7 @@ public class MarkerDetection : MonoBehaviour
     {
         Debug.Log("Started marker detection");
         _isTracking = true;
-        _TrackingStateText.text = "Is Tracking";
+        _SystemStatePresenter.DisplayTrackingStatus("Is Tracking");
     }
 
     /**
@@ -55,7 +54,7 @@ public class MarkerDetection : MonoBehaviour
     {
         Debug.Log("Stopped marker detection");
         _isTracking = false;
-        _TrackingStateText.text = "Tracking stopped";
+        _SystemStatePresenter.DisplayTrackingStatus("Tracking stopped");
     }
 
     /**
