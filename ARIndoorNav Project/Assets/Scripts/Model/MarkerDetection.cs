@@ -73,8 +73,10 @@ public class MarkerDetection : MonoBehaviour
         // Override _detectedImages with all tracked Augmented Images
         Session.GetTrackables(_detectedImages, TrackableQueryFilter.Updated);
 
+        Debug.Log("# of detected Images: " + _detectedImages.Count);
         if (_detectedImages.Count == 1)
         {
+            Debug.Log("Found 1 Augmented Image: " + _detectedImages[0].Name);
             detectedWorldMarker = _detectedImages[0];
             if (detectedWorldMarker.TrackingState == TrackingState.Tracking &&
                 detectedWorldMarker.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)

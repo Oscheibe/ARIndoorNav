@@ -11,16 +11,16 @@ public class UIMenuSwitchingManager : MonoBehaviour
     private float animationSpeed = 0.25f; // in seconds
 
     private Vector2 mainInViewPos = new Vector2(0, -560);
-    private Vector2 mainOutOfViewPos = new Vector2(0, -1700);
+    private Vector2 mainOutOfViewPos = new Vector2(0, -2000);
 
     private Vector2 settingsInViewPos = new Vector2(0, -560);
-    private Vector2 settingsOutOfViewPos = new Vector2(0, -1700);
+    private Vector2 settingsOutOfViewPos = new Vector2(0, -2000);
 
     private Vector2 navigationInViewPos = new Vector2(0, -560);
-    private Vector2 navigationOutOfViewPos = new Vector2(0, -1700);
+    private Vector2 navigationOutOfViewPos = new Vector2(0, -2000);
 
     private Vector2 destinationHeaderInViewPos = new Vector2(0, 1070);
-    private Vector2 destinationHeaderOutOfViewPos = new Vector2(0, 1200);
+    private Vector2 destinationHeaderOutOfViewPos = new Vector2(0, 2000);
 
     // Start is called before the first frame update
     void Start()

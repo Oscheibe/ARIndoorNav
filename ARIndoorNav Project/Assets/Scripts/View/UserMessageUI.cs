@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class UserMessageUI : MonoBehaviour
 {
+    public TMP_Text _TrackingStateText;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -16,9 +19,9 @@ public class UserMessageUI : MonoBehaviour
         
     }
 
-    //TODO
+    
     public void SendUserMessage(string message)
     {
-        Debug.Log(message);
+        _TrackingStateText.text = "Tracking state: " + message;
     }
 }

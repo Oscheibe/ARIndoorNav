@@ -26,12 +26,13 @@ public class TrackingErrorHandling : MonoBehaviour
      */
     public void ReportTrackingState(string state)
     {
-        //TODO
+        _SystemStatePresenter.DisplayTrackingStatus(state);
     }
 
     private void ReportTrackingState()
     {
         // if.... _UserMessagesPresenter.SendWarningMessage("TODO");
+        
     }
 
 }

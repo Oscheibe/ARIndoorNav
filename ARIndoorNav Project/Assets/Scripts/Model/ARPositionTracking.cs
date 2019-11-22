@@ -18,7 +18,6 @@ public class ARPositionTracking : MonoBehaviour
     void Update()
     {
         // Maybe FeaturePoint drift
-        _TrackingErrorHandling.ReportTrackingState("TODO");
     }
 
 

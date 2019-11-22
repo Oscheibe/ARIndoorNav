@@ -9,7 +9,8 @@ using UnityEngine.UI;
  */
 public class SystemStatePresenter : MonoBehaviour
 {
-    public Text trackingStatusText;
+    public PoseEstimation _PoseEstimation;
+    public UserMessageUI _UserMessageUI;
     
     // Start is called before the first frame update
     void Start()
@@ -30,6 +31,11 @@ public class SystemStatePresenter : MonoBehaviour
 
     public void DisplayTrackingStatus(string trackingStatus)
     {
-        trackingStatusText.text = trackingStatus;
+        _UserMessageUI.SendUserMessage(trackingStatus);
+    }
+
+    public void RequestMarkerTracking()
+    {
+        _PoseEstimation.RequestNewPosition();
     }
 }
