@@ -54,5 +54,7 @@ public class ARVisuals : MonoBehaviour
         {
             _Line.SetPosition(i, path[i]);
         }
+
+        //_Line.sortingLayerName = "Foreground";
     }
 }

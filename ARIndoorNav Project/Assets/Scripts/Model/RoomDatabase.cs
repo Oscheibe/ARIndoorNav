@@ -18,7 +18,8 @@ public class RoomDatabase : MonoBehaviour
         "3.219;Test3219\n" +
         "3.220;Test3220\n" +
         "3.222;Test3222\n" +
-        "3.222a;Test3222a";
+        "3.222a;Test3222a\n" + 
+        "Treppenhaus; Um die Ecke";
 
     // Start is called before the first frame update
     void Start()

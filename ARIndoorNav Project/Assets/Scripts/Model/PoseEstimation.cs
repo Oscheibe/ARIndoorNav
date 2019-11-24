@@ -5,6 +5,7 @@ using UnityEngine;
 public class PoseEstimation : MonoBehaviour
 {
     public Transform _ARCoreOriginTransform;
+    public Transform _ARCoreFPSPosition;
     public MarkerDetection _MarkerDetection;
     public NavigationPresenter _NavigationPresenter;
 
@@ -13,7 +14,7 @@ public class PoseEstimation : MonoBehaviour
     public bool _CalculateRotation = true;
     public bool _CalculatePosition = true;
 
-    private Vector3 lastWorldMarkerPos, lastVirtualMarkerPos;
+    private string lastWorldMarkerPos, lastVirtualMarkerPos, lastWorldMarkerRot, lastVirtualMarkerRot;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +28,11 @@ public class PoseEstimation : MonoBehaviour
         //TestUpdateLastMarkerPosition();
 
         // Check if 
-        _NavigationPresenter.DisplayPositionInformation(lastWorldMarkerPos.ToString(), lastVirtualMarkerPos.ToString(), _ARCoreOriginTransform.position.ToString());
+        _NavigationPresenter.DisplayPositionInformation(
+            "pos: " + lastWorldMarkerPos + " rot: " + lastWorldMarkerRot,
+            "pos: " + lastVirtualMarkerPos + " rot: " + lastVirtualMarkerRot,
+            "pos: " + _ARCoreOriginTransform.position.ToString() + " rot: " + _ARCoreOriginTransform.rotation.eulerAngles.ToString(),
+            "pos: " + _ARCoreFPSPosition.position.ToString() + " rot: " + _ARCoreFPSPosition.rotation.eulerAngles.ToString());
     }
 
     /**
@@ -35,10 +40,17 @@ public class PoseEstimation : MonoBehaviour
         ARCore is constantly updating the position in the background 
         This method is used to counteract drift by scanning marker
      */
-    public void ReportMarkerPosition(Transform virtualMarkerPosition, Pose worldMarkerPose)
+    public void ReportMarkerPose(Transform virtualMarkerPosition, Pose worldMarkerPose)
     {
         _MarkerDetection.StopDetection();
         UpdateLastMarkerPosition(virtualMarkerPosition, worldMarkerPose);
+        UpdateLastMarkerRotation(virtualMarkerPosition, worldMarkerPose);
+    }
+
+    public void ReportMarkerRotation(Transform virtualMarkerPosition, Pose worldMarkerPose)
+    {
+        _MarkerDetection.StopDetection();
+        //UpdateLastMarkerRotation(virtualMarkerPosition, worldMarkerPose);
     }
 
     /**
@@ -52,67 +64,60 @@ public class PoseEstimation : MonoBehaviour
 
     private void UpdateLastMarkerPosition(Transform virtualMarkerTransform, Pose worldMarkerPose)
     {
-        lastWorldMarkerPos = worldMarkerPose.position;
-        lastVirtualMarkerPos = virtualMarkerTransform.position;
-        
+        lastWorldMarkerPos = worldMarkerPose.position.ToString();
+        lastVirtualMarkerPos = virtualMarkerTransform.position.ToString();
+        lastWorldMarkerRot = worldMarkerPose.rotation.eulerAngles.ToString();
+        lastVirtualMarkerRot = virtualMarkerTransform.rotation.eulerAngles.ToString();
+
         var virtualMarkerPosition = virtualMarkerTransform.position;
-        var virtualMarkerRotation = virtualMarkerTransform.rotation;
 
         var worldMarkerPosition = worldMarkerPose.position; // - _LastMarkerTransform.position;
-        var worldMarkerRotation = worldMarkerPose.rotation; // * Quaternion.Inverse(_LastMarkerTransform.rotation);
 
-        Vector3 targetDelta;
-        Quaternion targetRotation;
+        var originPosition = _ARCoreOriginTransform.position;
 
-        targetDelta =   virtualMarkerPosition - _ARCoreOriginTransform.position - worldMarkerPosition;
-        _ARCoreOriginTransform.position += targetDelta;
-
-        targetRotation = virtualMarkerRotation * Quaternion.Inverse(_ARCoreOriginTransform.rotation) * Quaternion.Inverse(worldMarkerRotation) ;
-        _ARCoreOriginTransform.rotation *= targetRotation;
-
+        Vector3 targetPosDelta;
+        targetPosDelta = virtualMarkerPosition - _ARCoreOriginTransform.position - worldMarkerPosition;
+        _ARCoreOriginTransform.position += targetPosDelta;
     }
 
-
-    private void TestUpdateLastMarkerPosition()
+    private void UpdateLastMarkerRotation(Transform virtualMarkerTransform, Pose worldMarkerPose)
     {
-        var virtualMarkerPosition = _TestVirtualMarker.position;
-        var virtualMarkerRotation = _TestVirtualMarker.rotation;
-
-        var worldMarkerPosition = _TestWorldMarker.position - _ARCoreOriginTransform.position;
-        var worldMarkerRotation = _TestWorldMarker.rotation * Quaternion.Inverse(_ARCoreOriginTransform.rotation);
-
-        Debug.Log(string.Format("\nVirtual / World / Last\nPosition:{0} / {1} / {2}\nRotation:{3} / {4} / {5}",
-                                virtualMarkerPosition, worldMarkerPosition, _ARCoreOriginTransform.position,
-                                virtualMarkerRotation, worldMarkerRotation, _ARCoreOriginTransform.rotation));
-
-
+        var originRotation = _ARCoreOriginTransform.rotation;
+        var worldMarkerRotation = worldMarkerPose.rotation;
+        var virtualMarkerRotation = virtualMarkerTransform.rotation;
         Quaternion targetRotation;
-        Vector3 targetPosition;
+
+        targetRotation = virtualMarkerRotation * Quaternion.Inverse(_ARCoreOriginTransform.rotation) * Quaternion.Inverse(worldMarkerRotation);
+        _ARCoreOriginTransform.rotation *= targetRotation;
+    }
+
+    private void UpdateLastMarkerRotationEuler(Transform virtualMarkerTransform, Pose worldMarkerPose)
+    {
+        var originRotation = _ARCoreOriginTransform.rotation;
+        var worldMarkerRotation = worldMarkerPose.rotation;
+        var virtualMarkerRotation = virtualMarkerTransform.rotation;
 
 
-        if (_CalculatePosition)
-        {
-            // Calculate the new position of the _arScene center, based on relative distance between unity and ARCore plates
-            // Calculation needs to be done after changing the rotation.
-            //var targetPosition = (worldMarkerPose.position - virtualMarkerPosition.position) + _LastMarkerPosition.transform.position;
-            targetPosition = virtualMarkerPosition - _ARCoreOriginTransform.position - worldMarkerPosition; // - _LastMarkerTransform.position
+        var targetRotX = 0f; // virtualMarkerRotation.eulerAngles.x - _ARCoreOriginTransform.rotation.eulerAngles.x - worldMarkerRotation.eulerAngles.x + _ARCoreOriginTransform.rotation.eulerAngles.x;
+        var targetRotY = 0f; //virtualMarkerRotation.eulerAngles.y - originRotation.eulerAngles.y - worldMarkerRotation.eulerAngles.y + originRotation.eulerAngles.y;
+        targetRotY = originRotation.eulerAngles.y - virtualMarkerRotation.eulerAngles.y - worldMarkerRotation.eulerAngles.y + 180;
 
-            _ARCoreOriginTransform.position += targetPosition;
-            Debug.Log("Adjusted Position: " + targetPosition);
-        }
-        if (_CalculateRotation)
-        {
-            // Rotate first because the rotation changes the position of the object.
-            // Rotate over the X axis by 90° to account for AugmentedImage detection angles (Might change later, hopefully not)
-            targetRotation = _ARCoreOriginTransform.rotation * (Quaternion.Inverse(virtualMarkerRotation) *
-                worldMarkerRotation);
-            _ARCoreOriginTransform.rotation = targetRotation;
-            Debug.Log("Adjusted Rotation: " + targetRotation);
-        }
+        var targetRotZ = 0f;// virtualMarkerRotation.eulerAngles.z - _ARCoreOriginTransform.rotation.eulerAngles.z - worldMarkerRotation.eulerAngles.z + _ARCoreOriginTransform.rotation.z;
 
+        if (targetRotX < 0) targetRotX += 360;
+        if (targetRotX >= 360) targetRotX -= 360;
+        if (targetRotY < 0) targetRotX += 360;
+        if (targetRotY >= 360) targetRotX -= 360;
+        if (targetRotZ < 0) targetRotX += 360;
+        if (targetRotZ >= 360) targetRotX -= 360;
 
-
+        Quaternion targetRotDelta;
+        targetRotDelta = Quaternion.Euler(targetRotX, targetRotY, targetRotZ);
+        _ARCoreOriginTransform.rotation = targetRotDelta;
     }
 
 
 }
+
+
+

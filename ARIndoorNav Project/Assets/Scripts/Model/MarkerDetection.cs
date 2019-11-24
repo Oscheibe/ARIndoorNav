@@ -89,12 +89,11 @@ public class MarkerDetection : MonoBehaviour
                 }
                 else
                 {
-                     _PoseEstimation.ReportMarkerPosition(detectedVirtualMarkerPosition, detectedWorldMarker.CenterPose);
+                     _PoseEstimation.ReportMarkerPose(detectedVirtualMarkerPosition, detectedWorldMarker.CenterPose);
                 }
             }
         }
-        
-        
+                
         if (_WorldMarkerPositionList.Count >= _MaxTrackingCount)
         {
             //Pose averageWorldMarkerPosition = HelperFunctions.CalculateAveragePose(_WorldMarkerPositionList);

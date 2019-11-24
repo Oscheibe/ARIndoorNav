@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class UIMenuSwitchingManager : MonoBehaviour
 {
-    public RectTransform _mainMenu, _settingsMenu, _navigationMenu, _destinationHeader;
+    public RectTransform _mainMenu, _settingsMenu, _navigationMenu, _destinationHeader, _markerDetectionMenu;
 
     private float animationSpeed = 0.25f; // in seconds
 
@@ -21,6 +21,9 @@ public class UIMenuSwitchingManager : MonoBehaviour
 
     private Vector2 destinationHeaderInViewPos = new Vector2(0, 1070);
     private Vector2 destinationHeaderOutOfViewPos = new Vector2(0, 2000);
+
+    private Vector2 markerDetectionMenuInViewPos = new Vector2(0, 0);
+    private Vector2 markerDetectionMenuOutOfViewPos = new Vector2(0, 2000);
 
     // Start is called before the first frame update
     void Start()
@@ -73,4 +76,15 @@ public class UIMenuSwitchingManager : MonoBehaviour
     {
         _destinationHeader.DOAnchorPos(destinationHeaderOutOfViewPos, animationSpeed);
     }
+
+    public void OpenMarkerDetectionMenu()
+    {
+
+    }
+
+    public void CloseMarkerDetectionMenu()
+    {
+
+    }
+
 }

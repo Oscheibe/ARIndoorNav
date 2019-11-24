@@ -40,8 +40,8 @@ public class NavigationPresenter : MonoBehaviour
         _ARVisuals.SendNaviagtionPath(path);
     }
 
-    public void DisplayPositionInformation(string lastWorldMarkerPos, string lastVirtualMarkerPos, string arCorePos)
+    public void DisplayPositionInformation(string lastWorldMarkerPos, string lastVirtualMarkerPos, string arCoreOriginPos, string arCoreFPSPos)
     {
-        _TargetDestinationUI.DisplayPositionInformation(lastWorldMarkerPos, lastVirtualMarkerPos, arCorePos);
+        _TargetDestinationUI.DisplayPositionInformation(lastWorldMarkerPos, lastVirtualMarkerPos, arCoreOriginPos, arCoreFPSPos);
     }
 }
