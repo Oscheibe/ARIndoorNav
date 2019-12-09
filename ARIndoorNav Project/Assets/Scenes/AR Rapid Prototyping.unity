@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   url: https://vision.googleapis.com/v1/images:annotate?key=
-  apiKey: AIzaSyChGGHRPeHlLzinuWLrI2YWoJGwF4XmCGI
+  apiKey: 
   captureIntervalSeconds: 2
   featureType: 5
   maxResults: 10
