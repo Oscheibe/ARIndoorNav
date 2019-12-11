@@ -6,6 +6,7 @@ using GoogleARCore;
 using System.Runtime.InteropServices;
 using UnityEngine.UI;
 using System;
+using SimpleJSON;
 
 public class WebCamTextureToCloudVision : MonoBehaviour
 {
@@ -166,6 +167,7 @@ public class WebCamTextureToCloudVision : MonoBehaviour
                         //Debug.Log("WWW Text: "+www.text.Replace("\n", "").Replace(" ", ""));
                         AnnotateImageResponses responses = JsonUtility.FromJson<AnnotateImageResponses>(www.text);
                         // SendMessage, BroadcastMessage or someting like that.
+                        var response = JSON.Parse(www.text);
                         
                         TestTextRecognition(responses);
                     }
@@ -193,6 +195,12 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 	}
 #endif
 
+
+    private void DisplayJSONTextResult(JSONNode response)
+    {
+        Debug.Log("Locale: " + response["responses"]["textAnnotations"]["locale"].Value);
+        Debug.Log("Description: " + response["responses"]["textAnnotations"]["description"].Value);
+    }
     /// <summary>
     /// A sample implementation.
     /// </summary>
@@ -280,7 +288,7 @@ public class WebCamTextureToCloudVision : MonoBehaviour
         public List<EntityAnnotation> landmarkAnnotations;
         public List<EntityAnnotation> logoAnnotations;
         public List<EntityAnnotation> labelAnnotations;
-        public List<EntityAnnotation> textAnnotations;
+        public List<TextAnnotation> textAnnotations;
     }
 
     [System.Serializable]
@@ -301,6 +309,14 @@ public class WebCamTextureToCloudVision : MonoBehaviour
         public string underExposedLikelihood;
         public string blurredLikelihood;
         public string headwearLikelihood;
+    }
+
+    [System.Serializable]
+    public class TextAnnotation
+    {
+        public string locale;
+        public List<string> description;
+        public List<BoundingPoly> boundingPoly;
     }
 
     [System.Serializable]
