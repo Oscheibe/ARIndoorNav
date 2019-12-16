@@ -136,11 +136,6 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 
             imageTexture = tmpTexture;
 
-            //yield return new WaitForSeconds(captureIntervalSeconds);
-            //continue;
-
-
-
             byte[] jpg = imageTexture.EncodeToJPG();
             string base64 = System.Convert.ToBase64String(jpg);
 
