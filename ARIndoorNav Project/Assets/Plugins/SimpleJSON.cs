@@ -693,7 +693,7 @@ namespace SimpleJSON
 
                     case '\r':
                     case '\n':
-                        break;
+                        //break; Example:  "description": "WAITING?\nPLEASE\nTURN OFF\nYOUR\nENGINE\n",
 
                     case ' ':
                     case '\t':

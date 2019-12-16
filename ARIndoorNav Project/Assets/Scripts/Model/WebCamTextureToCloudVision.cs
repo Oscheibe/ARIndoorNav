@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.UI;
 using System;
 using SimpleJSON;
+using UnityEngine.Windows;
 
 public class WebCamTextureToCloudVision : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 
     public RawImage _texturePlane;
     public RectTransform _scanRect;
+    public RawImage _testImage;
+    public LineRenderer _lineRenderer;
 
     private bool runVision = false;
     private CameraImageBytes image;
@@ -88,12 +91,12 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 
         */
 
-        
+
         int arrayLength = (image.Height * image.YRowStride);
         byte[] managedArray = new byte[arrayLength];
         Marshal.Copy(image.Y, managedArray, 0, arrayLength);
         imageTexture.LoadRawTextureData(managedArray);
-        
+
         var flippedTexture = HelperFunctions.FlipTexture2D(imageTexture, true, false);
         imageTexture = flippedTexture;
 
@@ -122,12 +125,20 @@ public class WebCamTextureToCloudVision : MonoBehaviour
             // texture2D.Apply(false); // Not required. Because we do not need to be uploaded it to GPU
             */
             yield return new WaitForEndOfFrame();
-            var success = SetWebCamTexture();
-            if (!success) continue;
-            
+            //var success = SetWebCamTexture();
+            //if (!success) continue;
+
+            var tmpTexture = new Texture2D(640, 480, TextureFormat.R8, false, false);
+            var fileData = File.ReadAllBytes("Assets/Resources/3.219.jpg");
+            tmpTexture.LoadImage(fileData);
+            tmpTexture.Apply();
+            _texturePlane.texture = tmpTexture;
+
+            imageTexture = tmpTexture;
+
             //yield return new WaitForSeconds(captureIntervalSeconds);
             //continue;
-            
+
 
 
             byte[] jpg = imageTexture.EncodeToJPG();
@@ -164,12 +175,14 @@ public class WebCamTextureToCloudVision : MonoBehaviour
                     yield return www;
                     if (string.IsNullOrEmpty(www.error))
                     {
-                        //Debug.Log("WWW Text: "+www.text.Replace("\n", "").Replace(" ", ""));
-                        AnnotateImageResponses responses = JsonUtility.FromJson<AnnotateImageResponses>(www.text);
+                        Debug.Log("Parsing Data");
+                        Debug.Log("WWW Text: " + www.text.Replace("\n", "").Replace(" ", ""));
+                        //AnnotateImageResponses responses = JsonUtility.FromJson<AnnotateImageResponses>(www.text);
                         // SendMessage, BroadcastMessage or someting like that.
                         var response = JSON.Parse(www.text);
-                        
-                        TestTextRecognition(responses);
+
+
+                        DisplayJSONTextResult(response);
                     }
                     else
                     {
@@ -198,40 +211,90 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 
     private void DisplayJSONTextResult(JSONNode response)
     {
-        Debug.Log("Locale: " + response["responses"]["textAnnotations"]["locale"].Value);
-        Debug.Log("Description: " + response["responses"]["textAnnotations"]["description"].Value);
-    }
-    /// <summary>
-    /// A sample implementation.
-    /// </summary>
-    void Sample_OnAnnotateImageResponses(AnnotateImageResponses responses)
-    {
-        if (responses.responses.Count > 0)
+        var locale = response["responses"][0]["textAnnotations"][0]["locale"].Value;
+        var description1 = response["responses"][0]["textAnnotations"][0]["description"].Value;
+        var description2 = response["responses"][0]["textAnnotations"][1]["description"].Value;
+
+        /*
+        Vector2[] textBox1 = new Vector2[4];
+        var v1 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][0]["x"].AsFloat,
+                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][0]["y"].AsFloat);
+        var v2 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][1]["x"].AsFloat,
+                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][1]["y"].AsFloat);
+        var v3 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][2]["x"].AsFloat,
+                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][2]["y"].AsFloat);
+        var v4 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][3]["x"].AsFloat,
+                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][3]["y"].AsFloat);
+
+        textBox1[0] = v1;
+        textBox1[1] = v2;
+        textBox1[2] = v3;
+        textBox1[3] = v4;
+        */
+
+        var textBoxCount = 17;
+        var sumVector = new Vector2[textBoxCount * 4];
+
+        for (int i = 0; i < textBoxCount; i++)
         {
-            if (responses.responses[0].faceAnnotations != null && responses.responses[0].faceAnnotations.Count > 0)
+            var tmpVector = GetVector2FromJSON(response, i);
+            DrawPath(tmpVector);
+
+            for (int k = 0; k < 4; k++)
             {
-                Debug.Log("joyLikelihood: " + responses.responses[0].faceAnnotations[0].joyLikelihood);
+                //sumVector[4*i+k] = tmpVector[k];
             }
         }
+
+        //DrawPath(sumVector);
     }
 
-    private void TestTextRecognition(AnnotateImageResponses responses)
+    private void DrawPath(Vector2[] path)
     {
-        if (responses.responses.Count > 0)
+        var newLineRendererGO = new GameObject("LineRenderer");
+
+
+        newLineRendererGO.transform.SetParent(_lineRenderer.transform);
+        newLineRendererGO.AddComponent<LineRenderer>();
+        var newLineRenderer = newLineRendererGO.GetComponent<LineRenderer>();
+        newLineRenderer.material = _lineRenderer.material;
+        newLineRenderer.widthMultiplier = _lineRenderer.widthMultiplier;
+        newLineRenderer.loop = _lineRenderer.loop;
+        newLineRenderer.useWorldSpace = _lineRenderer.useWorldSpace;
+
+
+        if (path.Length < 2) return;
+        newLineRenderer.positionCount = path.Length;
+        for (int i = 0; i < path.Length; i++)
         {
-            if (responses.responses[0].textAnnotations != null && responses.responses[0].textAnnotations.Count > 0)
-            {
-                Debug.Log("Response count: " + responses.responses.Count);
-                int i = 0;
-                foreach (var text in responses.responses[0].textAnnotations)
-                {
-                    Debug.Log(i+++": "+ text);
-                }
-                //Debug.Log("Locations0: "+responses.responses[0].textAnnotations[0].locations[0].ToString());
-            }
+            Debug.Log("Draw line " + i + ": " + path[i]);
+            newLineRenderer.SetPosition(i, path[i]);
         }
+
+        newLineRendererGO.transform.position = Vector3.zero;
+        newLineRendererGO.transform.rotation = new Quaternion();
+        //_Line.sortingLayerName = "Foreground";
     }
 
+    private Vector2[] GetVector2FromJSON(JSONNode response, int vertextNumber)
+    {
+        Vector2[] textBox = new Vector2[4];
+        var v1 = new Vector2(response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][0]["x"].AsFloat,
+                            -response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][0]["y"].AsFloat);
+        var v2 = new Vector2(response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][1]["x"].AsFloat,
+                            -response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][1]["y"].AsFloat);
+        var v3 = new Vector2(response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][2]["x"].AsFloat,
+                            -response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][2]["y"].AsFloat);
+        var v4 = new Vector2(response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][3]["x"].AsFloat,
+                            -response["responses"][0]["textAnnotations"][vertextNumber]["boundingPoly"]["vertices"][3]["y"].AsFloat);
+
+        textBox[0] = v1;
+        textBox[1] = v2;
+        textBox[2] = v3;
+        textBox[3] = v4;
+
+        return textBox;
+    }
 
 
 
@@ -357,6 +420,12 @@ public class WebCamTextureToCloudVision : MonoBehaviour
     [System.Serializable]
     public class Vertex
     {
+        public Vertex(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
         public float x;
         public float y;
     }
