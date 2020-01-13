@@ -33,6 +33,7 @@ sysinfo.txt
 
 # Builds
 *.unitypackage
+*.apk
 
 #API keys
-API_keys/
+CloudVision.txt

@@ -29,7 +29,6 @@ public class UIMenuSwitchingManager : MonoBehaviour
     void Start()
     {
         OpenNavigationMenu();
-        OpenDestinationHeader();
     }
 
     // Update is called once per frame
@@ -38,53 +37,69 @@ public class UIMenuSwitchingManager : MonoBehaviour
 
     }
 
+    private void CloseAllMenus()
+    { 
+        CloseMainMenu();
+        CloseSettingsMenu();
+        CloseNavigationMenu();
+        CloseDestinationHeader();
+        CloseMarkerDetectionMenu();
+    }
+
     public void OpenMainMenu()
     {
+        CloseAllMenus();
+        OpenDestinationHeader();
         _mainMenu.DOAnchorPos(mainInViewPos, animationSpeed);
     }
 
-    public void CloseMainMenu()
+    private void CloseMainMenu()
     {
         _mainMenu.DOAnchorPos(mainOutOfViewPos, animationSpeed);
     }
     public void OpenSettingsMenu()
     {
+        CloseAllMenus();
         _settingsMenu.DOAnchorPos(settingsInViewPos, animationSpeed);
     }
 
-    public void CloseSettingsMenu()
+    private void CloseSettingsMenu()
     {
         _settingsMenu.DOAnchorPos(settingsOutOfViewPos, animationSpeed);
     }
 
     public void OpenNavigationMenu()
     {
+        CloseAllMenus();
+        OpenDestinationHeader();
         _navigationMenu.DOAnchorPos(navigationInViewPos, animationSpeed);
     }
 
-    public void CloseNavigationMenu()
+    private void CloseNavigationMenu()
     {
         _navigationMenu.DOAnchorPos(navigationOutOfViewPos, animationSpeed);
     }
 
-    public void OpenDestinationHeader()
+    private void OpenDestinationHeader()
     {
+        CloseAllMenus();
         _destinationHeader.DOAnchorPos(destinationHeaderInViewPos, animationSpeed);
     }
 
-    public void CloseDestinationHeader()
+    private void CloseDestinationHeader()
     {
         _destinationHeader.DOAnchorPos(destinationHeaderOutOfViewPos, animationSpeed);
     }
 
     public void OpenMarkerDetectionMenu()
     {
-
+        CloseAllMenus();
+        _markerDetectionMenu.DOAnchorPos(markerDetectionMenuInViewPos, animationSpeed);
     }
 
-    public void CloseMarkerDetectionMenu()
+    private void CloseMarkerDetectionMenu()
     {
-
+        _markerDetectionMenu.DOAnchorPos(markerDetectionMenuOutOfViewPos, animationSpeed);
     }
 
 }

@@ -1,27 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Windows;
 using SimpleJSON;
 using UnityEngine.UI;
 
 public class GoogleVisionAPIConnector : MonoBehaviour
 {
+    public TextDetection _TextDetection;
+
+
     //public TextDetection _TextDetection;
     public string url = "https://vision.googleapis.com/v1/images:annotate?key=";
-    public string apiKey = "";
-    public RawImage _texturePlane;
+    public string apiKeyResourceLocation = "APIKeys/CloudVision";
 
+    //public RawImage _texturePlane;
+    private string apiKey = "";
     private Dictionary<string, string> headers;
     private FeatureType featureType = FeatureType.TEXT_DETECTION;
     private int maxResults = 10;
     private bool receivedResult = false;
 
-    private Texture2D imageTexture = null;
+    private byte[] jpg;
 
     // Start is called before the first frame update
     void Start()
     {
+        TextAsset apiKeyText = Resources.Load(apiKeyResourceLocation) as TextAsset;
+        apiKey = apiKeyText.text;
+
         headers = new Dictionary<string, string>();
         headers.Add("Content-Type", "application/json; charset=UTF-8");
 
@@ -30,11 +36,17 @@ public class GoogleVisionAPIConnector : MonoBehaviour
 
     }
 
+    public void SendJPG(byte[] imageJPG)
+    {
+        jpg = imageJPG;
+        StartCoroutine("SendAPIRequest");
+    }
 
-    public IEnumerator SendJPG(byte[] jpg)
+
+    public IEnumerator SendAPIRequest()
     {
         receivedResult = false;
-
+        Debug.Log("Received Image");
         while (!receivedResult)
         {
             if (this.apiKey == null)
@@ -42,7 +54,7 @@ public class GoogleVisionAPIConnector : MonoBehaviour
                 Debug.Log("No API key");
                 yield return null;
             }
-
+            Debug.Log("Converting Image");
             string base64 = System.Convert.ToBase64String(jpg);
 
 #if UNITY_WEBGL
@@ -77,21 +89,14 @@ public class GoogleVisionAPIConnector : MonoBehaviour
                     if (string.IsNullOrEmpty(www.error))
                     {
                         receivedResult = true;
-                        Debug.Log("Parsing Data");
-                        Debug.Log("WWW Text: " + www.text.Replace("\n", "").Replace(" ", ""));
 
+                        //Debug.Log("Parsing Data");
+                        //Debug.Log("WWW Text: " + www.text.Replace("\n", "").Replace(" ", ""));
                         var response = JSON.Parse(www.text);
-                        
-                        var nodeList = response["responses"][0]["textAnnotations"].AsArray;
-                        List<string> textList = new List<string>();
-                        
-                        // Skipping first result because its a list of all strings
-                        for (int i = 1; i < nodeList.Count; i++)
-                        {
-                            textList.Add(nodeList[i]["description"].Value);
-                        }
-                        SendResponse(textList);
-                        //DisplayJSONTextResult(response);
+                        var nameList = GetDescriptionListFromJSON(response);
+
+                        _TextDetection.ReceiveTextList(nameList);
+
                     }
                     else
                     {
@@ -107,6 +112,23 @@ public class GoogleVisionAPIConnector : MonoBehaviour
 
             yield return new WaitForSeconds(5.0f);
         }
+    }
+
+
+    private List<string> GetDescriptionListFromJSON(JSONNode response)
+    {
+        List<string> descriptionList = new List<string>();
+        int listLength = response["responses"][0]["textAnnotations"].Count;
+
+        var description = response["responses"][0]["textAnnotations"][0]["description"].Value;
+        var descriptionLines = description.Split('\n');
+
+        foreach (var line in descriptionLines)
+        {
+            descriptionList.Add(line);
+        }
+
+        return descriptionList;
     }
 
 
@@ -160,26 +182,6 @@ public class GoogleVisionAPIConnector : MonoBehaviour
 #endif
 
 
-    // Functions to test this script below: 
-
-    public void TestConnector()
-    {
-        Debug.Log("Testing Script");
-        if (imageTexture == null) imageTexture = new Texture2D(640, 480, TextureFormat.R8, false, false);
-
-        var tmpTexture = new Texture2D(640, 480, TextureFormat.R8, false, false);
-        var fileData = File.ReadAllBytes("Assets/Resources/3.219.jpg");
-        tmpTexture.LoadImage(fileData);
-        tmpTexture.Apply();
-        _texturePlane.texture = tmpTexture;
-
-        imageTexture = tmpTexture;
-
-        byte[] jpg = imageTexture.EncodeToJPG();
-        //StartCoroutine("Capture");
-        StartCoroutine("SendJPG", jpg);
-    }
-
     private void SendResponse(List<string> textList)
     {
         foreach (var text in textList)
@@ -188,5 +190,5 @@ public class GoogleVisionAPIConnector : MonoBehaviour
         }
     }
 
-   
+
 }

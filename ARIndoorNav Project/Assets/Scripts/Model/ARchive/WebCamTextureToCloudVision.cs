@@ -5,18 +5,17 @@ using System.Collections.Generic;
 using GoogleARCore;
 using System.Runtime.InteropServices;
 using UnityEngine.UI;
-using System;
+using System.IO;
 using SimpleJSON;
-using UnityEngine.Windows;
+//using UnityEngine.Windows;
 
 public class WebCamTextureToCloudVision : MonoBehaviour
 {
+    public TextDetection _TextDetection;
 
     public string url = "https://vision.googleapis.com/v1/images:annotate?key=";
     public string apiKey = "";
     public float captureIntervalSeconds = 2.0f;
-    //public int requestedWidth = 640;
-    //public int requestedHeight = 480;
     public FeatureType featureType = FeatureType.TEXT_DETECTION;
     public int maxResults = 10;
 
@@ -25,14 +24,13 @@ public class WebCamTextureToCloudVision : MonoBehaviour
     public RawImage _testImage;
     public LineRenderer _lineRenderer;
 
+    private string apiKeyResourceLocation = "APIKeys/CloudVision";
     private bool runVision = false;
     private CameraImageBytes image;
     private Texture2D imageTexture = null;
     private int imageWidth, imageHeight;
     private byte[] imageBytes;
 
-    //WebCamTexture webcamTexture;
-    //Texture2D texture2D;
     Dictionary<string, string> headers;
 
     public void StartStop()
@@ -54,6 +52,10 @@ public class WebCamTextureToCloudVision : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        TextAsset apiKeyText = Resources.Load(apiKeyResourceLocation) as TextAsset;
+        apiKey = apiKeyText.text;
+
+
         headers = new Dictionary<string, string>();
         headers.Add("Content-Type", "application/json; charset=UTF-8");
 
@@ -94,16 +96,8 @@ public class WebCamTextureToCloudVision : MonoBehaviour
                 yield return null;
 
             yield return new WaitForEndOfFrame();
-            //var success = SetWebCamTexture();
-            //if (!success) continue;
-
-            var tmpTexture = new Texture2D(640, 480, TextureFormat.R8, false, false);
-            var fileData = File.ReadAllBytes("Assets/Resources/3.219.jpg");
-            tmpTexture.LoadImage(fileData);
-            tmpTexture.Apply();
-            _texturePlane.texture = tmpTexture;
-
-            imageTexture = tmpTexture;
+            var success = SetWebCamTexture();
+            if (!success) continue;
 
             byte[] jpg = imageTexture.EncodeToJPG();
             string base64 = System.Convert.ToBase64String(jpg);
@@ -139,14 +133,13 @@ public class WebCamTextureToCloudVision : MonoBehaviour
                     yield return www;
                     if (string.IsNullOrEmpty(www.error))
                     {
-                        Debug.Log("Parsing Data");
-                        Debug.Log("WWW Text: " + www.text.Replace("\n", "").Replace(" ", ""));
-                        //AnnotateImageResponses responses = JsonUtility.FromJson<AnnotateImageResponses>(www.text);
-                        // SendMessage, BroadcastMessage or someting like that.
+                        //Debug.Log("Parsing Data");
+                        //Debug.Log("WWW Text: " + www.text.Replace("\n", "").Replace(" ", ""));
                         var response = JSON.Parse(www.text);
+                        var nameList = GetDescriptionListFromJSON(response);
 
+                        _TextDetection.ReceiveTextList(nameList);
 
-                        DisplayJSONTextResult(response);
                     }
                     else
                     {
@@ -172,29 +165,30 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 	}
 #endif
 
+    
+    private List<string> GetDescriptionListFromJSON(JSONNode response)
+    {
+        List<string> descriptionList = new List<string>();
+        int listLength = response["responses"][0]["textAnnotations"].Count;
+
+        var description = response["responses"][0]["textAnnotations"][0]["description"].Value;
+        var descriptionLines = description.Split('\n');
+
+        foreach (var line in descriptionLines)
+        {
+            descriptionList.Add(line);
+        }
+
+        return descriptionList;
+    }
+
+
 
     private void DisplayJSONTextResult(JSONNode response)
     {
         var locale = response["responses"][0]["textAnnotations"][0]["locale"].Value;
         var description1 = response["responses"][0]["textAnnotations"][0]["description"].Value;
         var description2 = response["responses"][0]["textAnnotations"][1]["description"].Value;
-
-        /*
-        Vector2[] textBox1 = new Vector2[4];
-        var v1 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][0]["x"].AsFloat,
-                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][0]["y"].AsFloat);
-        var v2 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][1]["x"].AsFloat,
-                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][1]["y"].AsFloat);
-        var v3 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][2]["x"].AsFloat,
-                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][2]["y"].AsFloat);
-        var v4 = new Vector2(response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][3]["x"].AsFloat,
-                            response["responses"][0]["textAnnotations"][0]["boundingPoly"]["vertices"][3]["y"].AsFloat);
-
-        textBox1[0] = v1;
-        textBox1[1] = v2;
-        textBox1[2] = v3;
-        textBox1[3] = v4;
-        */
 
         var textBoxCount = 17;
         var sumVector = new Vector2[textBoxCount * 4];
@@ -231,7 +225,7 @@ public class WebCamTextureToCloudVision : MonoBehaviour
         newLineRenderer.positionCount = path.Length;
         for (int i = 0; i < path.Length; i++)
         {
-            Debug.Log("Draw line " + i + ": " + path[i]);
+            //Debug.Log("Draw line " + i + ": " + path[i]);
             newLineRenderer.SetPosition(i, path[i]);
         }
 
@@ -259,6 +253,7 @@ public class WebCamTextureToCloudVision : MonoBehaviour
 
         return textBox;
     }
+
 
 
 

@@ -21,6 +21,15 @@ public class Room
         Description = description;
     }
 
+    public bool Contains(string text)
+    {
+        var contains = false;
+        if(Name.Contains(text) || Description.Contains(text))
+            contains = true;
+
+        return contains;
+    }
+
     public string Name
     {
         get { return name; }

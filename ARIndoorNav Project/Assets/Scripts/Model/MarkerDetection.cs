@@ -15,12 +15,14 @@ public class MarkerDetection : MonoBehaviour
     public PoseEstimation _PoseEstimation;
     public MarkerDatabase _MarkerDatabase;
     public SystemStatePresenter _SystemStatePresenter;
+    public TextDetection _TextDetection;
 
-    public bool _isTracking = false;
+    public bool _isTracking = false; // For Debugging purposes: To start manual marker detection
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
     private List<Pose> _WorldMarkerPositionList = new List<Pose>();
     private readonly int _MaxTrackingCount = 10;
+    private CameraImageBytes image;
 
     // Start is called before the first frame update
     void Start()
@@ -58,10 +60,21 @@ public class MarkerDetection : MonoBehaviour
     }
 
     /**
-       Method that uses ARCores AugmentedImage tracking capabilities
+       Method that manages the detection method used (Augmented Images or OCR)
        Is called once per frame when the _isTracking bool is true 
      */
     private void DetectMarker()
+    {
+        DetectMarkerOCR();
+        //DetectMarkerAugmentedImages(); Not in use
+    }
+
+    /*
+        Depricated
+        A method to start the marker detection with the ARCore Augmented Images functionalities
+        Since this method is unrelable when used to glass-covered images (door plates), it cannot be used in this project
+    */
+    private void DetectMarkerAugmentedImages()
     {
         AugmentedImage detectedWorldMarker = null;
         Transform detectedVirtualMarkerPosition = null;
@@ -80,20 +93,20 @@ public class MarkerDetection : MonoBehaviour
                 detectedWorldMarker.TrackingMethod == AugmentedImageTrackingMethod.FullTracking)
             {
                 Debug.Log("Found 1 Augmented Image: " + _detectedImages[0].Name);
-                
+
                 detectedVirtualMarkerPosition = _MarkerDatabase.RequestMarkerPosition(detectedWorldMarker.Name);
                 //_WorldMarkerPositionList.Add(detectedWorldMarker.CenterPose);
-                if(detectedVirtualMarkerPosition == null)
+                if (detectedVirtualMarkerPosition == null)
                 {
                     Debug.Log("No matching marker found for Markername: " + detectedWorldMarker.Name);
                 }
                 else
                 {
-                     _PoseEstimation.ReportMarkerPose(detectedVirtualMarkerPosition, detectedWorldMarker.CenterPose);
+                    _PoseEstimation.ReportMarkerPose(detectedVirtualMarkerPosition, detectedWorldMarker.CenterPose);
                 }
             }
         }
-                
+
         if (_WorldMarkerPositionList.Count >= _MaxTrackingCount)
         {
             //Pose averageWorldMarkerPosition = HelperFunctions.CalculateAveragePose(_WorldMarkerPositionList);
@@ -101,6 +114,65 @@ public class MarkerDetection : MonoBehaviour
             //_WorldMarkerPositionList.Clear();
         }
     }
+
+    /*
+        Method to start the optival character reader script using the Google Vision API
+    */
+    private void DetectMarkerOCR()
+    {
+        image = Frame.CameraImage.AcquireCameraImageBytes();
+        // Detection needs to continue until enough cpu resources have been freed
+        if (!image.IsAvailable)
+        {
+            Debug.Log("Couldn't access camera image!");
+        }
+        // The camera image can be aquired and used to detect text within it
+        // The detection can now be stopped until the Cloud Vision returns a result!
+        else
+        {
+            var imageWidth = image.Width;
+            var imageHeight = image.Height;
+            var imageY = image.Y;
+            var imageYRowStride = image.YRowStride;
+
+            _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
+
+            StopDetection();
+        }
+    }
+
+    private void DetectWallDirection()
+    {
+        // Override _detectedPlanes with all tracked Planes
+        Session.GetTrackables<DetectedPlane>(_detectedPlanes, TrackableQueryFilter.All);
+
+        // Needs to be optimized in the future
+        DetectedPlane verticalPlane = null;
+
+        foreach (var plane in _detectedPlanes)
+        {
+            if (plane.PlaneType == DetectedPlaneType.Vertical)
+            {
+
+                //TODO check if in front
+                verticalPlane = plane;
+            }
+        }
+
+    }
+
+    /*
+        A function for the TextDetection component.
+        It is the dmz of the Google Cloud Vision API to detect text using 
+        the ARCore CameraImageByte class 
+
+    */
+    public void SendMarkerList(List<string> potentialMarkerList)
+    {
+        //TODO: Check against database
+    }
+
+
 
 
 }

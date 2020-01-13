@@ -13,15 +13,20 @@ public class TextDetection : MonoBehaviour
 
     private Texture2D imageTexture = null;
 
-    public void DetectText(CameraImageBytes image)
+    public void DetectText(int imageWidth, int imageHeight, System.IntPtr imageY, int imageYRowStride)
     {
-        byte[] jpg = ConvertToJPG(image);
+        byte[] jpg = ConvertToJPG(imageWidth, imageHeight, imageY, imageYRowStride);
+        Debug.Log("Sending JPG");
         _GoogleVisionAPIConnector.SendJPG(jpg);
     }
 
     public void ReceiveTextList(List<string> textList)
     {
-        // TODO
+        Debug.Log("RECEIVED TEXT LIST");
+        foreach (var text in textList)
+        {
+            Debug.Log(text);
+        }
     }
 
     /*  Converts CamerImageBytes array YUV format into a JPG array using only the Y channel of the image.
@@ -31,20 +36,19 @@ public class TextDetection : MonoBehaviour
         4. The Texture is then converted into a jpg array using Texture2D.EncodeToJPG()
     
     */
-    private byte[] ConvertToJPG(CameraImageBytes image)
+    private byte[] ConvertToJPG(int imageWidth, int imageHeight, System.IntPtr imageY, int imageYRowStride)
     {
-        if (imageTexture == null) imageTexture = new Texture2D(image.Width, image.Height, TextureFormat.R8, false, false);
+        if (imageTexture == null) imageTexture = new Texture2D(imageWidth, imageHeight, TextureFormat.R8, false, false);
 
-        int arrayLength = (image.Height * image.YRowStride);
+        int arrayLength = (imageHeight * imageYRowStride);
         byte[] managedArray = new byte[arrayLength];
-        Marshal.Copy(image.Y, managedArray, 0, arrayLength);
+        Marshal.Copy(imageY, managedArray, 0, arrayLength);
         imageTexture.LoadRawTextureData(managedArray);
 
         var flippedTexture = HelperFunctions.FlipTexture2D(imageTexture, true, false);
         imageTexture = flippedTexture;
 
         imageTexture.Apply();
-
         return imageTexture.EncodeToJPG();
     }
 }

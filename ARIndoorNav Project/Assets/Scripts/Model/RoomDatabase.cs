@@ -21,8 +21,8 @@ public class RoomDatabase : MonoBehaviour
         "3.222a;Test3222a\n" + 
         "Treppenhaus; Um die Ecke";
 
-    // Start is called before the first frame update
-    void Start()
+    // Awake is called before Start
+    void Awake()
     {
         InitiateDatabase();
         _RoomListPresenter.UpdateRoomList(roomList);
@@ -56,6 +56,12 @@ public class RoomDatabase : MonoBehaviour
         room = roomList.Find(roomFinder);
 
         return room;
+    }
+
+    // Return the initiated room list
+    public List<Room> GetRoomList()
+    {
+        return roomList;
     }
 
     /**
