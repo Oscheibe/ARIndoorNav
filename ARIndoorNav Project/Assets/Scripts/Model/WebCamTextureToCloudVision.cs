@@ -72,26 +72,6 @@ public class WebCamTextureToCloudVision : MonoBehaviour
         }
         if (imageTexture == null) imageTexture = new Texture2D(image.Width, image.Height, TextureFormat.R8, false, false);
 
-        /*
-        WebCamDevice[] devices = WebCamTexture.devices;
-        WebCamTexture webcamTexture;
-        webcamTexture = new WebCamTexture(devices[0].name, requestedWidth, requestedHeight);
-        webcamTexture.Play();
-        Color[] pixels = webcamTexture.GetPixels();
-        imageTexture.SetPixels(pixels);
-        webcamTexture.Stop();
-
-        _canvas.enabled = false;
-        new WaitForEndOfFrame();
-        imageTexture.ReadPixels(_canvas.GetComponent<Rect>(), 0, 0);
-        _canvas.enabled = true;
-
-        imageTexture.ReadPixels(_scanRect.GetComponent<Rect>(), 0, 0);
-
-
-        */
-
-
         int arrayLength = (image.Height * image.YRowStride);
         byte[] managedArray = new byte[arrayLength];
         Marshal.Copy(image.Y, managedArray, 0, arrayLength);
@@ -112,18 +92,7 @@ public class WebCamTextureToCloudVision : MonoBehaviour
         {
             if (this.apiKey == null)
                 yield return null;
-            /*
-            UnityEngine.Color[] pixels = webcamTexture.GetPixels();
-            if (pixels.Length == 0)
-                yield return null;
-            if (texture2D == null || webcamTexture.width != texture2D.width || webcamTexture.height != texture2D.height)
-            {
-                texture2D = new Texture2D(webcamTexture.width, webcamTexture.height, TextureFormat.RGBA32, false);
-            }
 
-            texture2D.SetPixels(pixels);
-            // texture2D.Apply(false); // Not required. Because we do not need to be uploaded it to GPU
-            */
             yield return new WaitForEndOfFrame();
             //var success = SetWebCamTexture();
             //if (!success) continue;

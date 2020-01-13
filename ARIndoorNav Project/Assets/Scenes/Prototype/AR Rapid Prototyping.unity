@@ -239,6 +239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 325806731}
   - component: {fileID: 325806732}
+  - component: {fileID: 325806733}
   m_Layer: 0
   m_Name: WebTests
   m_TagString: Untagged
@@ -273,7 +274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   url: https://vision.googleapis.com/v1/images:annotate?key=
-  apiKey: AIzaSyB4JMQ0QbXY3y_Q6hEHnmUL4GwIanv_Lsg
+  apiKey: 
   captureIntervalSeconds: 2
   featureType: 5
   maxResults: 10
@@ -281,6 +282,21 @@ MonoBehaviour:
   _scanRect: {fileID: 0}
   _testImage: {fileID: 0}
   _lineRenderer: {fileID: 1250226825}
+--- !u!114 &325806733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325806730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac1985d40ba1b854a9d9afdbb662a081, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  url: https://vision.googleapis.com/v1/images:annotate?key=
+  apiKey: 
+  _texturePlane: {fileID: 1999171924}
 --- !u!1 &440235127
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,8 +756,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 325806732}
-        m_MethodName: StartStop
+      - m_Target: {fileID: 325806733}
+        m_MethodName: TestConnector
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

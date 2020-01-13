@@ -33,3 +33,6 @@ sysinfo.txt
 
 # Builds
 *.unitypackage
+
+#API keys
+API_keys/
