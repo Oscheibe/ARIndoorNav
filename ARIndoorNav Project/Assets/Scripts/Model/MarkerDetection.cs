@@ -18,6 +18,7 @@ public class MarkerDetection : MonoBehaviour
     public TextDetection _TextDetection;
 
     public bool _isTracking = false; // For Debugging purposes: To start manual marker detection
+    public bool _isWaiting = false; // If the marker detection has been initialized and is being calculated
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
     private List<Pose> _WorldMarkerPositionList = new List<Pose>();
@@ -60,19 +61,46 @@ public class MarkerDetection : MonoBehaviour
     }
 
     /**
+        A function for the TextDetection component.
+        It is the dmz of the Google Cloud Vision API to detect text using 
+        the ARCore CameraImageByte class 
+
+        1. It announces that a result has been arrived
+        2. It checks which value contains a number
+    */
+    public void SendMarkerList(List<string> potentialMarkerList)
+    {
+        AnnounceResult();
+        var resultRoomList = _MarkerDatabase.ContainsRoom(potentialMarkerList);
+        if (resultRoomList.Count == 0)
+        {
+            Debug.Log("No Room found");
+            //TODO: No room found
+        }
+        else
+        {
+            foreach (var room in resultRoomList)
+            {
+                Debug.Log("RESULT: " + room.Name);
+            }
+            //TODO: room found
+        }
+    }
+    
+    /**
        Method that manages the detection method used (Augmented Images or OCR)
        Is called once per frame when the _isTracking bool is true 
      */
     private void DetectMarker()
     {
         DetectMarkerOCR();
-        //DetectMarkerAugmentedImages(); Not in use
+        //DetectMarkerAugmentedImages(); -> Not in use because it didn't provide sufficient results
     }
 
     /*
-        Depricated
+        Deprecated
         A method to start the marker detection with the ARCore Augmented Images functionalities
-        Since this method is unrelable when used to glass-covered images (door plates), it cannot be used in this project
+        Since this method is unreliable when used to glass-covered images (door plates), it cannot be used in this project
     */
     private void DetectMarkerAugmentedImages()
     {
@@ -126,8 +154,15 @@ public class MarkerDetection : MonoBehaviour
         {
             Debug.Log("Couldn't access camera image!");
         }
-        // The camera image can be aquired and used to detect text within it
-        // The detection can now be stopped until the Cloud Vision returns a result!
+        /**
+         * The camera image can be aquired and used to detect text within it
+         * 1. The camera image is split into its brightness(Y) channel and meta data needed for calculations
+         * 2. This data is sent to the Text Detection script to be evaluated by an OCR
+         * 3. The facing current direction of the wall in front of the User is calculated 
+         * 4. _isWaiting bool is set to true until the result comes back
+         * 5. The detection can now be stopped. 
+         * The status afterwards is "_isWaiting" and not "_isTracking"
+         */
         else
         {
             var imageWidth = image.Width;
@@ -136,7 +171,8 @@ public class MarkerDetection : MonoBehaviour
             var imageYRowStride = image.YRowStride;
 
             _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
-
+            DetectWallDirection();
+            IndicateWaitingForResult();
             StopDetection();
         }
     }
@@ -162,15 +198,22 @@ public class MarkerDetection : MonoBehaviour
     }
 
     /*
-        A function for the TextDetection component.
-        It is the dmz of the Google Cloud Vision API to detect text using 
-        the ARCore CameraImageByte class 
+        Method to indicate that a calculation has been initiated which can take longer
+        than 1 update cycle. (Waiting for API response)
 
     */
-    public void SendMarkerList(List<string> potentialMarkerList)
+    private void IndicateWaitingForResult()
     {
-        //TODO: Check against database
+        _isWaiting = true;
     }
+
+    // Method to indicate that a result has been delivered
+    private void AnnounceResult()
+    {
+        _isWaiting = false;
+    }
+
+
 
 
 

@@ -20,13 +20,13 @@ public class TextDetection : MonoBehaviour
         _GoogleVisionAPIConnector.SendJPG(jpg);
     }
 
+    /*
+        Method called by Google Vision API connector when the Google Cloud Vision server
+        responded with the scanned text
+    */
     public void ReceiveTextList(List<string> textList)
     {
-        Debug.Log("RECEIVED TEXT LIST");
-        foreach (var text in textList)
-        {
-            Debug.Log(text);
-        }
+        _MarkerDetection.SendMarkerList(textList);
     }
 
     /*  Converts CamerImageBytes array YUV format into a JPG array using only the Y channel of the image.

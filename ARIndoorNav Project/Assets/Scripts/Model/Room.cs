@@ -21,10 +21,14 @@ public class Room
         Description = description;
     }
 
+    /*
+        Contains method that only checks the Name (Number) of the room
+        It is used to check against OCR results
+    */
     public bool Contains(string text)
     {
         var contains = false;
-        if(Name.Contains(text) || Description.Contains(text))
+        if(Name.Contains(text))
             contains = true;
 
         return contains;

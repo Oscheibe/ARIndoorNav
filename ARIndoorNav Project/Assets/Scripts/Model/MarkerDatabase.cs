@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class MarkerDatabase : MonoBehaviour
 {
@@ -27,18 +28,37 @@ public class MarkerDatabase : MonoBehaviour
         Transform position = null;
         foreach (var room in roomList)
         {
-            if(room.Name == markerName) 
+            if (room.Name == markerName)
                 position = room.Location;
 
         }
         return position;
     }
 
-    public Room ContainsRoom(List<string> potentialMarkerList)
+    /**
+     * 1 Go through each result from OCR
+     * 2 Go through each character from OCR to determin if it contains a number
+     * 3 Check if a string that contains a number colorates with a room number
+     * 4 Add each result to the result list
+     */
+    public List<Room> ContainsRoom(List<string> potentialMarkerList)
     {
-        Room result = null;
-        //TODO efficient search
-
-        return result;
+        List<Room> resultList = new List<Room>();
+        foreach (string text in potentialMarkerList)
+        {
+            bool containsNumber = false;
+            foreach (char character in text)
+            {
+                if (Char.IsDigit(character))
+                    containsNumber = true;
+            }
+            if (containsNumber)
+            {
+                var resultRoom = _RoomDatabase.GetRoom(text.Replace(" ", ""));
+                if(resultRoom != null) 
+                    resultList.Add(resultRoom);
+            }
+        }
+        return resultList;
     }
 }
