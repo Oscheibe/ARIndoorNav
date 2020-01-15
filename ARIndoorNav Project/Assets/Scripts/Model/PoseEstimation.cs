@@ -47,6 +47,7 @@ public class PoseEstimation : MonoBehaviour
         UpdateLastMarkerRotation(virtualMarkerPosition, worldMarkerPose);
     }
 
+
     public void ReportMarkerRotation(Transform virtualMarkerPosition, Pose worldMarkerPose)
     {
         _MarkerDetection.StopDetection();
@@ -60,6 +61,15 @@ public class PoseEstimation : MonoBehaviour
     public void RequestNewPosition()
     {
         _MarkerDetection.StartDetection();
+    }
+
+    /**
+     * The absolute position of the user relative to the unity origin is
+     * the combined position of the ARCore origin and the relative movement of the user
+     */
+    public Vector3 GetUserPosition()
+    {
+        return _ARCoreOriginTransform.position + _ARCoreFPSPosition.position;
     }
 
     private void UpdateLastMarkerPosition(Transform virtualMarkerTransform, Pose worldMarkerPose)

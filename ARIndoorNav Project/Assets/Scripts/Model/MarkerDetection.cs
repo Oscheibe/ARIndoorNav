@@ -16,14 +16,16 @@ public class MarkerDetection : MonoBehaviour
     public MarkerDatabase _MarkerDatabase;
     public SystemStatePresenter _SystemStatePresenter;
     public TextDetection _TextDetection;
-
     public bool _isTracking = false; // For Debugging purposes: To start manual marker detection
     public bool _isWaiting = false; // If the marker detection has been initialized and is being calculated
+    public float _scanningDistance = 0.3f; // The average distance of the user when scanning a sign
+
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
     private List<AugmentedImage> _detectedImages = new List<AugmentedImage>();
     private List<Pose> _WorldMarkerPositionList = new List<Pose>();
     private readonly int _MaxTrackingCount = 10;
     private CameraImageBytes image;
+    private DetectedPlane detectedPlane = null;
 
     // Start is called before the first frame update
     void Start()
@@ -72,18 +74,36 @@ public class MarkerDetection : MonoBehaviour
     {
         AnnounceResult();
         var resultRoomList = _MarkerDatabase.ContainsRoom(potentialMarkerList);
+        Transform virtualMarkerPosition = null;
+        Pose worldMarkerPose = new Pose(); // = new Pose(new Vector3(), new Quaternion()); // Vector3 = virtual + a few cm, Quaternion = detectedPlane
+
+        if(detectedPlane != null)
+        {
+            var userPosAddition = (detectedPlane.CenterPose.rotation * new Vector3().normalized) * _scanningDistance;
+            var worldMarkerPosition = _PoseEstimation.GetUserPosition() + userPosAddition;
+            var worldMarkerRotation = detectedPlane.CenterPose.rotation;
+            worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation); 
+        }
+
         if (resultRoomList.Count == 0)
         {
             Debug.Log("No Room found");
-            //TODO: No room found
+            //TODO: tell the pose estimation
+            return;
         }
         else
         {
             foreach (var room in resultRoomList)
             {
                 Debug.Log("RESULT: " + room.Name);
+                //TODO: more than 1 room found
             }
-            //TODO: room found
+            virtualMarkerPosition = resultRoomList[0].Location;
+        }
+
+        if(virtualMarkerPosition != null && detectedPlane != null)
+        {
+            _PoseEstimation.ReportMarkerPose(virtualMarkerPosition, worldMarkerPose);
         }
     }
     
@@ -144,18 +164,20 @@ public class MarkerDetection : MonoBehaviour
     }
 
     /*
-        Method to start the optival character reader script using the Google Vision API
+        Method to start the optical character reader script using the Google Vision API
     */
     private void DetectMarkerOCR()
     {
         image = Frame.CameraImage.AcquireCameraImageBytes();
+        // Resetting detectedPlane to null before each new calculation because it is a criteria for a newly detected plane
+        detectedPlane = null;
         // Detection needs to continue until enough cpu resources have been freed
         if (!image.IsAvailable)
         {
             Debug.Log("Couldn't access camera image!");
         }
         /**
-         * The camera image can be aquired and used to detect text within it
+         * The camera image can be acquired and used to detect text within it
          * 1. The camera image is split into its brightness(Y) channel and meta data needed for calculations
          * 2. This data is sent to the Text Detection script to be evaluated by an OCR
          * 3. The facing current direction of the wall in front of the User is calculated 
@@ -171,7 +193,10 @@ public class MarkerDetection : MonoBehaviour
             var imageYRowStride = image.YRowStride;
 
             _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
-            DetectWallDirection();
+            
+            detectedPlane = GetCenterPlane();
+            //DetectWallDirection();
+
             IndicateWaitingForResult();
             StopDetection();
         }
@@ -190,7 +215,7 @@ public class MarkerDetection : MonoBehaviour
             if (plane.PlaneType == DetectedPlaneType.Vertical)
             {
 
-                //TODO check if in front
+                //var centerPlane = GetCenterPlane();
                 verticalPlane = plane;
             }
         }
@@ -213,7 +238,27 @@ public class MarkerDetection : MonoBehaviour
         _isWaiting = false;
     }
 
+    /**
+     * 1 Raycast to middle of screen to search for ARCore planes
+     * 2 If the hit is a DetectedPlane, return it
+     * 3    else return null
+     * 
+     */
+    private DetectedPlane GetCenterPlane()
+    {
+        TrackableHit hit;
+        TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds;
+        
+        if(Frame.Raycast(Screen.width/2, Screen.height/2, raycastFilter, out hit))
+        {
+            if( (hit.Trackable is DetectedPlane) ) // Might need to check if the hit is on the back of the plane
+            {
+                return (DetectedPlane) hit.Trackable;
+            }
+        }
 
+        return null;
+    }
 
 
 
