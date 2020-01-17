@@ -40,7 +40,15 @@ public class RoomDatabase : MonoBehaviour
      */
     public Transform GetRoomPosition(string roomName)
     {
-        return GameObject.Find(_RoomParentGameObject.name + "/" + roomName).transform;
+        var roomGO = GameObject.Find(_RoomParentGameObject.name + "/" + roomName);
+        if(roomGO == null) 
+        {
+            return null;
+        }
+        else 
+        {
+            return roomGO.transform;
+        }
     }
 
     /**
@@ -77,7 +85,10 @@ public class RoomDatabase : MonoBehaviour
             var roomDescription = entry.Split(';')[1];
             
             if (roomName == null || roomDescription == null) continue;
-            var newRoom = new Room(roomName, GetRoomPosition(roomName), roomDescription);
+            var roomPosition = GetRoomPosition(roomName);
+            if(roomPosition == null) continue; // If there is no room with that name, skip that entry
+
+            var newRoom = new Room(roomName, roomPosition, roomDescription);
             roomList.Add(newRoom);
             
         }

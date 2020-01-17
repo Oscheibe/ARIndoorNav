@@ -66,10 +66,21 @@ public class PoseEstimation : MonoBehaviour
     /**
      * The absolute position of the user relative to the unity origin is
      * the combined position of the ARCore origin and the relative movement of the user
+     * 
+     * Returns the Unity world coordinates of the user
      */
     public Vector3 GetUserPosition()
     {
         return _ARCoreOriginTransform.position + _ARCoreFPSPosition.position;
+    }
+
+    /**
+     * The rotation of the origin position of ARCore
+     * It needs to be added to every result that ARCore has when calculating rotation
+     */
+    public Quaternion GetARCoreRotationOffset()
+    {
+        return _ARCoreOriginTransform.rotation;
     }
 
     private void UpdateLastMarkerPosition(Transform virtualMarkerTransform, Pose worldMarkerPose)

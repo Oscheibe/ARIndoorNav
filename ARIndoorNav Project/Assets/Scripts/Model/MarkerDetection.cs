@@ -77,12 +77,12 @@ public class MarkerDetection : MonoBehaviour
         Transform virtualMarkerPosition = null;
         Pose worldMarkerPose = new Pose(); // = new Pose(new Vector3(), new Quaternion()); // Vector3 = virtual + a few cm, Quaternion = detectedPlane
 
-        if(detectedPlane != null)
+        if (detectedPlane != null)
         {
             var userPosAddition = (detectedPlane.CenterPose.rotation * new Vector3().normalized) * _scanningDistance;
             var worldMarkerPosition = _PoseEstimation.GetUserPosition() + userPosAddition;
-            var worldMarkerRotation = detectedPlane.CenterPose.rotation;
-            worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation); 
+            var worldMarkerRotation = detectedPlane.CenterPose.rotation * _PoseEstimation.GetARCoreRotationOffset();
+            worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);
         }
 
         if (resultRoomList.Count == 0)
@@ -101,12 +101,12 @@ public class MarkerDetection : MonoBehaviour
             virtualMarkerPosition = resultRoomList[0].Location;
         }
 
-        if(virtualMarkerPosition != null && detectedPlane != null)
+        if (virtualMarkerPosition != null && detectedPlane != null)
         {
             _PoseEstimation.ReportMarkerPose(virtualMarkerPosition, worldMarkerPose);
         }
     }
-    
+
     /**
        Method that manages the detection method used (Augmented Images or OCR)
        Is called once per frame when the _isTracking bool is true 
@@ -193,7 +193,7 @@ public class MarkerDetection : MonoBehaviour
             var imageYRowStride = image.YRowStride;
 
             _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
-            
+
             detectedPlane = GetCenterPlane();
             //DetectWallDirection();
 
@@ -202,6 +202,9 @@ public class MarkerDetection : MonoBehaviour
         }
     }
 
+    /**
+     * Not in Use: Used GetCenterPlane() instead
+     */
     private void DetectWallDirection()
     {
         // Override _detectedPlanes with all tracked Planes
@@ -222,6 +225,29 @@ public class MarkerDetection : MonoBehaviour
 
     }
 
+    /**
+     * 1 Raycast to middle of screen to search for ARCore planes
+     * 2 If the hit is a DetectedPlane, return it
+     * 3    else return null
+     * 
+     */
+    private DetectedPlane GetCenterPlane()
+    {
+        TrackableHit hit;
+        TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds;
+
+        if (Frame.Raycast(Screen.width / 2, Screen.height / 2, raycastFilter, out hit))
+        {
+            Debug.Log("Detected Plane Position: " + hit.Pose.position);
+            if ((hit.Trackable is DetectedPlane)) // Might need to check if the hit is on the back of the plane
+            {
+                return (DetectedPlane)hit.Trackable;
+            }
+        }
+        Debug.Log("NO WALL DETECTED!");
+        return null;
+    }
+
     /*
         Method to indicate that a calculation has been initiated which can take longer
         than 1 update cycle. (Waiting for API response)
@@ -238,27 +264,7 @@ public class MarkerDetection : MonoBehaviour
         _isWaiting = false;
     }
 
-    /**
-     * 1 Raycast to middle of screen to search for ARCore planes
-     * 2 If the hit is a DetectedPlane, return it
-     * 3    else return null
-     * 
-     */
-    private DetectedPlane GetCenterPlane()
-    {
-        TrackableHit hit;
-        TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds;
-        
-        if(Frame.Raycast(Screen.width/2, Screen.height/2, raycastFilter, out hit))
-        {
-            if( (hit.Trackable is DetectedPlane) ) // Might need to check if the hit is on the back of the plane
-            {
-                return (DetectedPlane) hit.Trackable;
-            }
-        }
 
-        return null;
-    }
 
 
 

@@ -5,7 +5,7 @@ using TMPro;
 
 public class UserMessageUI : MonoBehaviour
 {
-    public TMP_Text _TrackingStateText;
+    public SystemInformationHeaderController _SystemInformationHeaderController;
     
     // Start is called before the first frame update
     void Start()
@@ -22,6 +22,6 @@ public class UserMessageUI : MonoBehaviour
     
     public void SendUserMessage(string message)
     {
-        _TrackingStateText.text = "Tracking state: " + message;
+        _SystemInformationHeaderController.DisplaySystemInformation(message);
     }
 }

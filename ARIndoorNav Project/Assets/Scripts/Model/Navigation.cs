@@ -22,7 +22,8 @@ public class Navigation : MonoBehaviour
     void Start()
     {
         // Bakes the mesh based on the, in the unity editor defined, navigation values
-        _MapModelMesh.BuildNavMesh();
+        // It is already baked
+        //_MapModelMesh.BuildNavMesh();
     }
 
     // Sends periodic updates of the current navigation state
