@@ -6958,7 +6958,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102abbf177349b941a1bfe23317161ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TrackingStateText: {fileID: 0}
+  _SystemInformationHeaderController: {fileID: 0}
 --- !u!1 &544529680
 GameObject:
   m_ObjectHideFlags: 0
@@ -9124,7 +9124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102abbf177349b941a1bfe23317161ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TrackingStateText: {fileID: 1897778190}
+  _SystemInformationHeaderController: {fileID: 0}
 --- !u!1 &755592182
 GameObject:
   m_ObjectHideFlags: 0
@@ -13830,6 +13830,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7199149060692239087, guid: f30795c28e4873a4b855a8ccd054e84f,
+        type: 3}
+      propertyPath: m_Name
+      value: Map
+      objectReference: {fileID: 0}
+    - target: {fileID: 7199149060692239088, guid: f30795c28e4873a4b855a8ccd054e84f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f30795c28e4873a4b855a8ccd054e84f, type: 3}
 --- !u!4 &1219218206 stripped
@@ -18497,7 +18507,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.1
   m_BuildHeightMesh: 0
-  m_NavMeshData: {fileID: 23800000, guid: 2944865b06a5eda4c89fc9114abece65, type: 2}
+  m_NavMeshData: {fileID: 0}
 --- !u!1 &1611237812
 GameObject:
   m_ObjectHideFlags: 0
