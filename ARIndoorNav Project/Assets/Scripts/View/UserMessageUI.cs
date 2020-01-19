@@ -6,22 +6,14 @@ using TMPro;
 public class UserMessageUI : MonoBehaviour
 {
     public SystemInformationHeaderController _SystemInformationHeaderController;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    
+       
     public void SendUserMessage(string message)
     {
         _SystemInformationHeaderController.DisplaySystemInformation(message);
+    }
+
+    public void TestUserMessage()
+    {
+        _SystemInformationHeaderController.DisplaySystemInformation("Test Message System");
     }
 }

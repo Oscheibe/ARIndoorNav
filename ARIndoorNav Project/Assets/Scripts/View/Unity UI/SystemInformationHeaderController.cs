@@ -10,38 +10,39 @@ public class SystemInformationHeaderController : MonoBehaviour
 
     private TMP_Text systemInformationText;
     private bool isDisplaying = false;
-    
+
     // Start is called before the first frame update
     void Start()
     {
         systemInformationText = GetComponent<TMP_Text>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
+
 
     public void DisplaySystemInformation(string text)
     {
-        if(isDisplaying)
+        if (isDisplaying)
         {
-            systemInformationText.text += "\n- " + text;
+            systemInformationText.text = "- " + text + "\n" + systemInformationText.text;
         }
         else
         {
-            systemInformationText.text = text;
-            StartCoroutine("DisplayCoroutine");
+            systemInformationText.text = "- " + text;
+            _UIMenuSwitchingManager.OpenSystemInformationHeader();
+            isDisplaying = true;
+            Invoke("CloseSysInfo", systemInformationTime);
         }
 
     }
 
-    private IEnumerable DisplayCoroutine()
+    private void CloseSysInfo()
     {
-        _UIMenuSwitchingManager.OpenSystemInformationHeader();
-        isDisplaying = true;
-        yield return new WaitForSeconds(systemInformationTime);
         isDisplaying = false;
         _UIMenuSwitchingManager.CloseSystemInformationHeader();
     }

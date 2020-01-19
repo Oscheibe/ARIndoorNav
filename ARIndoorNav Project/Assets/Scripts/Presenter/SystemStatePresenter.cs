@@ -12,30 +12,28 @@ public class SystemStatePresenter : MonoBehaviour
     public PoseEstimation _PoseEstimation;
     public UserMessageUI _UserMessageUI;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void SendWarningMessage(string warning)
     {
-
+        //TODO: More aggressive message
     }
 
-    public void DisplayTrackingStatus(string trackingStatus)
+    public void DisplayUserMessage(string message)
     {
-        _UserMessageUI.SendUserMessage(trackingStatus);
+        _UserMessageUI.SendUserMessage(message);
     }
 
     public void RequestMarkerTracking()
     {
         _PoseEstimation.RequestNewPosition();
+    }
+
+    public void TestMessage()
+    {
+        _UserMessageUI.TestUserMessage();
+    }
+
+    public void IndicateDetectedWall()
+    {
+        _PoseEstimation.RequestWallInformationUpdates();
     }
 }

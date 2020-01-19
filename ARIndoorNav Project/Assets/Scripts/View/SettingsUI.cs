@@ -6,21 +6,18 @@ public class SettingsUI : MonoBehaviour
 {
     public SystemStatePresenter _SystemStatePresenter;
     
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void StartMarkerDetection()
     {
         _SystemStatePresenter.RequestMarkerTracking();
+    }
+
+    public void TestMessage()
+    {
+        _SystemStatePresenter.TestMessage();
+    }
+
+    public void StartStopWallIndicator()
+    {
+        _SystemStatePresenter.IndicateDetectedWall();
     }
 }

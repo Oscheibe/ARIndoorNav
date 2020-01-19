@@ -16,8 +16,10 @@ public class MarkerDetection : MonoBehaviour
     public MarkerDatabase _MarkerDatabase;
     public SystemStatePresenter _SystemStatePresenter;
     public TextDetection _TextDetection;
+    public float _waitingTime = 10f;
     public bool _isTracking = false; // For Debugging purposes: To start manual marker detection
     public bool _isWaiting = false; // If the marker detection has been initialized and is being calculated
+    public bool _isIndicatingWall = false;
     public float _scanningDistance = 0.3f; // The average distance of the user when scanning a sign
 
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
@@ -34,10 +36,15 @@ public class MarkerDetection : MonoBehaviour
     }
 
     // Continuosly tracks marker after the StartTracking() method is called
-    // Only stops when the StopTracking method is called
+    // Only stops when the StopTracking method is called and there is no pending result 
+    // indicated by "_isWaiting"
     void Update()
     {
-        if (_isTracking) DetectMarker();
+        if (_isTracking && _isWaiting == false)
+        {
+            DetectMarker();
+        }
+        if (_isIndicatingWall) DisplayDetectedWallInfo();
     }
 
     /**
@@ -48,7 +55,7 @@ public class MarkerDetection : MonoBehaviour
     {
         Debug.Log("Started marker detection");
         _isTracking = true;
-        _SystemStatePresenter.DisplayTrackingStatus("Is Tracking");
+        _SystemStatePresenter.DisplayUserMessage("Is Tracking");
     }
 
     /**
@@ -59,7 +66,7 @@ public class MarkerDetection : MonoBehaviour
     {
         Debug.Log("Stopped marker detection");
         _isTracking = false;
-        _SystemStatePresenter.DisplayTrackingStatus("Tracking stopped");
+        _SystemStatePresenter.DisplayUserMessage("Tracking stopped");
     }
 
     /**
@@ -73,38 +80,45 @@ public class MarkerDetection : MonoBehaviour
     public void SendMarkerList(List<string> potentialMarkerList)
     {
         AnnounceResult();
+        StopDetection(); // Should be called by PoseEstimation only
         var resultRoomList = _MarkerDatabase.ContainsRoom(potentialMarkerList);
-        Transform virtualMarkerPosition = null;
-        Pose worldMarkerPose = new Pose(); // = new Pose(new Vector3(), new Quaternion()); // Vector3 = virtual + a few cm, Quaternion = detectedPlane
 
-        if (detectedPlane != null)
+        if (resultRoomList != null && detectedPlane != null)
         {
-            var userPosAddition = (detectedPlane.CenterPose.rotation * new Vector3().normalized) * _scanningDistance;
-            var worldMarkerPosition = _PoseEstimation.GetUserPosition() + userPosAddition;
-            var worldMarkerRotation = detectedPlane.CenterPose.rotation * _PoseEstimation.GetARCoreRotationOffset();
-            worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);
-        }
-
-        if (resultRoomList.Count == 0)
-        {
-            Debug.Log("No Room found");
-            //TODO: tell the pose estimation
-            return;
+            //TODO: more than 1 room found
+            CalculateOCRPosition(resultRoomList[0], detectedPlane);
         }
         else
         {
-            foreach (var room in resultRoomList)
-            {
-                Debug.Log("RESULT: " + room.Name);
-                //TODO: more than 1 room found
-            }
-            virtualMarkerPosition = resultRoomList[0].Location;
+            Debug.Log("ERROR CALCULATING ROOM POSITION: No room or no wall found");
         }
+    }
 
-        if (virtualMarkerPosition != null && detectedPlane != null)
-        {
-            _PoseEstimation.ReportMarkerPose(virtualMarkerPosition, worldMarkerPose);
-        }
+    private void CalculateOCRPosition(Room room, DetectedPlane plane)
+    {
+        Transform virtualMarkerTransform = room.Location;
+        Pose worldMarkerPose = new Pose();
+
+        var worldMarkerRotation = plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
+        var userPosAddition = (worldMarkerRotation * new Vector3(1,1,1)) * _scanningDistance;
+        var worldMarkerPosition = _PoseEstimation.GetUserRotation() * new Vector3(0,0, -_scanningDistance);
+
+        Debug.Log("Normalized vector: " + new Vector3(1,1,1));
+        Debug.Log("Weird VEctor: " +  (worldMarkerRotation * new Vector3(1,1,1)));
+
+        Debug.Log("Virtual Marker POS:" + virtualMarkerTransform.position);
+        Debug.Log("Virtual Marker ROTATION:" + virtualMarkerTransform.rotation.eulerAngles);
+
+        Debug.Log("WorldMarker POS: " + worldMarkerPosition);
+        Debug.Log("Plane (WorldMarker) Position: " + plane.CenterPose.position);
+        Debug.Log("WorldMarker ROTATION: " + worldMarkerRotation.eulerAngles);
+
+        Debug.Log("User Position: " + _PoseEstimation.GetUserPosition());
+        Debug.Log("UserPosAddition: " + userPosAddition);
+
+        worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);
+
+        _PoseEstimation.ReportMarkerPose(virtualMarkerTransform, worldMarkerPose);
     }
 
     /**
@@ -198,31 +212,25 @@ public class MarkerDetection : MonoBehaviour
             //DetectWallDirection();
 
             IndicateWaitingForResult();
-            StopDetection();
         }
     }
 
-    /**
-     * Not in Use: Used GetCenterPlane() instead
-     */
-    private void DetectWallDirection()
+    public void IndictateDetectedWall_OnOff()
     {
-        // Override _detectedPlanes with all tracked Planes
-        Session.GetTrackables<DetectedPlane>(_detectedPlanes, TrackableQueryFilter.All);
+        _isIndicatingWall = !_isIndicatingWall;
+    }
 
-        // Needs to be optimized in the future
-        DetectedPlane verticalPlane = null;
-
-        foreach (var plane in _detectedPlanes)
+    private void DisplayDetectedWallInfo()
+    {
+        var foundPlane = GetCenterPlane();
+        if (foundPlane == null)
         {
-            if (plane.PlaneType == DetectedPlaneType.Vertical)
-            {
-
-                //var centerPlane = GetCenterPlane();
-                verticalPlane = plane;
-            }
+            _SystemStatePresenter.DisplayUserMessage("No wall in front");
         }
-
+        else
+        {
+            _SystemStatePresenter.DisplayUserMessage("Wall found!");
+        }
     }
 
     /**
@@ -238,13 +246,12 @@ public class MarkerDetection : MonoBehaviour
 
         if (Frame.Raycast(Screen.width / 2, Screen.height / 2, raycastFilter, out hit))
         {
-            Debug.Log("Detected Plane Position: " + hit.Pose.position);
             if ((hit.Trackable is DetectedPlane)) // Might need to check if the hit is on the back of the plane
             {
                 return (DetectedPlane)hit.Trackable;
             }
         }
-        Debug.Log("NO WALL DETECTED!");
+        //Debug.Log("NO WALL DETECTED!");
         return null;
     }
 
@@ -256,6 +263,7 @@ public class MarkerDetection : MonoBehaviour
     private void IndicateWaitingForResult()
     {
         _isWaiting = true;
+        Invoke("TimeOutWaiting", _waitingTime); // Waiting time = 10 seconds
     }
 
     // Method to indicate that a result has been delivered
@@ -264,7 +272,10 @@ public class MarkerDetection : MonoBehaviour
         _isWaiting = false;
     }
 
-
+    private void TimeOutWaiting()
+    {
+        AnnounceResult();
+    }
 
 
 

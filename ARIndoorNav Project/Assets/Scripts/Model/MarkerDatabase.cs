@@ -40,6 +40,7 @@ public class MarkerDatabase : MonoBehaviour
      * 2 Go through each character from OCR to determin if it contains a number
      * 3 Check if a string that contains a number colorates with a room number
      * 4 Add each result to the result list
+     * 5 If there is no match return 0 else return the list with at least 1 room
      */
     public List<Room> ContainsRoom(List<string> potentialMarkerList)
     {
@@ -59,6 +60,9 @@ public class MarkerDatabase : MonoBehaviour
                     resultList.Add(resultRoom);
             }
         }
-        return resultList;
+        if(resultList.Count == 0) 
+            return null;
+        else
+            return resultList;
     }
 }

@@ -24,9 +24,11 @@ public class TrackingErrorHandling : MonoBehaviour
         If the drift is too high, a marker needs to be scanned.
         
      */
-    public void ReportTrackingState(string state)
+    public void ReportTrackingState(string state, float time)
     {
-        _SystemStatePresenter.DisplayTrackingStatus(state);
+        // TODO
+        
+        _SystemStatePresenter.DisplayUserMessage(state);
     }
 
     private void ReportTrackingState()
