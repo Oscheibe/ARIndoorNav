@@ -17,9 +17,54 @@ public class RoomDatabase : MonoBehaviour
         "3.218;Test3218\n" +
         "3.219;Test3219\n" +
         "3.220;Test3220\n" +
+        "3.221;nA\n"+
         "3.222;Test3222\n" +
-        "3.222a;Test3222a\n" + 
-        "Treppenhaus; Um die Ecke";
+        "3.222a;Test3222a\n"+
+        "3.200;nA\n"+
+        "3.201;nA\n"+
+        "3.202;nA\n"+
+        "3.203;nA\n"+
+        "3.204;nA\n"+
+        "3.205;nA\n"+
+        "3.206;nA\n"+
+        "3.207;nA\n"+
+        "3.208;nA\n"+
+        "3.209;nA\n"+
+        "3.210;nA\n"+
+        "3.211;nA\n"+
+        "3.212;nA\n"+
+        "3.213;nA\n"+
+        "3.214;nA\n"+
+        // SEE TOP
+        "3.223;nA\n"+
+        "3.224;nA\n"+
+        "3.225;nA\n"+
+        "3.226;nA\n"+
+        "3.227;nA\n"+
+        "3.228;nA\n"+
+        "3.229;nA\n"+
+        "3.230;nA\n"+
+        "3.231;nA\n"+
+        "3.232;nA\n"+
+        "3.233;nA\n"+
+        "3.234;nA\n"+
+        "3.235;nA\n"+
+        "3.236;nA\n"+
+        "3.237;nA\n"+
+        "3.238;nA\n"+
+        "3.239;nA\n"+
+        "3.240;nA\n"+
+        "3.241;nA\n"+
+        "3.242;nA\n"+
+        "3.243;nA\n"+
+        "3.244;nA\n"+
+        "3.245;nA\n"+
+        "3.246;nA\n"+
+        "3.247;nA\n"+
+        "3.248;nA\n"+
+        // TESTING MORE ROOMS SOON
+        "3.119;nA\n"+
+        "3.101;nA"; // LAST STRING WITHOUT '\n'
 
     // Awake is called before Start
     void Awake()

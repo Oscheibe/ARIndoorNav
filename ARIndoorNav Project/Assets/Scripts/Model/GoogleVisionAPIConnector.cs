@@ -46,7 +46,6 @@ public class GoogleVisionAPIConnector : MonoBehaviour
     public IEnumerator SendAPIRequest()
     {
         receivedResult = false;
-        Debug.Log("Received Image");
         while (!receivedResult)
         {
             if (this.apiKey == null)
@@ -54,7 +53,6 @@ public class GoogleVisionAPIConnector : MonoBehaviour
                 Debug.Log("No API key");
                 yield return null;
             }
-            Debug.Log("Converting Image");
             string base64 = System.Convert.ToBase64String(jpg);
 
 #if UNITY_WEBGL
@@ -80,7 +78,7 @@ public class GoogleVisionAPIConnector : MonoBehaviour
             string jsonData = JsonUtility.ToJson(requests, false);
             if (jsonData != string.Empty)
             {
-                Debug.Log("Sending Request");
+                Debug.Log("Sending Request to Google Vision API");
                 string url = this.url + this.apiKey;
                 byte[] postData = System.Text.Encoding.Default.GetBytes(jsonData);
                 using (WWW www = new WWW(url, postData, headers))

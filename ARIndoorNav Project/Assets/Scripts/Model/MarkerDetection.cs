@@ -92,11 +92,20 @@ public class MarkerDetection : MonoBehaviour
         AnnounceResult();
         StopDetection(); // Should be called by PoseEstimation only
         var resultRoomList = _MarkerDatabase.ContainsRoom(potentialMarkerList);
+        foreach (var name in potentialMarkerList)
+        {
+            Debug.Log("API Result: " + name);
+        }
+        if(resultRoomList == null)
+        {
+            _SystemStatePresenter.DisplayUserMessage("No Results Found!");
+        }
 
         if (resultRoomList != null && detectedPlane != null)
         {
             //TODO: more than 1 room found
             CalculateOCRPosition(resultRoomList[0], detectedPlane);
+            _SystemStatePresenter.DisplayUserMessage("Setting position to room: " + resultRoomList[0].Name);
         }
         else
         {
@@ -180,7 +189,7 @@ public class MarkerDetection : MonoBehaviour
         // Detection needs to continue until enough cpu resources have been freed
         if (!image.IsAvailable)
         {
-            Debug.Log("Couldn't access camera image!");
+            _SystemStatePresenter.DisplayUserMessage("Couldn't access camera image!");
         }
         /**
          * The camera image can be acquired and used to detect text within it
