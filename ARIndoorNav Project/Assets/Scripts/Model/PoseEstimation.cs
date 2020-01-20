@@ -110,11 +110,6 @@ public class PoseEstimation : MonoBehaviour
         targetPosDelta = virtualMarkerPosition - worldMarkerPosition - originPosition;
         _ARCoreOriginTransform.position += targetPosDelta;
 
-        Debug.Log("World POS: " + worldMarkerPosition);
-        Debug.Log("Virtual POS: " + virtualMarkerPosition);
-        Debug.Log("Position Delta: " + targetPosDelta);
-        Debug.Log("Original Position: " + originPosition);
-        Debug.Log("New Position: " + _ARCoreOriginTransform.position);
     }
 
     private void UpdateLastMarkerRotation(Transform virtualMarkerTransform, Pose worldMarkerPose)
@@ -126,6 +121,13 @@ public class PoseEstimation : MonoBehaviour
 
         targetRotDelta = virtualMarkerRotation * Quaternion.Inverse(originRotation) * Quaternion.Inverse(worldMarkerRotation);
         _ARCoreOriginTransform.rotation *= targetRotDelta;
+
+        Debug.Log("Virtual ROT: " + virtualMarkerRotation.eulerAngles);
+        Debug.Log("World ROT: " + worldMarkerPose.rotation.eulerAngles);
+
+        Debug.Log("Origin ROT: " + originRotation.eulerAngles);
+        Debug.Log("ROT Delta: " + targetRotDelta.eulerAngles);
+        Debug.Log("Origin AFTER ROT: "+ _ARCoreOriginTransform.rotation.eulerAngles);
     }
 
     private void UpdateLastMarkerRotationEuler(Transform virtualMarkerTransform, Pose worldMarkerPose)

@@ -48,6 +48,16 @@ public class MarkerDetection : MonoBehaviour
     }
 
     /**
+        Method that manages the detection method used (Augmented Images or OCR)
+        Is called once per frame when the _isTracking bool is true 
+    */
+    private void DetectMarker()
+    {
+        DetectMarkerOCR();
+        //DetectMarkerAugmentedImages(); // -> Not in use because it didn't provide sufficient results
+    }
+
+    /**
         Starts the marker detection with ARCore AugmentedImages
         Is called by PoseEstimation
      */
@@ -99,36 +109,16 @@ public class MarkerDetection : MonoBehaviour
         Transform virtualMarkerTransform = room.Location;
         Pose worldMarkerPose = new Pose();
 
-        var worldMarkerRotation = plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
-        var userPosAddition = (worldMarkerRotation * new Vector3(1,1,1)) * _scanningDistance;
-        var worldMarkerPosition = _PoseEstimation.GetUserRotation() * new Vector3(0,0, -_scanningDistance);
+        var worldMarkerRotation = _PoseEstimation.GetUserRotation() * new Quaternion(0,0,-1, 0);   //plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
+        //var userPosAddition = (worldMarkerRotation * new Vector3(1, 1, 1)) * _scanningDistance;
+        var worldMarkerPosition = _PoseEstimation.GetUserRotation() * new Vector3(0, 0, -_scanningDistance);
 
-        Debug.Log("Normalized vector: " + new Vector3(1,1,1));
-        Debug.Log("Weird VEctor: " +  (worldMarkerRotation * new Vector3(1,1,1)));
-
-        Debug.Log("Virtual Marker POS:" + virtualMarkerTransform.position);
         Debug.Log("Virtual Marker ROTATION:" + virtualMarkerTransform.rotation.eulerAngles);
-
-        Debug.Log("WorldMarker POS: " + worldMarkerPosition);
-        Debug.Log("Plane (WorldMarker) Position: " + plane.CenterPose.position);
         Debug.Log("WorldMarker ROTATION: " + worldMarkerRotation.eulerAngles);
-
-        Debug.Log("User Position: " + _PoseEstimation.GetUserPosition());
-        Debug.Log("UserPosAddition: " + userPosAddition);
 
         worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);
 
         _PoseEstimation.ReportMarkerPose(virtualMarkerTransform, worldMarkerPose);
-    }
-
-    /**
-       Method that manages the detection method used (Augmented Images or OCR)
-       Is called once per frame when the _isTracking bool is true 
-     */
-    private void DetectMarker()
-    {
-        DetectMarkerOCR();
-        //DetectMarkerAugmentedImages(); -> Not in use because it didn't provide sufficient results
     }
 
     /*
@@ -164,6 +154,7 @@ public class MarkerDetection : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log("Reporting Augmented Image Position");
                     _PoseEstimation.ReportMarkerPose(detectedVirtualMarkerPosition, detectedWorldMarker.CenterPose);
                 }
             }
@@ -175,6 +166,7 @@ public class MarkerDetection : MonoBehaviour
             //_PoseEstimation.ReportMarkerPosition(detectedVirtualMarkerPosition, );
             //_WorldMarkerPositionList.Clear();
         }
+        Debug.Log("End of Augmented Tracking");
     }
 
     /*
@@ -209,7 +201,6 @@ public class MarkerDetection : MonoBehaviour
             _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
 
             detectedPlane = GetCenterPlane();
-            //DetectWallDirection();
 
             IndicateWaitingForResult();
         }
@@ -218,6 +209,7 @@ public class MarkerDetection : MonoBehaviour
     public void IndictateDetectedWall_OnOff()
     {
         _isIndicatingWall = !_isIndicatingWall;
+        _SystemStatePresenter.DisplayUserMessage("Wall indicator started/ stopped");
     }
 
     private void DisplayDetectedWallInfo()
@@ -231,6 +223,15 @@ public class MarkerDetection : MonoBehaviour
         {
             _SystemStatePresenter.DisplayUserMessage("Wall found!");
         }
+
+        /*
+        Session.GetTrackables<DetectedPlane>(_detectedPlanes, TrackableQueryFilter.All);
+        Debug.Log("\n\n\n");
+        foreach (var plane in _detectedPlanes)
+        {
+            Debug.Log("Plane: " + plane.PlaneType + " / ROT: " + plane.CenterPose.rotation.eulerAngles);
+        }
+        */
     }
 
     /**
