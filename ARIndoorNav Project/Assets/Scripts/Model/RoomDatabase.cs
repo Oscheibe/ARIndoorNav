@@ -8,6 +8,7 @@ public class RoomDatabase : MonoBehaviour
     public GameObject _RoomParentGameObject;
     public RoomListPresenter _RoomListPresenter;
     public Navigation _Navigation;
+    public MarkerDatabase _MarkerDatabase;
 
     private List<Room> roomList = new List<Room>();
     private string testDatabaseEntries =
@@ -67,7 +68,7 @@ public class RoomDatabase : MonoBehaviour
         "3.101;nA"; // LAST STRING WITHOUT '\n'
 
     // Awake is called before Start
-    void Awake()
+    void Start()
     {
         InitiateDatabase();
         _RoomListPresenter.UpdateRoomList(roomList);
@@ -85,15 +86,7 @@ public class RoomDatabase : MonoBehaviour
      */
     public Transform GetRoomPosition(string roomName)
     {
-        var roomGO = GameObject.Find(_RoomParentGameObject.name + "/" + roomName);
-        if(roomGO == null) 
-        {
-            return null;
-        }
-        else 
-        {
-            return roomGO.transform;
-        }
+       return _MarkerDatabase.RequestMarkerPosition(roomName);
     }
 
     /**

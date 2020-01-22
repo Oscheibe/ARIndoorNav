@@ -9,12 +9,13 @@ public class MarkerDatabase : MonoBehaviour
 
     public RoomDatabase _RoomDatabase;
 
-    private List<Room> roomList;
+    private List<GameObject> markerList;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        roomList = _RoomDatabase.GetRoomList();
+        markerList = new List<GameObject>(GameObject.FindGameObjectsWithTag("VirtualMarker"));//_RoomDatabase.GetRoomList();
+        Debug.Log("Marker List set");
     }
 
     // Update is called once per frame
@@ -25,14 +26,15 @@ public class MarkerDatabase : MonoBehaviour
 
     public Transform RequestMarkerPosition(string markerName)
     {
-        Transform position = null;
-        foreach (var room in roomList)
-        {
-            if (room.Name == markerName)
-                position = room.Location;
+        Predicate<GameObject> markerFinder = (GameObject marker) => { return marker.name == markerName; };
+        var markerGO = markerList.Find(markerFinder);
 
-        }
-        return position;
+        if(markerGO == null) 
+            return null;
+        else    
+            return markerGO.transform;
+        
+        //return markerGO ? null : markerGO.transform;
     }
 
     /**
@@ -41,6 +43,7 @@ public class MarkerDatabase : MonoBehaviour
      * 3 Check if a string that contains a number colorates with a room number
      * 4 Add each result to the result list
      * 5 If there is no match return 0 else return the list with at least 1 room
+     * Needs to be adjusted later, MakerDatabase should not return any rooms!
      */
     public List<Room> ContainsRoom(List<string> potentialMarkerList)
     {
@@ -56,11 +59,11 @@ public class MarkerDatabase : MonoBehaviour
             if (containsNumber)
             {
                 var resultRoom = _RoomDatabase.GetRoom(text.Replace(" ", ""));
-                if(resultRoom != null) 
+                if (resultRoom != null)
                     resultList.Add(resultRoom);
             }
         }
-        if(resultList.Count == 0) 
+        if (resultList.Count == 0)
             return null;
         else
             return resultList;

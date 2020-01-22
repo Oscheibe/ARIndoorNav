@@ -29,11 +29,7 @@ public class SystemStatePresenter : MonoBehaviour
 
     public void TestMessage()
     {
+        Debug.Log("Testing Message");
         _UserMessageUI.TestUserMessage();
-    }
-
-    public void IndicateDetectedWall()
-    {
-        _PoseEstimation.RequestWallInformationUpdates();
     }
 }

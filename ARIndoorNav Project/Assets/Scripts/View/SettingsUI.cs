@@ -16,8 +16,4 @@ public class SettingsUI : MonoBehaviour
         _SystemStatePresenter.TestMessage();
     }
 
-    public void StartStopWallIndicator()
-    {
-        _SystemStatePresenter.IndicateDetectedWall();
-    }
 }

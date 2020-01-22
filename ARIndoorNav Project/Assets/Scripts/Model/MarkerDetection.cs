@@ -19,7 +19,6 @@ public class MarkerDetection : MonoBehaviour
     public float _waitingTime = 10f;
     public bool _isTracking = false; // For Debugging purposes: To start manual marker detection
     public bool _isWaiting = false; // If the marker detection has been initialized and is being calculated
-    public bool _isIndicatingWall = false;
     public float _scanningDistance = 0.3f; // The average distance of the user when scanning a sign
 
     private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
@@ -27,7 +26,6 @@ public class MarkerDetection : MonoBehaviour
     private List<Pose> _WorldMarkerPositionList = new List<Pose>();
     private readonly int _MaxTrackingCount = 10;
     private CameraImageBytes image;
-    private DetectedPlane detectedPlane = null;
 
     // Start is called before the first frame update
     void Start()
@@ -44,7 +42,6 @@ public class MarkerDetection : MonoBehaviour
         {
             DetectMarker();
         }
-        if (_isIndicatingWall) DisplayDetectedWallInfo();
     }
 
     /**
@@ -101,10 +98,10 @@ public class MarkerDetection : MonoBehaviour
             _SystemStatePresenter.DisplayUserMessage("No Results Found!");
         }
 
-        if (resultRoomList != null && detectedPlane != null)
+        if (resultRoomList != null)
         {
             //TODO: more than 1 room found
-            CalculateOCRPosition(resultRoomList[0], detectedPlane);
+            CalculateOCRPosition(resultRoomList[0]);
             _SystemStatePresenter.DisplayUserMessage("Setting position to room: " + resultRoomList[0].Name);
         }
         else
@@ -113,18 +110,14 @@ public class MarkerDetection : MonoBehaviour
         }
     }
 
-    private void CalculateOCRPosition(Room room, DetectedPlane plane)
+    private void CalculateOCRPosition(Room room)
     {
         Transform virtualMarkerTransform = room.Location;
         Pose worldMarkerPose = new Pose();
 
         var worldMarkerRotation = _PoseEstimation.GetUserRotation() * new Quaternion(0,0,-1, 0);   //plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
         //var userPosAddition = (worldMarkerRotation * new Vector3(1, 1, 1)) * _scanningDistance;
-        var worldMarkerPosition = _PoseEstimation.GetUserRotation() * new Vector3(0, 0, -_scanningDistance);
-
-        Debug.Log("Virtual Marker ROTATION:" + virtualMarkerTransform.rotation.eulerAngles);
-        Debug.Log("WorldMarker ROTATION: " + worldMarkerRotation.eulerAngles);
-
+        var worldMarkerPosition = _PoseEstimation.GetUserPosition(); // * new Vector3(0, 0, -_scanningDistance);
         worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);
 
         _PoseEstimation.ReportMarkerPose(virtualMarkerTransform, worldMarkerPose);
@@ -184,8 +177,7 @@ public class MarkerDetection : MonoBehaviour
     private void DetectMarkerOCR()
     {
         image = Frame.CameraImage.AcquireCameraImageBytes();
-        // Resetting detectedPlane to null before each new calculation because it is a criteria for a newly detected plane
-        detectedPlane = null;
+
         // Detection needs to continue until enough cpu resources have been freed
         if (!image.IsAvailable)
         {
@@ -209,60 +201,8 @@ public class MarkerDetection : MonoBehaviour
 
             _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
 
-            detectedPlane = GetCenterPlane();
-
             IndicateWaitingForResult();
         }
-    }
-
-    public void IndictateDetectedWall_OnOff()
-    {
-        _isIndicatingWall = !_isIndicatingWall;
-        _SystemStatePresenter.DisplayUserMessage("Wall indicator started/ stopped");
-    }
-
-    private void DisplayDetectedWallInfo()
-    {
-        var foundPlane = GetCenterPlane();
-        if (foundPlane == null)
-        {
-            _SystemStatePresenter.DisplayUserMessage("No wall in front");
-        }
-        else
-        {
-            _SystemStatePresenter.DisplayUserMessage("Wall found!");
-        }
-
-        /*
-        Session.GetTrackables<DetectedPlane>(_detectedPlanes, TrackableQueryFilter.All);
-        Debug.Log("\n\n\n");
-        foreach (var plane in _detectedPlanes)
-        {
-            Debug.Log("Plane: " + plane.PlaneType + " / ROT: " + plane.CenterPose.rotation.eulerAngles);
-        }
-        */
-    }
-
-    /**
-     * 1 Raycast to middle of screen to search for ARCore planes
-     * 2 If the hit is a DetectedPlane, return it
-     * 3    else return null
-     * 
-     */
-    private DetectedPlane GetCenterPlane()
-    {
-        TrackableHit hit;
-        TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds;
-
-        if (Frame.Raycast(Screen.width / 2, Screen.height / 2, raycastFilter, out hit))
-        {
-            if ((hit.Trackable is DetectedPlane)) // Might need to check if the hit is on the back of the plane
-            {
-                return (DetectedPlane)hit.Trackable;
-            }
-        }
-        //Debug.Log("NO WALL DETECTED!");
-        return null;
     }
 
     /*

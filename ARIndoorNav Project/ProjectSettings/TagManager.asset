@@ -6,6 +6,7 @@ TagManager:
   tags:
   - NameText
   - PlateText
+  - VirtualMarker
   layers:
   - Default
   - TransparentFX
