@@ -27,12 +27,6 @@ public class MarkerDetection : MonoBehaviour
     private readonly int _MaxTrackingCount = 10;
     private CameraImageBytes image;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Continuosly tracks marker after the StartTracking() method is called
     // Only stops when the StopTracking method is called and there is no pending result 
     // indicated by "_isWaiting"
@@ -76,6 +70,40 @@ public class MarkerDetection : MonoBehaviour
         _SystemStatePresenter.DisplayUserMessage("Tracking stopped");
     }
 
+    /*
+    Method to start the optical character reader script using the Google Vision API
+    */
+    private void DetectMarkerOCR()
+    {
+        image = Frame.CameraImage.AcquireCameraImageBytes();
+
+        // Detection needs to continue until enough cpu resources have been freed
+        if (!image.IsAvailable)
+        {
+            _SystemStatePresenter.DisplayUserMessage("Couldn't access camera image!");
+        }
+        /**
+         * The camera image can be acquired and used to detect text within it
+         * 1. The camera image is split into its brightness(Y) channel and meta data needed for calculations
+         * 2. This data is sent to the Text Detection script to be evaluated by an OCR
+         * 3. The facing current direction of the wall in front of the User is calculated 
+         * 4. _isWaiting bool is set to true until the result comes back
+         * 5. The detection can now be stopped. 
+         * The status afterwards is "_isWaiting" and not "_isTracking"
+         */
+        else
+        {
+            var imageWidth = image.Width;
+            var imageHeight = image.Height;
+            var imageY = image.Y;
+            var imageYRowStride = image.YRowStride;
+
+            _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
+
+            IndicateWaitingForResult();
+        }
+    }
+
     /**
         A function for the TextDetection component.
         It is the dmz of the Google Cloud Vision API to detect text using 
@@ -93,7 +121,7 @@ public class MarkerDetection : MonoBehaviour
         {
             Debug.Log("API Result: " + name);
         }
-        if(resultRoomList == null)
+        if (resultRoomList == null)
         {
             _SystemStatePresenter.DisplayUserMessage("No Results Found!");
         }
@@ -114,8 +142,14 @@ public class MarkerDetection : MonoBehaviour
     {
         Transform virtualMarkerTransform = room.Location;
         Pose worldMarkerPose = new Pose();
+        var inverseRotation = new Quaternion(0, 0, -1, 0);
+        // Setting X and Z to 0 to keep the plane parallel to the x-z axis
+        var flatUserRotation = new Quaternion(  0,
+                                                _PoseEstimation.GetUserRotation().y,
+                                                0,
+                                                _PoseEstimation.GetUserRotation().w);
 
-        var worldMarkerRotation = _PoseEstimation.GetUserRotation() * new Quaternion(0,0,-1, 0);   //plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
+        var worldMarkerRotation = flatUserRotation * inverseRotation;   //plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
         //var userPosAddition = (worldMarkerRotation * new Vector3(1, 1, 1)) * _scanningDistance;
         var worldMarkerPosition = _PoseEstimation.GetUserPosition(); // * new Vector3(0, 0, -_scanningDistance);
         worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);
@@ -169,40 +203,6 @@ public class MarkerDetection : MonoBehaviour
             //_WorldMarkerPositionList.Clear();
         }
         Debug.Log("End of Augmented Tracking");
-    }
-
-    /*
-        Method to start the optical character reader script using the Google Vision API
-    */
-    private void DetectMarkerOCR()
-    {
-        image = Frame.CameraImage.AcquireCameraImageBytes();
-
-        // Detection needs to continue until enough cpu resources have been freed
-        if (!image.IsAvailable)
-        {
-            _SystemStatePresenter.DisplayUserMessage("Couldn't access camera image!");
-        }
-        /**
-         * The camera image can be acquired and used to detect text within it
-         * 1. The camera image is split into its brightness(Y) channel and meta data needed for calculations
-         * 2. This data is sent to the Text Detection script to be evaluated by an OCR
-         * 3. The facing current direction of the wall in front of the User is calculated 
-         * 4. _isWaiting bool is set to true until the result comes back
-         * 5. The detection can now be stopped. 
-         * The status afterwards is "_isWaiting" and not "_isTracking"
-         */
-        else
-        {
-            var imageWidth = image.Width;
-            var imageHeight = image.Height;
-            var imageY = image.Y;
-            var imageYRowStride = image.YRowStride;
-
-            _TextDetection.DetectText(imageWidth, imageHeight, imageY, imageYRowStride);
-
-            IndicateWaitingForResult();
-        }
     }
 
     /*
