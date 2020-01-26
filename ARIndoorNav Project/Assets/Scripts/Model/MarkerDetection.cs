@@ -149,7 +149,7 @@ public class MarkerDetection : MonoBehaviour
                                                 0,
                                                 _PoseEstimation.GetUserRotation().w);
 
-        var worldMarkerRotation = flatUserRotation * inverseRotation;   //plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
+        var worldMarkerRotation = flatUserRotation; // * inverseRotation;   //plane.CenterPose.rotation; // * _PoseEstimation.GetARCoreRotationOffset();
         //var userPosAddition = (worldMarkerRotation * new Vector3(1, 1, 1)) * _scanningDistance;
         var worldMarkerPosition = _PoseEstimation.GetUserPosition(); // * new Vector3(0, 0, -_scanningDistance);
         worldMarkerPose = new Pose(worldMarkerPosition, worldMarkerRotation);

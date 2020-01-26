@@ -6,11 +6,15 @@ public class PoseEstimation : MonoBehaviour
 {
     public Transform _ARCoreOriginTransform;
     public Transform _ARCoreFPSTransform;
+
     public MarkerDetection _MarkerDetection;
     public NavigationPresenter _NavigationPresenter;
+    public SystemStatePresenter _SystemStatePresenter;
+    public Navigation _Navigation;
 
     public Transform _TestWorldMarker;
     public Transform _TestVirtualMarker;
+
 
     private string lastWorldMarkerPos, lastVirtualMarkerPos, lastWorldMarkerRot, lastVirtualMarkerRot;
 
@@ -47,21 +51,21 @@ public class PoseEstimation : MonoBehaviour
 
         _MarkerDetection.StopDetection();
 
-        var arPosBeforeRotation = _ARCoreFPSTransform.position;
+        var arPosBefore = _ARCoreFPSTransform.position;
         UpdateLastMarkerRotation(virtualMarkerTransform, worldMarkerPose);
-        var arPosRotationOffset = _ARCoreFPSTransform.position - arPosBeforeRotation;
-        Debug.Log("Position Offset: " + arPosRotationOffset);
-
-        UpdateLastMarkerPosition(virtualMarkerTransform.position, worldMarkerPose.position, arPosRotationOffset);
+        var arPosAfter = _ARCoreFPSTransform.position;
+        CorrectRotationOffset(arPosBefore, arPosAfter);
+        UpdateLastMarkerPosition(virtualMarkerTransform.position, worldMarkerPose.position);
+        _Navigation.WarpNavMeshAgent(_ARCoreFPSTransform.position);
     }
 
-    private void UpdateLastMarkerPosition(Vector3 virtualMarkerPosition, Vector3 worldMarkerPosition, Vector3 arPosRotationOffset)
+    private void UpdateLastMarkerPosition(Vector3 virtualMarkerPosition, Vector3 worldMarkerPosition)
     {
         var originPosition = _ARCoreOriginTransform.position;
         var fpsPos = _ARCoreFPSTransform.position;
 
         Vector3 targetPosDelta;
-        targetPosDelta = virtualMarkerPosition - worldMarkerPosition + arPosRotationOffset;
+        targetPosDelta = virtualMarkerPosition - worldMarkerPosition;
         _ARCoreOriginTransform.position += targetPosDelta;
 
         Debug.Log(("Virtual POS: " + virtualMarkerPosition));
@@ -79,7 +83,7 @@ public class PoseEstimation : MonoBehaviour
         var virtualMarkerRotation = virtualMarkerTransform.rotation;
         Quaternion targetRotDelta;
 
-        targetRotDelta = virtualMarkerRotation  * Quaternion.Inverse(worldMarkerRotation);
+        targetRotDelta = virtualMarkerRotation * Quaternion.Inverse(worldMarkerRotation);
         _ARCoreOriginTransform.rotation *= targetRotDelta;
 
         Debug.Log("Virtual ROT: " + virtualMarkerRotation.eulerAngles);
@@ -88,6 +92,15 @@ public class PoseEstimation : MonoBehaviour
         Debug.Log("Origin BEFORE ROT: " + originRotation.eulerAngles);
         Debug.Log("ROT Delta: " + targetRotDelta.eulerAngles);
         Debug.Log("Origin AFTER ROT: " + _ARCoreOriginTransform.rotation.eulerAngles);
+    }
+
+    private void CorrectRotationOffset(Vector3 arPosBefore, Vector3 arPosAfter)
+    {
+        var posOffset = arPosAfter - arPosBefore;        
+        _ARCoreOriginTransform.position -= posOffset;
+
+        Debug.Log("Position Offset: " + posOffset);
+        _SystemStatePresenter.DisplayUserMessage("Position Offset: " + posOffset);
     }
 
 
