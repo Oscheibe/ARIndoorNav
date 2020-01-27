@@ -45,6 +45,15 @@ public class Navigation : MonoBehaviour
     }
 
     /**
+     * Used to update the destination of the Agent after a warp
+     */
+    private void UpdateDestination()
+    {
+        _NavMeshAgent.SetDestination(_destination.Location.position);
+        _NavigationPresenter.DisplayNavigationInformation(_destination.Name, CalculateDistance(), GetPath());
+    }
+
+    /**
         Warps the NavMesh agent to the Vector3 position
         Returns true if successfull.
         This Method is used after the PoseEstimation has updated to user position to warp
@@ -52,7 +61,9 @@ public class Navigation : MonoBehaviour
     */
     public bool WarpNavMeshAgent(Vector3 warpPosition)
     {
-        return _NavMeshAgent.Warp(warpPosition);
+        var hasWarped = _NavMeshAgent.Warp(warpPosition);
+        UpdateDestination();
+        return hasWarped;
     }
 
     /**
