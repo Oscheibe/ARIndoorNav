@@ -49,6 +49,11 @@ public class Navigation : MonoBehaviour
      */
     private void UpdateDestination()
     {
+        if(_destination == null)
+        {
+            Debug.Log("Updating Destination impossible: no destination set");
+            return;
+        }
         _NavMeshAgent.SetDestination(_destination.Location.position);
         _NavigationPresenter.DisplayNavigationInformation(_destination.Name, CalculateDistance(), GetPath());
     }

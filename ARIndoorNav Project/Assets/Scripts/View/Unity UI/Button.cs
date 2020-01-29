@@ -13,13 +13,6 @@ public class Button : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(!_MarkerDetection._isTracking) 
-        {
-            _MarkerDetection.StartDetection();
-        }
-        else 
-        {
-            _MarkerDetection.StopDetection();
-        }
+        _MarkerDetection.StartDetection();
     }
 }

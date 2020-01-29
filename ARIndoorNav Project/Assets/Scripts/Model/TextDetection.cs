@@ -26,7 +26,7 @@ public class TextDetection : MonoBehaviour
     */
     public void ReceiveTextList(List<string> textList)
     {
-        _MarkerDetection.SendMarkerList(textList);
+        _MarkerDetection.ReceiveResponse(textList);
     }
 
     /*  Converts CamerImageBytes array YUV format into a JPG array using only the Y channel of the image.

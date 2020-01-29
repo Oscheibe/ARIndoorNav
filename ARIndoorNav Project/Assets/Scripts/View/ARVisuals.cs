@@ -8,7 +8,7 @@ public class ARVisuals : MonoBehaviour
     public GameObject _ARDotTemplate;
     public LineRenderer _Line;
 
-    private GameObject arDotGameeObject;
+    private GameObject arDotGameObject;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +23,7 @@ public class ARVisuals : MonoBehaviour
     }
 
     //TODO
-    public void SendNaviagtionPath(Vector3[] path)
+    public void SendNavigationPath(Vector3[] path)
     {
         ChangeARDotPos(path[path.Length -1]);
         DrawPath(path);
@@ -32,8 +32,8 @@ public class ARVisuals : MonoBehaviour
 
     private void GenARDot()
     {
-        arDotGameeObject = Instantiate(_ARDotTemplate) as GameObject;
-        arDotGameeObject.SetActive(false);
+        arDotGameObject = Instantiate(_ARDotTemplate) as GameObject;
+        arDotGameObject.SetActive(false);
         //button.GetComponent<RoomButton>().InitializeButton(room, "Distance TBD");
         //button.name = room.Name;
         //button.transform.SetParent(_buttonTemplate.transform.parent, false); // set false so that button doesn't position themselves in worldspace. Makes it more dynamic
@@ -42,8 +42,8 @@ public class ARVisuals : MonoBehaviour
 
     private void ChangeARDotPos(Vector3 position)
     {
-        arDotGameeObject.SetActive(true);
-        arDotGameeObject.transform.position = position;
+        arDotGameObject.SetActive(true);
+        arDotGameObject.transform.position = position;
     }
 
     private void DrawPath(Vector3[] path)

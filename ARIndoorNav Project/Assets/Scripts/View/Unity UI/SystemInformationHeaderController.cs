@@ -5,25 +5,11 @@ using TMPro;
 
 public class SystemInformationHeaderController : MonoBehaviour
 {
-    public float systemInformationTime = 4.0f;
+    public float _DisplayTime = 6.0f;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
-
-    private TMP_Text systemInformationText;
+    public TMP_Text systemInformationText;
+    
     private bool isDisplaying = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        systemInformationText = GetComponent<TMP_Text>();
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
 
     public void DisplaySystemInformation(string text)
     {
@@ -36,7 +22,7 @@ public class SystemInformationHeaderController : MonoBehaviour
             systemInformationText.text = "- " + text;
             _UIMenuSwitchingManager.OpenSystemInformationHeader();
             isDisplaying = true;
-            Invoke("CloseSysInfo", systemInformationTime);
+            Invoke("CloseSysInfo", _DisplayTime);
         }
 
     }

@@ -32,13 +32,7 @@ public class UIMenuSwitchingManager : MonoBehaviour
     void Start()
     {
         systemInformationInViewPos = destinationHeaderInViewPos - new Vector2(0, 200);
-        OpenNavigationMenu();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        OpenMarkerDetectionMenu();
     }
 
     private void CloseAllMenus()
