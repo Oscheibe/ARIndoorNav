@@ -5,56 +5,81 @@ using UnityEngine.AI;
 
 public class ARVisuals : MonoBehaviour
 {
-    public GameObject _ARDotTemplate;
+    public NavigationPresenter _NavigationPresenter;
+    public SystemStatePresenter _SystemStatePresenter;
+
+    public GameObject _2DArrow;
+    public Camera _ARCamera;
     public LineRenderer _Line;
 
-    private GameObject arDotGameObject;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        GenARDot();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    //TODO
+    /**
+     * Gets called each update by NavigationPresenter
+     */
     public void SendNavigationPath(Vector3[] path)
     {
-        ChangeARDotPos(path[path.Length -1]);
         DrawPath(path);
-        
-    }
-
-    private void GenARDot()
-    {
-        arDotGameObject = Instantiate(_ARDotTemplate) as GameObject;
-        arDotGameObject.SetActive(false);
-        //button.GetComponent<RoomButton>().InitializeButton(room, "Distance TBD");
-        //button.name = room.Name;
-        //button.transform.SetParent(_buttonTemplate.transform.parent, false); // set false so that button doesn't position themselves in worldspace. Makes it more dynamic
-        //buttonGameobjects.Add(button);   
-    }
-
-    private void ChangeARDotPos(Vector3 position)
-    {
-        arDotGameObject.SetActive(true);
-        arDotGameObject.transform.position = position;
+        if (path.Length >= 2)
+            Indicate2dDirection(path[1]);
     }
 
     private void DrawPath(Vector3[] path)
     {
-        if(path.Length < 2 ) return;
+        if (path.Length < 2) return;
         _Line.positionCount = path.Length;
-        for(int i = 0; i < path.Length; i++)
+        for (int i = 0; i < path.Length; i++)
         {
             _Line.SetPosition(i, path[i]);
         }
 
         //_Line.sortingLayerName = "Foreground";
+    }
+
+    private void Indicate2dDirection(Vector3 nextCorner)
+    {
+        // Source: https://answers.unity.com/questions/1037969/arrows-pointing-to-offscreen-enemy.html
+        var screenPos = _ARCamera.WorldToViewportPoint(nextCorner);
+
+        if (screenPos.x >= 0 && screenPos.x <= 1 && screenPos.y >= 0 && screenPos.y <= 1 && screenPos.z >= 0)
+        {
+            _2DArrow.SetActive(false);
+            return;
+        }
+
+        _2DArrow.SetActive(true);
+
+        var onScreenPos = new Vector2(screenPos.x - 0.5f, screenPos.y - 0.5f) * 2;
+        var max = Mathf.Max(Mathf.Abs(onScreenPos.x), Mathf.Abs(onScreenPos.y));
+        onScreenPos = (onScreenPos / (max * 2)) + new Vector2(0.5f, 0.5f);
+
+        float x = 0;
+        float y = 0;
+
+        /**
+         * This part of the code is to counteract a bug found within the app
+         * The bug was that after a 90° turn away from the next corner of the path (nextCorner) 
+         * the x and y axis would flip their respective values. (For example, if the corner is on the left side
+         * the 2D arrow would jump from the left side of the screen to the right)
+         * The y axis is still not fixed.
+         */
+        // Looking away from corner
+        if (screenPos.z < Camera.main.nearClipPlane)
+        {
+            // Right side
+            if(screenPos.x >= 0)
+                x = 0;
+            // Left side
+            else    
+                x = Screen.width;
+            y = onScreenPos.y * Screen.height;
+        }
+        // Looking towards corner
+        else
+        {
+            x = onScreenPos.x * Screen.width;
+            y = onScreenPos.y * Screen.height;
+        }
+        
+        onScreenPos = new Vector2(x, y);
+        _2DArrow.transform.position = onScreenPos;
     }
 }

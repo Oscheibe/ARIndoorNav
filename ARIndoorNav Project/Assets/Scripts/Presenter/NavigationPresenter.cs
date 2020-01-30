@@ -12,6 +12,7 @@ public class NavigationPresenter : MonoBehaviour
     public ARVisuals _ARVisuals;
     public TargetDestinationUI _TargetDestinationUI;
     public PoseEstimation _PoseEstimation;
+    public Navigation _Navigation;
 
     private string _currentDestination;
     
@@ -46,5 +47,10 @@ public class NavigationPresenter : MonoBehaviour
     public void InitiateMarkerDetection()
     {
         _PoseEstimation.RequestNewPosition();
+    }
+
+    public Vector3 GetNextPathPosition()
+    {
+        return _Navigation.GetNextCorner();
     }
 }

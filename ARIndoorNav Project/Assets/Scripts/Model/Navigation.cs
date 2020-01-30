@@ -18,14 +18,6 @@ public class Navigation : MonoBehaviour
 
     private Room _destination;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        // Bakes the mesh based on the, in the unity editor defined, navigation values
-        // It is already baked
-        //_MapModelMesh.BuildNavMesh();
-    }
-
     // Sends periodic updates of the current navigation state
     void Update()
     {
@@ -75,9 +67,18 @@ public class Navigation : MonoBehaviour
         NavMesh constantly updates the path based on the user and destination position.
         The path that was updated during the current frame can be accessed here
      */
-    public Vector3[] GetPath()
+    private Vector3[] GetPath()
     {
         return _NavMeshAgent.path.corners;
+    }
+
+    /**
+     * Returns the Vector3 of the next corner in the path.
+     * If the corner count == 1, then the next corner is the destination
+     */
+    public Vector3 GetNextCorner()
+    {
+        return _NavMeshAgent.path.corners[0];
     }
 
     /**
