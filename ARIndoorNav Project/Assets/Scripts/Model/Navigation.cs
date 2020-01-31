@@ -15,13 +15,15 @@ public class Navigation : MonoBehaviour
     public NavMeshAgent _NavMeshAgent;
     public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
+    public Transform _GroundFloor;
 
-    private Room _destination;
+    private Room destination;
+    private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
 
     // Sends periodic updates of the current navigation state
     void Update()
     {
-        if (_destination == null || _NavMeshAgent == null) return;
+        if (destination == null || _NavMeshAgent == null) return;
         _NavigationPresenter.UpdateNavigationInformation(CalculateDistance().ToString(), GetPath());
     }
 
@@ -31,9 +33,12 @@ public class Navigation : MonoBehaviour
     */
     public void UpdateDestination(Room destination)
     {
-        _destination = destination;
-        _NavMeshAgent.SetDestination(destination.Location.position);
-        _NavigationPresenter.DisplayNavigationInformation(_destination.Name, CalculateDistance(), GetPath());
+        this.destination = destination;
+        // Setting the destination height to the ground level
+        destinationPos = new Vector3(destination.Location.position.x, _GroundFloor.position.y, destination.Location.position.z); 
+        
+        _NavMeshAgent.SetDestination(destinationPos);
+        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, CalculateDistance(), GetPath());
     }
 
     /**
@@ -41,13 +46,13 @@ public class Navigation : MonoBehaviour
      */
     private void UpdateDestination()
     {
-        if(_destination == null)
+        if(destination == null)
         {
             Debug.Log("Updating Destination impossible: no destination set");
             return;
         }
-        _NavMeshAgent.SetDestination(_destination.Location.position);
-        _NavigationPresenter.DisplayNavigationInformation(_destination.Name, CalculateDistance(), GetPath());
+        _NavMeshAgent.SetDestination(destinationPos);
+        _NavigationPresenter.DisplayNavigationInformation(destination.Name, CalculateDistance(), GetPath());
     }
 
     /**
@@ -96,7 +101,7 @@ public class Navigation : MonoBehaviour
 
     private float CalculateDistance()
     {
-        return Vector3.Distance(_NavMeshAgent.transform.position, _destination.Location.position);
+        return Vector3.Distance(_NavMeshAgent.transform.position, destination.Location.position);
     }
 
 }
