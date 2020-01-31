@@ -53,4 +53,20 @@ public class NavigationPresenter : MonoBehaviour
     {
         return _Navigation.GetNextCorner();
     }
+
+    /**
+     * Method to adjust the user rotation manually
+     */
+    public void RotateMiddleRight()
+    {
+        _Navigation.RotateClockwise();
+    }
+
+    /**
+     * Method to adjust the user rotation manually
+     */
+    public void RotateMiddleLeft()
+    {
+        _Navigation.RotateCounterClockwise();
+    }
 }

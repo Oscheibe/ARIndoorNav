@@ -12,6 +12,7 @@ using UnityEngine.AI;
  */
 public class Navigation : MonoBehaviour
 {
+    public Transform _ARCoreOrigin;
     public NavMeshAgent _NavMeshAgent;
     public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
@@ -19,6 +20,7 @@ public class Navigation : MonoBehaviour
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
+    private float rotationDegree = 0.5f;
 
     // Sends periodic updates of the current navigation state
     void Update()
@@ -35,8 +37,8 @@ public class Navigation : MonoBehaviour
     {
         this.destination = destination;
         // Setting the destination height to the ground level
-        destinationPos = new Vector3(destination.Location.position.x, _GroundFloor.position.y, destination.Location.position.z); 
-        
+        destinationPos = new Vector3(destination.Location.position.x, _GroundFloor.position.y, destination.Location.position.z);
+
         _NavMeshAgent.SetDestination(destinationPos);
         _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, CalculateDistance(), GetPath());
     }
@@ -46,7 +48,7 @@ public class Navigation : MonoBehaviour
      */
     private void UpdateDestination()
     {
-        if(destination == null)
+        if (destination == null)
         {
             Debug.Log("Updating Destination impossible: no destination set");
             return;
@@ -102,6 +104,24 @@ public class Navigation : MonoBehaviour
     private float CalculateDistance()
     {
         return Vector3.Distance(_NavMeshAgent.transform.position, destination.Location.position);
+    }
+
+    /**
+     * Method to manually adjust the rotation of the user position
+     * Rotates the user clockwise
+     */
+    public void RotateClockwise()
+    {
+        _ARCoreOrigin.transform.rotation *= Quaternion.Euler(0, rotationDegree, 0);
+    }
+
+    /**
+     * Method to manually adjust the rotation of the user position
+     * Rotates the user clockwise
+     */
+    public void RotateCounterClockwise()
+    {
+        _ARCoreOrigin.transform.rotation *= Quaternion.Euler(0, -rotationDegree, 0);
     }
 
 }

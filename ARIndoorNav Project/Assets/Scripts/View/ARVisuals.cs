@@ -16,6 +16,23 @@ public class ARVisuals : MonoBehaviour
     {
         _Line.material.SetTextureOffset("_MainTex", Vector2.left * Time.time);
     }
+
+    /**
+    * Method to adjust the user rotation manually
+    */
+    public void RotateRight()
+    {
+        _NavigationPresenter.RotateMiddleRight();
+    }
+
+    /**
+     * Method to adjust the user rotation manually
+     */
+    public void RotateLeft()
+    {
+        _NavigationPresenter.RotateMiddleLeft();
+    }
+
     /**
      * Gets called each update by NavigationPresenter
      */
@@ -24,7 +41,7 @@ public class ARVisuals : MonoBehaviour
         DrawPath(path);
         if (path.Length == 1)
             Indicate2dDirection(path[0]);
-        else 
+        else
             Indicate2dDirection(path[1]);
     }
 
@@ -40,7 +57,7 @@ public class ARVisuals : MonoBehaviour
             _Line.SetPosition(i, new Vector3(x, y, z));
         }
 
-        
+
         //_Line.sortingLayerName = "Foreground";
     }
 
@@ -75,10 +92,10 @@ public class ARVisuals : MonoBehaviour
         if (screenPos.z < Camera.main.nearClipPlane)
         {
             // Right side
-            if(screenPos.x >= 0)
+            if (screenPos.x >= 0)
                 x = 0;
             // Left side
-            else    
+            else
                 x = Screen.width;
             y = onScreenPos.y * Screen.height;
         }
@@ -88,7 +105,7 @@ public class ARVisuals : MonoBehaviour
             x = onScreenPos.x * Screen.width;
             y = onScreenPos.y * Screen.height;
         }
-        
+
         onScreenPos = new Vector2(x, y);
         _2DArrow.transform.position = onScreenPos;
     }
