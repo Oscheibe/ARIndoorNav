@@ -12,13 +12,19 @@ public class ARVisuals : MonoBehaviour
     public Camera _ARCamera;
     public LineRenderer _Line;
 
+    void Update()
+    {
+        _Line.material.SetTextureOffset("_MainTex", Vector2.left * Time.time);
+    }
     /**
      * Gets called each update by NavigationPresenter
      */
     public void SendNavigationPath(Vector3[] path)
     {
         DrawPath(path);
-        if (path.Length >= 2)
+        if (path.Length == 1)
+            Indicate2dDirection(path[0]);
+        else 
             Indicate2dDirection(path[1]);
     }
 
@@ -28,9 +34,13 @@ public class ARVisuals : MonoBehaviour
         _Line.positionCount = path.Length;
         for (int i = 0; i < path.Length; i++)
         {
-            _Line.SetPosition(i, path[i]);
+            var x = path[i].x;
+            var y = path[i].y + 0.01f; // Line is invisible if parallel to ground
+            var z = path[i].z;
+            _Line.SetPosition(i, new Vector3(x, y, z));
         }
 
+        
         //_Line.sortingLayerName = "Foreground";
     }
 

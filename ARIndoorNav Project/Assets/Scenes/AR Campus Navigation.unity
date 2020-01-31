@@ -5724,7 +5724,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 318680336}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: -285.5, y: -507.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5732,7 +5732,7 @@ Transform:
   - {fileID: 1758342354}
   m_Father: {fileID: 1997125451}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -90, z: 0}
 --- !u!114 &318680338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5781,7 +5781,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b6dbc70afdf667348bf4efe64cb90d43, type: 2}
+  - {fileID: 2100000, guid: 1fb3ef03d36594844ab1b864e63e9a43, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5803,7 +5803,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0.01, z: 1.34}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -5853,8 +5853,8 @@ LineRenderer:
       m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 0
-    alignment: 0
-    textureMode: 0
+    alignment: 1
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1
@@ -8254,9 +8254,9 @@ NavMeshAgent:
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
+  m_AutoTraverseOffMeshLink: 0
+  m_AutoBraking: 0
+  m_AutoRepath: 0
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
@@ -9788,7 +9788,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 596864707}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -179.78, y: -601.66, z: -12.46}
+  m_LocalPosition: {x: -252.7, y: -612.6, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 318680337}
@@ -12561,7 +12561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07975f201ad522d48a2b20109d3d91d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invisibleMaterial: {fileID: 2100000, guid: d2bbe9e59ee28224c9f39aab16bc0dc4, type: 2}
+  invisibleMaterial: {fileID: 2100000, guid: 07520e41ecff21f4098b60fc33db2c45, type: 2}
 --- !u!1 &818421476
 GameObject:
   m_ObjectHideFlags: 0
@@ -33195,6 +33195,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3307333856512972122, guid: 79c0da84aea008047b29a34e954d8ac4,
+        type: 3}
+      propertyPath: invisibleMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 07520e41ecff21f4098b60fc33db2c45, type: 2}
     - target: {fileID: 3307333856428945585, guid: 79c0da84aea008047b29a34e954d8ac4,
         type: 3}
       propertyPath: m_LocalPosition.z
