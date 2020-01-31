@@ -57,16 +57,16 @@ public class NavigationPresenter : MonoBehaviour
     /**
      * Method to adjust the user rotation manually
      */
-    public void RotateMiddleRight()
+    public void RotatePathToRight()
     {
-        _Navigation.RotateClockwise();
+        _Navigation.RotateCounterClockwise();
     }
 
     /**
      * Method to adjust the user rotation manually
      */
-    public void RotateMiddleLeft()
+    public void RotatePathToLeft()
     {
-        _Navigation.RotateCounterClockwise();
+        _Navigation.RotateClockwise();
     }
 }

@@ -22,7 +22,7 @@ public class ARVisuals : MonoBehaviour
     */
     public void RotateRight()
     {
-        _NavigationPresenter.RotateMiddleRight();
+        _NavigationPresenter.RotatePathToRight();
     }
 
     /**
@@ -30,7 +30,7 @@ public class ARVisuals : MonoBehaviour
      */
     public void RotateLeft()
     {
-        _NavigationPresenter.RotateMiddleLeft();
+        _NavigationPresenter.RotatePathToLeft();
     }
 
     /**
