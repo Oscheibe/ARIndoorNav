@@ -26,7 +26,7 @@ public class Navigation : MonoBehaviour
     void Update()
     {
         if (destination == null || _NavMeshAgent == null) return;
-        _NavigationPresenter.UpdateNavigationInformation(CalculateDistance().ToString(), GetPath());
+        _NavigationPresenter.UpdateNavigationInformation(CalculateDistance(), GetPath());
     }
 
     /** 

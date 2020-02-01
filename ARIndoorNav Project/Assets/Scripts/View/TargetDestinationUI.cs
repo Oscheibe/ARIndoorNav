@@ -10,15 +10,15 @@ public class TargetDestinationUI : MonoBehaviour
     public TMP_Text _DestinationName;
     public TMP_Text _LastMarkerText;
   
-    public void DisplayTargetInformation(string destinationName, string targetDistance)
+    public void DisplayTargetInformation(string destinationName, float targetDistance)
     {
-        _DestinationName.text = destinationName;
-        _DestinationDistance.text = targetDistance + " m";
+        _DestinationName.text = "Destination: " + destinationName;
+        _DestinationDistance.text = "(" + targetDistance.ToString("0.00") + " m)";
     }
 
-    public void UpdateDistance(string targetDistance)
+    public void UpdateDistance(float targetDistance)
     {
-        _DestinationDistance.text = targetDistance + " m";
+        _DestinationDistance.text = "(" + targetDistance.ToString("0.00") + " m)";
     }
 
     public void UpdateLastMarker(string markerName)

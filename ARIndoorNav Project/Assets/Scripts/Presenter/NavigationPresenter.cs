@@ -19,11 +19,11 @@ public class NavigationPresenter : MonoBehaviour
     public void DisplayNavigationInformation(string destinationName, float destinationDistance, Vector3[] path)
     {
         _currentDestination = destinationName;
-        _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance.ToString());
+        _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance);
         _ARVisuals.SendNavigationPath(path);
     }
 
-    public void UpdateNavigationInformation(string destinationDistance, Vector3[] path)
+    public void UpdateNavigationInformation(float destinationDistance, Vector3[] path)
     {
         _TargetDestinationUI.UpdateDistance(destinationDistance);
         _ARVisuals.SendNavigationPath(path);
