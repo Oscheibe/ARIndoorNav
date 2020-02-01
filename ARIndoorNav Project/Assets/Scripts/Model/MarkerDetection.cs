@@ -83,6 +83,7 @@ public class MarkerDetection : MonoBehaviour
         {
             _TextDetection.DetectText(image.Width, image.Height, image.Y, image.YRowStride);
         }
+        image.Release();
     }
 
     /**
