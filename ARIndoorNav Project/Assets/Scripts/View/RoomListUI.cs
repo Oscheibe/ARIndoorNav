@@ -65,7 +65,6 @@ public class RoomListUI : MonoBehaviour
      */
     public void SearchRoom(string text)
     {
-        Debug.Log("Searching for: " + text);
         foreach (var button in buttonGameobjects)
         {
             if (button.GetComponent<RoomButton>().ContainsText(text) == false)

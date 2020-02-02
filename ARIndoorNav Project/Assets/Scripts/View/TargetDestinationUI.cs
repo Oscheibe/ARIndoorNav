@@ -26,4 +26,11 @@ public class TargetDestinationUI : MonoBehaviour
         _LastMarkerText.text = "Last Marker: " + markerName;
     }
 
+    public void ResetTargetInformation()
+    {
+        _DestinationDistance.text = "(0.00m)";
+        _DestinationName.text = "Last destination: " + _DestinationName;
+        _LastMarkerText.text = "";
+    }
+
 }

@@ -16,6 +16,7 @@ public class Navigation : MonoBehaviour
     public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
     public Transform _GroundFloor;
+    public float _goalReachedDistance = 1.0f; // In meters
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
@@ -24,7 +25,14 @@ public class Navigation : MonoBehaviour
     void Update()
     {
         if (destination == null || _NavMeshAgent == null) return;
-        _NavigationPresenter.UpdateNavigationInformation(CalculateDistance(), GetPath());
+        var currentDistance = CalculateDistance();
+        _NavigationPresenter.UpdateNavigationInformation(currentDistance, GetPath());
+        if(currentDistance < _goalReachedDistance)
+        {
+            
+            ResetDestination();
+            _NavigationPresenter.ReachedDestination();
+        }
     }
 
     /** 
@@ -104,4 +112,12 @@ public class Navigation : MonoBehaviour
         return Vector3.Distance(_NavMeshAgent.transform.position, destination.Location.position);
     }
 
+    /**
+     * Sets destination to null which ends all destination related calculations.
+     * Used when the user has reached their goal
+     */
+    public void ResetDestination()
+    {
+        destination = null;
+    }
 }

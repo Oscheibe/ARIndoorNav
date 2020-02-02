@@ -13,6 +13,7 @@ public class NavigationPresenter : MonoBehaviour
     public TargetDestinationUI _TargetDestinationUI;
     public PoseEstimation _PoseEstimation;
     public Navigation _Navigation;
+    public UserMessageUI _UserMessageUI;
 
     private string _currentDestination;
     
@@ -32,6 +33,16 @@ public class NavigationPresenter : MonoBehaviour
     public void UpdateLastMarker(string markerName)
     {
         _TargetDestinationUI.UpdateLastMarker(markerName);
+    }
+
+    /**
+     * Called when the user is within 1 meter of the destination
+     * Displays a message to the user
+     */
+    public void ReachedDestination()
+    {
+        _UserMessageUI.ShowDestinationReachedText();
+        _TargetDestinationUI.ResetTargetInformation();
     }
 
     /**
