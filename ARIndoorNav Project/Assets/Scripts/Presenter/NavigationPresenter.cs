@@ -59,7 +59,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void RotatePathToRight()
     {
-        _Navigation.RotateCounterClockwise();
+        _PoseEstimation.RotateCounterClockwise();
     }
 
     /**
@@ -67,6 +67,6 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void RotatePathToLeft()
     {
-        _Navigation.RotateClockwise();
+        _PoseEstimation.RotateClockwise();
     }
 }

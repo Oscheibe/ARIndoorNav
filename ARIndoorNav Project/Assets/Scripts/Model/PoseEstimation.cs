@@ -12,6 +12,8 @@ public class PoseEstimation : MonoBehaviour
     public SystemStatePresenter _SystemStatePresenter;
     public Navigation _Navigation;
 
+    private float rotationDegree = 0.5f;
+
     /**
         Method to gather positional data to combine it and calculate the most likely user position
         ARCore is constantly updating the position in the background 
@@ -53,7 +55,7 @@ public class PoseEstimation : MonoBehaviour
 
     private void CorrectRotationOffset(Vector3 arPosBefore, Vector3 arPosAfter)
     {
-        var posOffset = arPosAfter - arPosBefore;        
+        var posOffset = arPosAfter - arPosBefore;
         _ARCoreOriginTransform.position -= posOffset;
 
         Debug.Log("Position Offset: " + posOffset);
@@ -93,6 +95,32 @@ public class PoseEstimation : MonoBehaviour
     public Quaternion GetARCoreRotationOffset()
     {
         return Quaternion.Inverse(_ARCoreOriginTransform.rotation) * _ARCoreFPSTransform.rotation;
+    }
+
+    /**
+     * Method to manually adjust the rotation of the user position
+     * Rotates the user clockwise
+     */
+    public void RotateClockwise()
+    {
+        var arPosBefore = _ARCoreOriginTransform.position;
+        _ARCoreOriginTransform.transform.rotation *= Quaternion.Euler(0, rotationDegree, 0);
+        var arPosAfter = _ARCoreOriginTransform.position;
+
+        CorrectRotationOffset(arPosBefore, arPosAfter);
+    }
+
+    /**
+     * Method to manually adjust the rotation of the user position
+     * Rotates the user clockwise
+     */
+    public void RotateCounterClockwise()
+    {
+        var arPosBefore = _ARCoreOriginTransform.position;
+        _ARCoreOriginTransform.transform.rotation *= Quaternion.Euler(0, -rotationDegree, 0);
+        var arPosAfter = _ARCoreOriginTransform.position;
+
+        CorrectRotationOffset(arPosBefore, arPosAfter);
     }
 
 }

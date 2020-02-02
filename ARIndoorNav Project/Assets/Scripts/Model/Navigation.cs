@@ -12,7 +12,6 @@ using UnityEngine.AI;
  */
 public class Navigation : MonoBehaviour
 {
-    public Transform _ARCoreOrigin;
     public NavMeshAgent _NavMeshAgent;
     public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
@@ -20,7 +19,6 @@ public class Navigation : MonoBehaviour
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
-    private float rotationDegree = 0.5f;
 
     // Sends periodic updates of the current navigation state
     void Update()
@@ -104,24 +102,6 @@ public class Navigation : MonoBehaviour
     private float CalculateDistance()
     {
         return Vector3.Distance(_NavMeshAgent.transform.position, destination.Location.position);
-    }
-
-    /**
-     * Method to manually adjust the rotation of the user position
-     * Rotates the user clockwise
-     */
-    public void RotateClockwise()
-    {
-        _ARCoreOrigin.transform.rotation *= Quaternion.Euler(0, rotationDegree, 0);
-    }
-
-    /**
-     * Method to manually adjust the rotation of the user position
-     * Rotates the user clockwise
-     */
-    public void RotateCounterClockwise()
-    {
-        _ARCoreOrigin.transform.rotation *= Quaternion.Euler(0, -rotationDegree, 0);
     }
 
 }
