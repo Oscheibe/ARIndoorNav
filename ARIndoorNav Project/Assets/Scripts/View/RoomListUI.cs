@@ -9,12 +9,6 @@ public class RoomListUI : MonoBehaviour
 
     private List<GameObject> buttonGameobjects = new List<GameObject>();
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -64,4 +58,32 @@ public class RoomListUI : MonoBehaviour
             button.GetComponent<RoomButton>().UpdateDistanceToRoom();
         }
     }
+
+    /**
+     * Go through each room in the list and hides the button if they don't contain the text
+     * No consideration for performance
+     */
+    public void SearchRoom(string text)
+    {
+        Debug.Log("Searching for: " + text);
+        foreach (var button in buttonGameobjects)
+        {
+            if (button.GetComponent<RoomButton>().ContainsText(text) == false)
+                button.SetActive(false);
+            else
+                button.SetActive(true);
+        }
+    }
+
+    /**
+     * Makes all buttons visible again
+     */
+    public void ResetAllButton()
+    {
+        foreach (var button in buttonGameobjects)
+        {
+            button.SetActive(true);
+        }
+    }
+
 }

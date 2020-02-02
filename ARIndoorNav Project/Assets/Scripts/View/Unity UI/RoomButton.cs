@@ -13,6 +13,8 @@ public class RoomButton : MonoBehaviour
     public TMP_Text _DistanceToRoomText;
     public Image _RoomImage;
 
+    private string allText;
+
     
     private Room room;
     
@@ -23,6 +25,8 @@ public class RoomButton : MonoBehaviour
         _RoomInformationText.text = room.Description;
         _DistanceToRoomText.text = distanceToRoom;
         if(room.Image != null) _RoomImage = room.Image;
+
+        allText = _RoomNameText.text + " " + _RoomInformationText.text;
     }
 
     public void UpdateDistanceToRoom()
@@ -33,5 +37,11 @@ public class RoomButton : MonoBehaviour
     public void OnClick()
     {
         _RoomListUI.ChooseDestination(room);
+    }
+
+    // Returns true if the room botton contains the text
+    public bool ContainsText(string text)
+    {
+        return allText.Contains(text);
     }
 }

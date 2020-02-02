@@ -13707,7 +13707,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe779204485718440b56d4f22de35003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ARCoreOrigin: {fileID: 562736065}
   _NavMeshAgent: {fileID: 476792922}
   _MapModelMesh: {fileID: 1973794768}
   _NavigationPresenter: {fileID: 1267271179}
@@ -28313,7 +28312,7 @@ MonoBehaviour:
   m_enableKerning: 1
   m_enableExtraPadding: 1
   checkPaddingRequired: 0
-  m_isRichText: 1
+  m_isRichText: 0
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -28920,7 +28919,18 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1891678649}
+        m_MethodName: SearchRoom
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: value
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: TMPro.TMP_InputField+OnChangeEvent, Unity.TextMeshPro, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
@@ -28930,12 +28940,12 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
-  m_RichText: 1
+  m_RichText: 0
   m_GlobalFontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
-  m_isRichTextEditingAllowed: 1
+  m_isRichTextEditingAllowed: 0
   m_InputValidator: {fileID: 0}
 --- !u!114 &1822483121
 MonoBehaviour:
