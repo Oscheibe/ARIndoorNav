@@ -11,6 +11,7 @@ public class PoseEstimation : MonoBehaviour
     public NavigationPresenter _NavigationPresenter;
     public SystemStatePresenter _SystemStatePresenter;
     public Navigation _Navigation;
+    public TrackingErrorHandling _TrackingErrorHandling; 
 
     private float rotationDegree = 0.5f;
     private int currentFloor = -1;
@@ -23,6 +24,13 @@ public class PoseEstimation : MonoBehaviour
         EnteredElevator = 3,
     }
 
+    void Update() 
+    {
+        // Reporting the current position for error evaluation
+        _TrackingErrorHandling.ReportCurrentUserPosition(_ARCoreFPSTransform.position);
+    }
+
+
     /**
         Method to gather positional data to combine it and calculate the most likely user position
         ARCore is constantly updating the position in the background 
@@ -31,11 +39,11 @@ public class PoseEstimation : MonoBehaviour
     public void ReportMarkerPose(Transform virtualMarkerTransform, Pose worldMarkerPose)
     {
         var arPosBefore = _ARCoreFPSTransform.position;
-        UpdateLastMarkerRotation(virtualMarkerTransform, worldMarkerPose);
+        UpdateUserRotation(virtualMarkerTransform, worldMarkerPose);
         var arPosAfter = _ARCoreFPSTransform.position;
 
         CorrectRotationOffset(arPosBefore, arPosAfter);
-        UpdateLastMarkerPosition(virtualMarkerTransform.position, worldMarkerPose.position);
+        UpdateUserPosition(virtualMarkerTransform.position, worldMarkerPose.position);
 
         _Navigation.WarpNavMeshAgent(_ARCoreFPSTransform.position);
         _SystemStatePresenter.HideMarkerDetectionMenu();
@@ -49,7 +57,7 @@ public class PoseEstimation : MonoBehaviour
         this.currentFloor = currentFloor;
     }
 
-    private void UpdateLastMarkerPosition(Vector3 virtualMarkerPosition, Vector3 worldMarkerPosition)
+    private void UpdateUserPosition(Vector3 virtualMarkerPosition, Vector3 worldMarkerPosition)
     {
         var originPosition = _ARCoreOriginTransform.position;
         var fpsPos = _ARCoreFPSTransform.position;
@@ -59,7 +67,7 @@ public class PoseEstimation : MonoBehaviour
         _ARCoreOriginTransform.position += targetPosDelta;
     }
 
-    private void UpdateLastMarkerRotation(Transform virtualMarkerTransform, Pose worldMarkerPose)
+    private void UpdateUserRotation(Transform virtualMarkerTransform, Pose worldMarkerPose)
     {
         var originRotation = _ARCoreOriginTransform.rotation;
         var worldMarkerRotation = worldMarkerPose.rotation;

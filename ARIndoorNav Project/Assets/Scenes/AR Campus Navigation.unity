@@ -11008,6 +11008,7 @@ MonoBehaviour:
   _NavigationPresenter: {fileID: 1267271179}
   _SystemStatePresenter: {fileID: 290767496}
   _Navigation: {fileID: 846815021}
+  _TrackingErrorHandling: {fileID: 1685355798}
 --- !u!1 &676925842
 GameObject:
   m_ObjectHideFlags: 0

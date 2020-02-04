@@ -6,18 +6,9 @@ public class TrackingErrorHandling : MonoBehaviour
 {
     public SystemStatePresenter _SystemStatePresenter;
     public PoseEstimation _PoseEstimation;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    private Vector3 lastPosition;
+    private float maxErrorDistance = 2f; // max offset distance in meter
 
     /**
         Method that accumulates the tracking state of ARCore and analyses it for drift
@@ -29,6 +20,18 @@ public class TrackingErrorHandling : MonoBehaviour
         // TODO
         
         _SystemStatePresenter.DisplayUserMessage(state);
+    }
+
+    public void ReportCurrentUserPosition(Vector3 position)
+    {
+        var distanceToLastPosition = Vector3.Distance(position, lastPosition);
+        if(distanceToLastPosition >= maxErrorDistance)
+        {
+            _SystemStatePresenter.DisplayUserMessage("Detected big jump in user position: " + distanceToLastPosition + "m");
+            _SystemStatePresenter.DisplayUserMessage("From: " + lastPosition + " to: " + position);
+        }
+
+        lastPosition = position;
     }
 
     private void ReportTrackingState()
