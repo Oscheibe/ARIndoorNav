@@ -13,6 +13,15 @@ public class PoseEstimation : MonoBehaviour
     public Navigation _Navigation;
 
     private float rotationDegree = 0.5f;
+    private int currentFloor = -1;
+
+    public enum NewPosReason
+    {
+        Manual = 0,
+        TooMuchError = 1,
+        EnteredStairs = 2,
+        EnteredElevator = 3,
+    }
 
     /**
         Method to gather positional data to combine it and calculate the most likely user position
@@ -30,6 +39,14 @@ public class PoseEstimation : MonoBehaviour
 
         _Navigation.WarpNavMeshAgent(_ARCoreFPSTransform.position);
         _SystemStatePresenter.HideMarkerDetectionMenu();
+    }
+
+    /**
+     * changes the current floor based on marker detection results
+     */
+    public void ReportCurrentFloor(int currentFloor)
+    {
+        this.currentFloor = currentFloor;
     }
 
     private void UpdateLastMarkerPosition(Vector3 virtualMarkerPosition, Vector3 worldMarkerPosition)
@@ -67,9 +84,27 @@ public class PoseEstimation : MonoBehaviour
         When it is called manually
         Tracking will be stopped and a user prompt initiated that asks the user to scan a marker
      */
-    public void RequestNewPosition()
+    public void RequestNewPosition(NewPosReason reason)
     {
-        _MarkerDetection.StartDetection();
+        var destinationFloor = _Navigation.GetDestinationFloor();
+        
+        switch (reason)
+        {
+            case NewPosReason.Manual:
+                _MarkerDetection.StartDetection();
+                break;
+            case NewPosReason.TooMuchError:
+                //TODO
+                break;
+            case NewPosReason.EnteredStairs:
+                _NavigationPresenter.SendTakeStairsMessage(currentFloor, destinationFloor);
+                break;
+            case NewPosReason.EnteredElevator:
+                _NavigationPresenter.SendTakeElevatorMessage(currentFloor, destinationFloor);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -86,15 +121,6 @@ public class PoseEstimation : MonoBehaviour
     public Quaternion GetUserRotation()
     {
         return _ARCoreFPSTransform.rotation;
-    }
-
-    /**
-     * The rotation of the origin position of ARCore
-     * It needs to be added to every result that ARCore has when calculating rotation
-     */
-    public Quaternion GetARCoreRotationOffset()
-    {
-        return Quaternion.Inverse(_ARCoreOriginTransform.rotation) * _ARCoreFPSTransform.rotation;
     }
 
     /**

@@ -6,7 +6,13 @@ using DG.Tweening;
 
 public class UIMenuSwitchingManager : MonoBehaviour
 {
-    public RectTransform _mainMenu, _settingsMenu, _navigationMenu, _destinationHeader, _markerDetectionMenu, _systemInformationHeader;
+    public RectTransform _mainMenu,
+                        _settingsMenu,
+                        _navigationMenu,
+                        _destinationHeader,
+                        _markerDetectionMenu,
+                        _systemInformationHeader,
+                        _confirmScreen;
 
     private float animationSpeed = 0.25f; // in seconds
 
@@ -19,14 +25,17 @@ public class UIMenuSwitchingManager : MonoBehaviour
     private Vector2 navigationInViewPos = new Vector2(0, -560);
     private Vector2 navigationOutOfViewPos = new Vector2(0, -2000);
 
-    private Vector2 destinationHeaderInViewPos = new Vector2(0, 1070-50);
+    private Vector2 destinationHeaderInViewPos = new Vector2(0, 1070 - 50);
     private Vector2 destinationHeaderOutOfViewPos = new Vector2(0, 2000);
 
     private Vector2 markerDetectionMenuInViewPos = new Vector2(0, 0);
     private Vector2 markerDetectionMenuOutOfViewPos = new Vector2(0, 2000);
 
-    private Vector2 systemInformationInViewPos;
+    private Vector2 systemInformationInViewPos; // 200px under destinationHeader
     private Vector2 systemInformationOutOfViewPos = new Vector2(0, 2000);
+
+    private Vector2 confirmScreenInViewPos = new Vector2(0, 0);
+    private Vector2 confirmScreenOutOfViewPos = new Vector2(0, -2500);
 
     // Start is called before the first frame update
     void Start()
@@ -36,12 +45,13 @@ public class UIMenuSwitchingManager : MonoBehaviour
     }
 
     private void CloseAllMenus()
-    { 
+    {
         CloseMainMenu();
         CloseSettingsMenu();
         CloseNavigationMenu();
         CloseDestinationHeader();
         CloseMarkerDetectionMenu();
+        CloseConfirmScreen();
     }
 
     public void OpenMainMenu()
@@ -102,6 +112,7 @@ public class UIMenuSwitchingManager : MonoBehaviour
 
     public void OpenSystemInformationHeader()
     {
+        // Does not close all menus when called
         _systemInformationHeader.DOAnchorPos(systemInformationInViewPos, animationSpeed);
     }
 
@@ -110,4 +121,14 @@ public class UIMenuSwitchingManager : MonoBehaviour
         _systemInformationHeader.DOAnchorPos(systemInformationOutOfViewPos, animationSpeed);
     }
 
+    public void OpenConfirmScreen()
+    {
+        CloseAllMenus();
+        _confirmScreen.DOAnchorPos(confirmScreenInViewPos, animationSpeed);
+    }
+
+    private void CloseConfirmScreen()
+    {
+        _confirmScreen.DOAnchorPos(confirmScreenOutOfViewPos, animationSpeed);
+    }
 }

@@ -124,6 +124,7 @@ public class MarkerDetection : MonoBehaviour
             //TODO: more than 1 room found
             roomTransform = resultRoomList[0].Location;
             _SystemStatePresenter.DisplayCurrentPosition(resultRoomList[0].Name);
+            _PoseEstimation.ReportCurrentFloor(resultRoomList[0].Floor);
         }
         else
         {

@@ -28,7 +28,7 @@ public class SystemStatePresenter : MonoBehaviour
 
     public void RequestMarkerTracking()
     {
-        _PoseEstimation.RequestNewPosition();
+        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
     }
 
     public void TestMessage()

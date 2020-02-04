@@ -10,6 +10,7 @@ public class Room
     private Transform location;
     private Image image;
     private string distanceToUser;
+    private int floor = -1;
 
     private Room() { }
 
@@ -19,6 +20,15 @@ public class Room
         Name = name;
         Location = location;
         Description = description;
+
+        foreach (var ch in name.ToCharArray())
+        {
+            if(char.IsNumber(ch))
+            {
+                floor = (int) char.GetNumericValue(ch);
+                return;
+            }
+        }
     }
 
     /*
@@ -63,6 +73,12 @@ public class Room
     {
         get { return distanceToUser; }
         set { distanceToUser = value; }
+    }
+
+    public int Floor
+    {
+        get { return floor; }
+        set { floor = value; }
     }
 
 }

@@ -14,9 +14,10 @@ public class NavigationPresenter : MonoBehaviour
     public PoseEstimation _PoseEstimation;
     public Navigation _Navigation;
     public UserMessageUI _UserMessageUI;
+    public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
     private string _currentDestination;
-    
+
     public void DisplayNavigationInformation(string destinationName, float destinationDistance, Vector3[] path)
     {
         _currentDestination = destinationName;
@@ -57,7 +58,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void InitiateMarkerDetection()
     {
-        _PoseEstimation.RequestNewPosition();
+        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
     }
 
     public Vector3 GetNextPathPosition()
@@ -79,5 +80,32 @@ public class NavigationPresenter : MonoBehaviour
     public void RotatePathToLeft()
     {
         _PoseEstimation.RotateClockwise();
+    }
+
+    /**
+     * Called when the users enters a "Stairs" area.
+     * The user must walk the stairs and then re-locate
+     */
+    public void SendTakeStairsMessage(int currentFloor, int destinationFloor)
+    {
+        _UIMenuSwitchingManager.OpenConfirmScreen();
+        _UserMessageUI.ShowStairsText(currentFloor.ToString(), destinationFloor.ToString());
+    }
+
+    /**
+     * Called when the users enters a "Elevator" area.
+     * The user must walk the elevator and then re-locate
+     */
+    public void SendTakeElevatorMessage(int currentFloor, int destinationFloor)
+    {
+        _UIMenuSwitchingManager.OpenConfirmScreen();
+        _UserMessageUI.ShowElevatorText(currentFloor.ToString(), destinationFloor.ToString());
+    }
+    /**
+     * Clears the line renderer path and hides other AR elements
+     */
+    public void ClearPathDisplay()
+    {
+        _ARVisuals.StopARDisplay();
     }
 }

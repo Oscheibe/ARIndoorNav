@@ -45,6 +45,12 @@ public class ARVisuals : MonoBehaviour
             Indicate2dDirection(path[1]);
     }
 
+    public void StopARDisplay()
+    {
+        _Line.positionCount = 0;
+        _2DArrow.SetActive(false);
+    }
+
     private void DrawPath(Vector3[] path)
     {
         if (path.Length < 2) return;

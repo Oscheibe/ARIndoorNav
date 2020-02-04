@@ -15,11 +15,17 @@ public class Navigation : MonoBehaviour
     public NavMeshAgent _NavMeshAgent;
     public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
+    public PoseEstimation _PoseEstimation;
+
     public Transform _GroundFloor;
     public float _goalReachedDistance = 1.0f; // In meters
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
+    private int lastDestinationFloor = -1;
+
+    private int stairsMask = 8;
+    private int elevatorMask = 16;
 
     // Sends periodic updates of the current navigation state
     void Update()
@@ -27,12 +33,13 @@ public class Navigation : MonoBehaviour
         if (destination == null || _NavMeshAgent == null) return;
         var currentDistance = CalculateDistance();
         _NavigationPresenter.UpdateNavigationInformation(currentDistance, GetPath());
-        if(currentDistance < _goalReachedDistance)
+        if (currentDistance < _goalReachedDistance)
         {
-            
-            ResetDestination();
+
+            StopNavigation();
             _NavigationPresenter.ReachedDestination();
         }
+        ProcessCurrentArea();
     }
 
     /** 
@@ -42,6 +49,7 @@ public class Navigation : MonoBehaviour
     public void UpdateDestination(Room destination)
     {
         this.destination = destination;
+        lastDestinationFloor = destination.Floor;
         // Setting the destination height to the ground level
         destinationPos = new Vector3(destination.Location.position.x, _GroundFloor.position.y, destination.Location.position.z);
 
@@ -116,8 +124,43 @@ public class Navigation : MonoBehaviour
      * Sets destination to null which ends all destination related calculations.
      * Used when the user has reached their goal
      */
-    public void ResetDestination()
+    public void StopNavigation()
     {
+        _NavMeshAgent.ResetPath();
+        _NavigationPresenter.ClearPathDisplay();
         destination = null;
+    }
+
+    /**
+     * Only returns a value when a path is set. The NavMesh mask is a bitset representing the current area
+     * 8 = Stairs / 16 = Elevator
+     */
+    private void ProcessCurrentArea()
+    {
+        NavMeshHit navMeshHit;
+        int currentMask = -1;
+        if (!_NavMeshAgent.SamplePathPosition(NavMesh.AllAreas, 0f, out navMeshHit))
+        {
+            currentMask = navMeshHit.mask;
+        }
+        if(currentMask == stairsMask)
+        {
+
+            StopNavigation();
+            _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredStairs);
+        }
+        else if (currentMask == elevatorMask)
+        {
+            StopNavigation();
+            _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredElevator);
+        }
+    }
+
+    /**
+     * returns the floor number of the last current destination
+     */
+    public int GetDestinationFloor()
+    {
+        return lastDestinationFloor;
     }
 }
