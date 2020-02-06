@@ -17,7 +17,11 @@ public class Navigation : MonoBehaviour
     public NavigationPresenter _NavigationPresenter;
     public PoseEstimation _PoseEstimation;
 
-    public Transform _GroundFloor;
+    public Transform _Floor3;
+    public Transform _Floor2;
+    public Transform _Floor1;
+    public Transform _Floor0;
+    
     public float _goalReachedDistance = 1.0f; // In meters
 
     private Room destination;
@@ -51,7 +55,7 @@ public class Navigation : MonoBehaviour
         this.destination = destination;
         lastDestinationFloor = destination.Floor;
         // Setting the destination height to the ground level
-        destinationPos = new Vector3(destination.Location.position.x, _GroundFloor.position.y, destination.Location.position.z);
+        destinationPos = new Vector3(destination.Location.position.x, _Floor3.position.y, destination.Location.position.z);
 
         _NavMeshAgent.SetDestination(destinationPos);
         _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, CalculateDistance(), GetPath());

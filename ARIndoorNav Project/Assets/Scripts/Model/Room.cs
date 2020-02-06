@@ -15,20 +15,12 @@ public class Room
     private Room() { }
 
     //TODO Room tags?
-    public Room(string name, Transform location, string description)
+    public Room(string name, string description, int floorNumber, Transform location)
     {
         Name = name;
         Location = location;
         Description = description;
-
-        foreach (var ch in name.ToCharArray())
-        {
-            if(char.IsNumber(ch))
-            {
-                floor = (int) char.GetNumericValue(ch);
-                return;
-            }
-        }
+        floor = floorNumber;
     }
 
     /*

@@ -14,7 +14,6 @@ public class MarkerDatabase : MonoBehaviour
     void Awake()
     {
         markerList = new List<GameObject>(GameObject.FindGameObjectsWithTag("VirtualMarker"));//_RoomDatabase.GetRoomList();
-        Debug.Log("Marker List set");
     }
 
     // Update is called once per frame

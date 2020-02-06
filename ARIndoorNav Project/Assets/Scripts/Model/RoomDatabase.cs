@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using SimpleJSON;
 
 public class RoomDatabase : MonoBehaviour
 {
@@ -11,61 +12,8 @@ public class RoomDatabase : MonoBehaviour
     public MarkerDatabase _MarkerDatabase;
 
     private List<Room> roomList = new List<Room>();
-    private string testDatabaseEntries =
-        "3.215;Test3215 V2\n" +
-        "3.216;Test3216\n" +
-        "3.217;Test3217\n" +
-        "3.218;Test3218\n" +
-        "3.219;Test3219\n" +
-        "3.220;Test3220\n" +
-        "3.221;nA\n"+
-        "3.222;Test3222\n" +
-        "3.222a;Test3222a\n"+
-        "3.200;nA\n"+
-        "3.201;nA\n"+
-        "3.202;nA\n"+
-        "3.203;nA\n"+
-        "3.204;nA\n"+
-        "3.205;nA\n"+
-        "3.206;nA\n"+
-        "3.207;nA\n"+
-        "3.208;nA\n"+
-        "3.209;nA\n"+
-        "3.210;nA\n"+
-        "3.211;nA\n"+
-        "3.212;nA\n"+
-        "3.213;nA\n"+
-        "3.214;nA\n"+
-        // SEE TOP
-        "3.223;nA\n"+
-        "3.224;nA\n"+
-        "3.225;nA\n"+
-        "3.226;nA\n"+
-        "3.227;nA\n"+
-        "3.228;nA\n"+
-        "3.229;nA\n"+
-        "3.230;nA\n"+
-        "3.231;nA\n"+
-        "3.232;nA\n"+
-        "3.233;nA\n"+
-        "3.234;nA\n"+
-        "3.235;nA\n"+
-        "3.236;nA\n"+
-        "3.237;nA\n"+
-        "3.238;nA\n"+
-        "3.239;nA\n"+
-        "3.240;nA\n"+
-        "3.241;nA\n"+
-        "3.242;nA\n"+
-        "3.243;nA\n"+
-        "3.244;nA\n"+
-        "3.245;nA\n"+
-        "3.246;nA\n"+
-        "3.247;nA\n"+
-        "3.248;nA\n"+
-        // TESTING MORE ROOMS SOON
-        "3.119;nA\n"+
-        "3.101;nA"; // LAST STRING WITHOUT '\n'
+    public string roomListFilePath = "Rooms/RoomList";
+
 
     // Awake is called before Start
     void Start()
@@ -86,7 +34,7 @@ public class RoomDatabase : MonoBehaviour
      */
     public Transform GetRoomPosition(string roomName)
     {
-       return _MarkerDatabase.RequestMarkerPosition(roomName);
+        return _MarkerDatabase.RequestMarkerPosition(roomName);
     }
 
     /**
@@ -116,19 +64,31 @@ public class RoomDatabase : MonoBehaviour
      */
     private void InitiateDatabase()
     {
-        string[] testEntryList = testDatabaseEntries.Split('\n');
-        foreach (var entry in testEntryList)
-        {
-            var roomName = entry.Split(';')[0];
-            var roomDescription = entry.Split(';')[1];
-            
-            if (roomName == null || roomDescription == null) continue;
-            var roomPosition = GetRoomPosition(roomName);
-            if(roomPosition == null) continue; // If there is no room with that name, skip that entry
+        TextAsset roomListJSON = Resources.Load(roomListFilePath) as TextAsset;
+        var roomListNode = JSON.Parse(roomListJSON.ToString());
 
-            var newRoom = new Room(roomName, roomPosition, roomDescription);
+        var roomArray = roomListNode.AsArray;
+        foreach (var roomPair in roomArray)
+        {
+            var roomName = roomPair.Value["RoomName"];
+            var roomDescription = roomPair.Value["Description"];
+            if (roomName == null || roomDescription == null)
+            {
+                Debug.Log("Error Calculating Room KeyValuePair: " + roomPair);
+                continue;
+            }
+
+            var floorNumber = GetFloorNumber(roomName);
+
+            var roomPosition = GetRoomPosition(roomName);
+            if (roomPosition == null)
+            {
+                Debug.Log("No Room Found: " + roomName);
+                continue; // If there is no room with that name, skip that entry
+            }
+
+            var newRoom = new Room(roomName, roomDescription, floorNumber, roomPosition);
             roomList.Add(newRoom);
-            
         }
     }
 
@@ -141,6 +101,27 @@ public class RoomDatabase : MonoBehaviour
         {
             room.DistanceToUser = _Navigation.GetDistanceToUser(room.Location.position);
         }
+    }
+
+    /**
+     * Returns the first number from the room name.
+     * Stairs should not be used as a target because of it
+     */
+    private int GetFloorNumber(string roomName)
+    {
+        int floorNumber = -1;
+        foreach (var ch in name.ToCharArray())
+        {
+            if (char.IsNumber(ch))
+            {
+                floorNumber = (int)char.GetNumericValue(ch);
+                return -1;
+            }
+        }
+        // It should never happen, but who knows
+        if(floorNumber > 3)
+            return -1;
+        return floorNumber;
     }
 
 }
