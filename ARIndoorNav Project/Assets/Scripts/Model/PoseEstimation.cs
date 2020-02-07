@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GoogleARCore;
 
 public class PoseEstimation : MonoBehaviour
 {
@@ -155,6 +156,16 @@ public class PoseEstimation : MonoBehaviour
         var arPosAfter = _ARCoreOriginTransform.position;
 
         CorrectRotationOffset(arPosBefore, arPosAfter);
+    }
+
+    /**
+     * method to reset the state of ARCore
+     * used when the user has to relocate themselves because of an error or when they change floor
+     */
+    private void ResetARCore()
+    {
+        //TODO
+        
     }
 
 }
