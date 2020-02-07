@@ -45,6 +45,10 @@ public class ARVisuals : MonoBehaviour
             Indicate2dDirection(path[1]);
     }
 
+    /**
+     * Clears current ARDisplay GameObjects
+     * Will be overritten by the next SendNavigationPath() call
+     */
     public void StopARDisplay()
     {
         _Line.positionCount = 0;

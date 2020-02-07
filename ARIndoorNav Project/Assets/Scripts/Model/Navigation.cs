@@ -27,6 +27,7 @@ public class Navigation : MonoBehaviour
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
     private int lastDestinationFloor = -1;
+    private bool isPaused = false;
 
     private int stairsMask = 8;
     private int elevatorMask = 16;
@@ -34,7 +35,7 @@ public class Navigation : MonoBehaviour
     // Sends periodic updates of the current navigation state
     void Update()
     {
-        if (destination == null || _NavMeshAgent == null) return;
+        if (destination == null || _NavMeshAgent == null || isPaused == true) return;
         var currentDistance = GetDistanceToUser(destination);
         _NavigationPresenter.UpdateNavigationInformation(currentDistance, GetPath());
         if (currentDistance < _goalReachedDistance)
@@ -134,9 +135,28 @@ public class Navigation : MonoBehaviour
     public void StopNavigation()
     {
         _NavMeshAgent.ResetPath();
-        _NavigationPresenter.ClearPathDisplay();
+        _NavigationPresenter.ResetPathDisplay();
         _NavigationPresenter.ReachedDestination();
         destination = null;
+    }
+
+    /** 
+     * only paused the navigation calculations
+     * the current destination is not lost, but the user needs to reposition themselves
+     */
+    private void PauseNavigation()
+    {
+        isPaused = true;
+        _NavigationPresenter.ClearPathDisplay();
+    }
+
+    /** 
+     * only paused the navigation calculations
+     * the current destination is not lost, but the user needs to reposition themselves
+     */
+    public void ContinueNavigation()
+    {
+        isPaused = false;
     }
 
     /**
@@ -154,12 +174,12 @@ public class Navigation : MonoBehaviour
         if (currentMask == stairsMask)
         {
 
-            StopNavigation();
+            PauseNavigation();
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredStairs);
         }
         else if (currentMask == elevatorMask)
         {
-            StopNavigation();
+            PauseNavigation();
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredElevator);
         }
     }

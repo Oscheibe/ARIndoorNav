@@ -101,11 +101,27 @@ public class NavigationPresenter : MonoBehaviour
         _UserMessageUI.ShowElevatorText(currentFloor.ToString(), destinationFloor.ToString());
     }
     /**
-     * Clears the line renderer path and hides other AR elements
+     * Resets the destination information and clears AR elements AR elements
+     */
+    public void ResetPathDisplay()
+    {
+        _ARVisuals.StopARDisplay();
+        _TargetDestinationUI.ResetTargetInformation();
+    }
+
+    /**
+     * Only clears current AR UI elements, without reseting any values
      */
     public void ClearPathDisplay()
     {
         _ARVisuals.StopARDisplay();
-        _TargetDestinationUI.ResetTargetInformation();
+    }
+
+    /**
+     * Method to continue a paused navigation
+     */
+    public void ContinueNavigation()
+    {
+        _Navigation.ContinueNavigation();
     }
 }
