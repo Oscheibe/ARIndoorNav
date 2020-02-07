@@ -21,7 +21,7 @@ public class Navigation : MonoBehaviour
     public Transform _Floor2;
     public Transform _Floor1;
     public Transform _Floor0;
-    
+
     public float _goalReachedDistance = 1.0f; // In meters
 
     private Room destination;
@@ -35,13 +35,12 @@ public class Navigation : MonoBehaviour
     void Update()
     {
         if (destination == null || _NavMeshAgent == null) return;
-        var currentDistance = CalculateDistance();
+        var currentDistance = GetDistanceToUser(destination);
         _NavigationPresenter.UpdateNavigationInformation(currentDistance, GetPath());
         if (currentDistance < _goalReachedDistance)
         {
 
             StopNavigation();
-            _NavigationPresenter.ReachedDestination();
         }
         ProcessCurrentArea();
     }
@@ -55,10 +54,15 @@ public class Navigation : MonoBehaviour
         this.destination = destination;
         lastDestinationFloor = destination.Floor;
         // Setting the destination height to the ground level
-        destinationPos = new Vector3(destination.Location.position.x, _Floor3.position.y, destination.Location.position.z);
+        var floorTransform = GetFloorTransform(destination.Floor);
+        if (floorTransform == null)
+        {
+            Debug.Log("NO FLOOR FOUND AT ROOM: " + destination.Name);
+        }
+        destinationPos = new Vector3(destination.Location.position.x, floorTransform.position.y, destination.Location.position.z);
 
         _NavMeshAgent.SetDestination(destinationPos);
-        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, CalculateDistance(), GetPath());
+        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, GetDistanceToUser(destination), GetPath());
     }
 
     /**
@@ -72,7 +76,7 @@ public class Navigation : MonoBehaviour
             return;
         }
         _NavMeshAgent.SetDestination(destinationPos);
-        _NavigationPresenter.DisplayNavigationInformation(destination.Name, CalculateDistance(), GetPath());
+        _NavigationPresenter.DisplayNavigationInformation(destination.Name, GetDistanceToUser(destination), GetPath());
     }
 
     /**
@@ -107,21 +111,20 @@ public class Navigation : MonoBehaviour
     }
 
     /**
-        Returns the distance between the users next simulated position and the origin vector
+        Returns the distance between the user and the destination coordinate with its Y value on the floor
     */
-    public string GetDistanceToUser(Vector3 origin)
+    public float GetDistanceToUser(Room room)
     {
-        return Vector3.Distance(_NavMeshAgent.nextPosition, origin).ToString();
+        var floorY = GetFloorTransform(room.Floor).position.y;
+        var roomPosition = room.Location.position;
+        var destinationPosition = new Vector3(room.Location.position.x, floorY, room.Location.position.z);
+
+        return Vector3.Distance(_PoseEstimation.GetUserPosition(), destinationPosition);
     }
 
     private float CalculateDistance(Transform startPosition, Transform endPosition)
     {
         return Vector3.Distance(startPosition.position, endPosition.position);
-    }
-
-    private float CalculateDistance()
-    {
-        return Vector3.Distance(_NavMeshAgent.transform.position, destination.Location.position);
     }
 
     /**
@@ -132,6 +135,7 @@ public class Navigation : MonoBehaviour
     {
         _NavMeshAgent.ResetPath();
         _NavigationPresenter.ClearPathDisplay();
+        _NavigationPresenter.ReachedDestination();
         destination = null;
     }
 
@@ -147,7 +151,7 @@ public class Navigation : MonoBehaviour
         {
             currentMask = navMeshHit.mask;
         }
-        if(currentMask == stairsMask)
+        if (currentMask == stairsMask)
         {
 
             StopNavigation();
@@ -166,5 +170,34 @@ public class Navigation : MonoBehaviour
     public int GetDestinationFloor()
     {
         return lastDestinationFloor;
+    }
+
+    /**
+     * returns the floor transform of floor 0 to 3
+     */
+    private Transform GetFloorTransform(int floorNumber)
+    {
+        if (floorNumber < 0 || floorNumber > 3)
+            return null;
+
+        // No breaks needed when return is called
+        switch (floorNumber)
+        {
+            case 0:
+                return _Floor0;
+
+            case 1:
+                return _Floor1;
+
+            case 2:
+                return _Floor2;
+
+            case 3:
+                return _Floor3;
+
+            default:
+                return null;
+        }
+
     }
 }

@@ -6,7 +6,6 @@ using SimpleJSON;
 
 public class RoomDatabase : MonoBehaviour
 {
-    public GameObject _RoomParentGameObject;
     public RoomListPresenter _RoomListPresenter;
     public Navigation _Navigation;
     public MarkerDatabase _MarkerDatabase;
@@ -26,15 +25,6 @@ public class RoomDatabase : MonoBehaviour
     void Update()
     {
         UpdateDistanceToUser();
-    }
-
-    /**
-        Searches the child components of the parent objects of all rooms within unity 
-        and returns a Transform of found object. Else returns null
-     */
-    public Transform GetRoomPosition(string roomName)
-    {
-        return _MarkerDatabase.RequestMarkerPosition(roomName);
     }
 
     /**
@@ -89,6 +79,7 @@ public class RoomDatabase : MonoBehaviour
 
             var newRoom = new Room(roomName, roomDescription, floorNumber, roomPosition);
             roomList.Add(newRoom);
+            //Debug.Log("Room: " + roomName + " Floor: " + floorNumber);
         }
     }
 
@@ -99,7 +90,7 @@ public class RoomDatabase : MonoBehaviour
     {
         foreach (var room in roomList)
         {
-            room.DistanceToUser = _Navigation.GetDistanceToUser(room.Location.position);
+            room.DistanceToUser = _Navigation.GetDistanceToUser(room).ToString();
         }
     }
 
@@ -110,18 +101,27 @@ public class RoomDatabase : MonoBehaviour
     private int GetFloorNumber(string roomName)
     {
         int floorNumber = -1;
-        foreach (var ch in name.ToCharArray())
+        foreach (var ch in roomName.ToCharArray())
         {
             if (char.IsNumber(ch))
             {
                 floorNumber = (int)char.GetNumericValue(ch);
-                return -1;
+                break;
             }
         }
         // It should never happen, but who knows
-        if(floorNumber > 3)
+        if (floorNumber > 3)
             return -1;
         return floorNumber;
+    }
+
+    /**
+    Searches the child components of the parent objects of all rooms within unity 
+    and returns a Transform of found object. Else returns null
+     */
+    public Transform GetRoomPosition(string roomName)
+    {
+        return _MarkerDatabase.RequestMarkerPosition(roomName);
     }
 
 }

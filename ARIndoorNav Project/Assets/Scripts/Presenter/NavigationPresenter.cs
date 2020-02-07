@@ -43,7 +43,6 @@ public class NavigationPresenter : MonoBehaviour
     public void ReachedDestination()
     {
         _UserMessageUI.ShowDestinationReachedText();
-        _TargetDestinationUI.ResetTargetInformation();
     }
 
     /**
@@ -107,5 +106,6 @@ public class NavigationPresenter : MonoBehaviour
     public void ClearPathDisplay()
     {
         _ARVisuals.StopARDisplay();
+        _TargetDestinationUI.ResetTargetInformation();
     }
 }
