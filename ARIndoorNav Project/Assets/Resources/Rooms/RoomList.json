@@ -112,10 +112,6 @@
     "Description": ""
   },
   {
-    "RoomName": "3.214",
-    "Description": ""
-  },
-  {
     "RoomName": "3.215",
     "Description": ""
   },
@@ -257,27 +253,31 @@
   },
   {
     "RoomName": "T301",
-    "Description": ""
+    "Description": "Stairs"
   },
   {
     "RoomName": "T302",
-    "Description": ""
+    "Description": "Stairs"
   },
   {
     "RoomName": "T303",
-    "Description": ""
+    "Description": "Stairs"
   },
   {
     "RoomName": "T304",
-    "Description": ""
+    "Description": "Stairs"
   },
   {
     "RoomName": "T305",
-    "Description": ""
+    "Description": "Stairs"
+  },
+  {
+    "RoomName": "T306",
+    "Description": "Stairs"
   },
   {
     "RoomName": "T307",
-    "Description": ""
+    "Description": "Stairs"
   },
   {
     "RoomName": "2.100",
@@ -309,6 +309,10 @@
   },
   {
     "RoomName": "2.106",
+    "Description": ""
+  },
+  {
+    "RoomName": "2.106a",
     "Description": ""
   },
   {
@@ -348,11 +352,11 @@
     "Description": ""
   },
   {
-    "RoomName": "2.116",
+    "RoomName": "2.116/2.117",
     "Description": ""
   },
   {
-    "RoomName": "2.118",
+    "RoomName": "2.118/2.119",
     "Description": ""
   },
   {
@@ -385,6 +389,10 @@
   },
   {
     "RoomName": "2.207",
+    "Description": ""
+  },
+  {
+    "RoomName": "2.213",
     "Description": ""
   },
   {
@@ -546,5 +554,29 @@
   {
     "RoomName": "2.253",
     "Description": ""
+  }
+  {
+    "RoomName": "T202",
+    "Description": "Stairs"
+  },
+  {
+    "RoomName": "T203",
+    "Description": "Stairs"
+  },
+  {
+    "RoomName": "T204",
+    "Description": "Stairs"
+  },
+  {
+    "RoomName": "T205",
+    "Description": "Stairs"
+  },
+  {
+    "RoomName": "T206",
+    "Description": "Stairs"
+  },
+  {
+    "RoomName": "T207",
+    "Description": "Stairs"
   }
 ]

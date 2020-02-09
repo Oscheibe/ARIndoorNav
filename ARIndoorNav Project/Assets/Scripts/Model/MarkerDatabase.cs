@@ -16,22 +16,16 @@ public class MarkerDatabase : MonoBehaviour
         markerList = new List<GameObject>(GameObject.FindGameObjectsWithTag("VirtualMarker"));//_RoomDatabase.GetRoomList();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public Transform RequestMarkerPosition(string markerName)
     {
         Predicate<GameObject> markerFinder = (GameObject marker) => { return marker.name == markerName; };
         var markerGO = markerList.Find(markerFinder);
 
-        if(markerGO == null) 
+        if (markerGO == null)
             return null;
-        else    
+        else
             return markerGO.transform;
-        
+
         //return markerGO ? null : markerGO.transform;
     }
 
@@ -43,10 +37,10 @@ public class MarkerDatabase : MonoBehaviour
      * 5 If there is no match return 0 else return the list with at least 1 room
      * Needs to be adjusted later, MakerDatabase should not return any rooms!
      */
-    public List<Room> ContainsRoom(List<string> potentialMarkerList)
+    public List<Room> ContainsRoom(List<string> potentialMarkerStringsList)
     {
         List<Room> resultList = new List<Room>();
-        foreach (string text in potentialMarkerList)
+        foreach (string text in potentialMarkerStringsList)
         {
             bool containsNumber = false;
             foreach (char character in text)
@@ -65,5 +59,26 @@ public class MarkerDatabase : MonoBehaviour
             return null;
         else
             return resultList;
+    }
+
+    /**
+     * Method to validate if every marker has an entry in the database
+     */
+    public bool ValidateMarkerList(List<Room> roomList)
+    {
+        bool matched1to1 = true;
+        string markerName = "";
+        Predicate<Room> roomFinder = (Room room) => { return room.Name == markerName; };
+
+        foreach (var marker in markerList)
+        {
+            markerName = marker.name;
+            if (roomList.Find(roomFinder) == null)
+            {
+                matched1to1 = false;
+                Debug.Log("No room for marker: " + markerName);
+            }
+        }
+        return matched1to1;
     }
 }

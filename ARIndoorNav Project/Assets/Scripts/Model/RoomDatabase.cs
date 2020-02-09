@@ -18,6 +18,9 @@ public class RoomDatabase : MonoBehaviour
     void Start()
     {
         InitiateDatabase();
+        var validatedList = _MarkerDatabase.ValidateMarkerList(roomList);
+        if(validatedList)
+            Debug.Log("Validated room database successfully");
         _RoomListPresenter.UpdateRoomList(roomList);
     }
 
