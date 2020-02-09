@@ -65,11 +65,11 @@
   },
   {
     "RoomName": "3.117/3.118",
-    "Description": ""
+    "Description": "Toilet, WC"
   },
   {
     "RoomName": "3.119/3.120",
-    "Description": ""
+    "Description": "Toilet, WC"
   },
   {
     "RoomName": "3.200",
@@ -110,6 +110,14 @@
   {
     "RoomName": "3.209",
     "Description": ""
+  },
+  {
+    "RoomName": "3.210/3.211",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "3.212/3.213",
+    "Description": "Toilet, WC"
   },
   {
     "RoomName": "3.215",
@@ -353,11 +361,11 @@
   },
   {
     "RoomName": "2.116/2.117",
-    "Description": ""
+    "Description": "Toilet, WC"
   },
   {
     "RoomName": "2.118/2.119",
-    "Description": ""
+    "Description": "Toilet, WC"
   },
   {
     "RoomName": "2.200",
@@ -390,6 +398,14 @@
   {
     "RoomName": "2.207",
     "Description": ""
+  },
+  {
+    "RoomName": "2.208/2.209",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "2.210/2.211",
+    "Description": "Toilet, WC"
   },
   {
     "RoomName": "2.213",

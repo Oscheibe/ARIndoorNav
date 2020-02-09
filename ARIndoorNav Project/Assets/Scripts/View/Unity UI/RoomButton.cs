@@ -42,6 +42,6 @@ public class RoomButton : MonoBehaviour
     // Returns true if the room botton contains the text
     public bool ContainsText(string text)
     {
-        return allText.Contains(text);
+        return allText.ToLower().Contains(text.ToLower());
     }
 }
