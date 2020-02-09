@@ -37,7 +37,8 @@ public class Navigation : MonoBehaviour
     {
         if (destination == null || _NavMeshAgent == null || isPaused == true) return;
         var currentDistance = GetDistanceToUser(destination);
-        _NavigationPresenter.UpdateNavigationInformation(currentDistance, GetPath());
+        _NavigationPresenter.UpdateNavigationInformation(_NavMeshAgent.remainingDistance, GetPath());
+
         if (currentDistance < _goalReachedDistance)
         {
 
@@ -135,6 +136,7 @@ public class Navigation : MonoBehaviour
     public void StopNavigation()
     {
         _NavMeshAgent.ResetPath();
+        //_NavMeshAgent.
         _NavigationPresenter.ResetPathDisplay();
         _NavigationPresenter.ReachedDestination();
         destination = null;
@@ -148,6 +150,10 @@ public class Navigation : MonoBehaviour
     {
         isPaused = true;
         _NavigationPresenter.ClearPathDisplay();
+        //_NavMeshAgent.isStopped = true;
+        //_NavMeshAgent.ActivateCurrentOffMeshLink(false);
+        _NavMeshAgent.enabled = false;
+        // Deactivate agent
     }
 
     /** 
@@ -157,6 +163,10 @@ public class Navigation : MonoBehaviour
     public void ContinueNavigation()
     {
         isPaused = false;
+        _NavMeshAgent.enabled = true;
+        UpdateDestination();
+        // Reset Destination
+        // Activate agent
     }
 
     /**

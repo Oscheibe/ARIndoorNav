@@ -135,11 +135,14 @@ public class PoseEstimation : MonoBehaviour
      */
     public void RotateClockwise()
     {
-        var arPosBefore = _ARCoreOriginTransform.position;
-        _ARCoreOriginTransform.transform.rotation *= Quaternion.Euler(0, rotationDegree, 0);
-        var arPosAfter = _ARCoreOriginTransform.position;
+        //var arPosBefore = _ARCoreOriginTransform.position;
+        //_ARCoreOriginTransform.transform.rotation *= Quaternion.Euler(0, rotationDegree, 0);
+        //var arPosAfter = _ARCoreOriginTransform.position;
 
-        CorrectRotationOffset(arPosBefore, arPosAfter);
+        //CorrectRotationOffset(arPosBefore, arPosAfter);
+
+
+        _ARCoreOriginTransform.transform.RotateAround(_ARCoreFPSTransform.transform.position, Vector3.up, rotationDegree);
     }
 
     /**
@@ -148,11 +151,13 @@ public class PoseEstimation : MonoBehaviour
      */
     public void RotateCounterClockwise()
     {
-        var arPosBefore = _ARCoreOriginTransform.position;
-        _ARCoreOriginTransform.transform.rotation *= Quaternion.Euler(0, -rotationDegree, 0);
-        var arPosAfter = _ARCoreOriginTransform.position;
+        //var arPosBefore = _ARCoreOriginTransform.position;
+        //_ARCoreOriginTransform.transform.rotation *= Quaternion.Euler(0, -rotationDegree, 0);
+        //var arPosAfter = _ARCoreOriginTransform.position;
 
-        CorrectRotationOffset(arPosBefore, arPosAfter);
+        //CorrectRotationOffset(arPosBefore, arPosAfter);
+
+        _ARCoreOriginTransform.transform.RotateAround(_ARCoreFPSTransform.transform.position, Vector3.up, -rotationDegree);
     }
 
     /**
