@@ -25,6 +25,11 @@ public class PoseEstimation : MonoBehaviour
         EnteredElevator = 3,
     }
 
+    void Start()
+    {
+        _TrackingErrorHandling.AnnouncePositionJump(_ARCoreFPSTransform.position);
+    }
+
     void Update() 
     {
         // Reporting the current position for error evaluation
@@ -65,7 +70,10 @@ public class PoseEstimation : MonoBehaviour
 
         Vector3 targetPosDelta;
         targetPosDelta = virtualMarkerPosition - worldMarkerPosition;
-        _ARCoreOriginTransform.position += targetPosDelta;
+
+        var newPosition = _ARCoreOriginTransform.position + targetPosDelta;
+        _TrackingErrorHandling.AnnouncePositionJump(newPosition);
+        _ARCoreOriginTransform.position = newPosition;
     }
 
     private void UpdateUserRotation(Transform virtualMarkerTransform, Pose worldMarkerPose)
