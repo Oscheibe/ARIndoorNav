@@ -83,9 +83,6 @@ public class PoseEstimation : MonoBehaviour
     {
         var posOffset = arPosAfter - arPosBefore;
         _ARCoreOriginTransform.position -= posOffset;
-
-        Debug.Log("Position Offset: " + posOffset);
-        _SystemStatePresenter.DisplayUserMessage("Position Offset: " + posOffset);
     }
 
     /**
