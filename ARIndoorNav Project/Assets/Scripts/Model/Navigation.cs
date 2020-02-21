@@ -22,7 +22,7 @@ public class Navigation : MonoBehaviour
     public Transform _Floor1;
     public Transform _Floor0;
 
-    public float _goalReachedDistance = 2.0f; // In meters
+    public float _goalReachedDistance = 5.0f; // In meters
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
