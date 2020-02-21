@@ -22,7 +22,7 @@ public class Navigation : MonoBehaviour
     public Transform _Floor1;
     public Transform _Floor0;
 
-    public float _goalReachedDistance = 5.0f; // In meters
+    public float _goalReachedDistance = 8.0f; // In meters
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
@@ -36,12 +36,19 @@ public class Navigation : MonoBehaviour
     void Update()
     {
         if (destination == null || _NavMeshAgent == null || isPaused == true) return;
-        var currentDistance = GetDistanceToUser(destination);
-        _NavigationPresenter.UpdateNavigationInformation(_NavMeshAgent.remainingDistance, GetPath());
+        
+        var nextFloorPath = GetPathToNextFloor();
+        var currentDistance = GetPathDistance(GetTotalPath());
 
-        if (currentDistance < _goalReachedDistance)
+        _NavigationPresenter.UpdateNavigationInformation(currentDistance, nextFloorPath);
+
+        /**
+         * Due to a bug, the first frame of changing the destination will no calculate the correct distance
+         * NavMesh will calculate a path after the first update, which means that the first update will result in a 0 distance
+         * Using the unity distance will avoid that behavior
+         */ 
+        if (GetUnityDistanceToUser(destination) < _goalReachedDistance)
         {
-
             StopNavigation();
         }
         ProcessCurrentArea();
@@ -64,7 +71,9 @@ public class Navigation : MonoBehaviour
         destinationPos = new Vector3(destination.Location.position.x, floorTransform.position.y, destination.Location.position.z);
 
         _NavMeshAgent.SetDestination(destinationPos);
-        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, GetDistanceToUser(destination), GetPath());
+        var nextFloorPath = GetPathToNextFloor();
+        var totalDistance = GetPathDistance(GetTotalPath());
+        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, totalDistance, nextFloorPath);
     }
 
     /**
@@ -78,7 +87,9 @@ public class Navigation : MonoBehaviour
             return;
         }
         _NavMeshAgent.SetDestination(destinationPos);
-        _NavigationPresenter.DisplayNavigationInformation(destination.Name, GetDistanceToUser(destination), GetPath());
+        var nextFloorPath = GetPathToNextFloor();
+        var totalDistance = GetPathDistance(GetTotalPath());
+        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, totalDistance, nextFloorPath);
     }
 
     /**
@@ -98,7 +109,7 @@ public class Navigation : MonoBehaviour
         NavMesh constantly updates the path based on the user and destination position.
         The path that was updated during the current frame can be accessed here
      */
-    private Vector3[] GetPath()
+    private Vector3[] GetTotalPath()
     {
         return _NavMeshAgent.path.corners;
     }
@@ -115,18 +126,13 @@ public class Navigation : MonoBehaviour
     /**
         Returns the distance between the user and the destination coordinate with its Y value on the floor
     */
-    public float GetDistanceToUser(Room room)
+    public float GetUnityDistanceToUser(Room room)
     {
         var floorY = GetFloorTransform(room.Floor).position.y;
         var roomPosition = room.Location.position;
         var destinationPosition = new Vector3(room.Location.position.x, floorY, room.Location.position.z);
 
         return Vector3.Distance(_PoseEstimation.GetUserPosition(), destinationPosition);
-    }
-
-    private float CalculateDistance(Transform startPosition, Transform endPosition)
-    {
-        return Vector3.Distance(startPosition.position, endPosition.position);
     }
 
     /**
@@ -228,6 +234,42 @@ public class Navigation : MonoBehaviour
             default:
                 return null;
         }
+    }
 
+    /**
+     * Calculates the distance between all the points on a path
+     */
+    private float GetPathDistance(Vector3[] path)
+    {
+        float result = 0;
+        // Iterates over each path corner expect the last and 
+        // calculates the distance between each one
+        for (int i = 0; i < path.Length - 1; i++)
+        {
+            result += Vector3.Distance(path[i], path[i + 1]);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the path to the next floor-changing corner
+     * This method allows for navigation to stairs or elevators without displaying the path beyond them
+     * and cleaning up visual clutter this way
+     */
+    private Vector3[] GetPathToNextFloor()
+    {
+        var totalPath = GetTotalPath();
+        List<Vector3> pathToFloor = new List<Vector3>();
+        Vector3 lastCorner = totalPath[0];
+        foreach (var corner in totalPath)
+        {
+            if(corner.y != lastCorner.y)
+                break;
+
+            pathToFloor.Add(corner);
+            lastCorner = corner;
+        }
+        return pathToFloor.ToArray();
     }
 }

@@ -9,7 +9,7 @@ public class Room
     private string description;
     private Transform location;
     private Image image;
-    private string distanceToUser;
+    private float distanceToUser;
     private int floor = -1;
 
     private Room() { }
@@ -61,7 +61,7 @@ public class Room
         set { image = value; }
     }
 
-    public string DistanceToUser
+    public float DistanceToUser
     {
         get { return distanceToUser; }
         set { distanceToUser = value; }
