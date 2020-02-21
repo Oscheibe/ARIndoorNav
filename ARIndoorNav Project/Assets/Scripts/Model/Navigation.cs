@@ -26,7 +26,7 @@ public class Navigation : MonoBehaviour
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
-    private int lastDestinationFloor = -1;
+    private int destinationFloor = -1;
     private bool isPaused = false;
 
     private int stairsMask = 8;
@@ -61,7 +61,7 @@ public class Navigation : MonoBehaviour
     public void UpdateDestination(Room destination)
     {
         this.destination = destination;
-        lastDestinationFloor = destination.Floor;
+        destinationFloor = destination.Floor;
         // Setting the destination height to the ground level
         var floorTransform = GetFloorTransform(destination.Floor);
         if (floorTransform == null)
@@ -183,16 +183,24 @@ public class Navigation : MonoBehaviour
     {
         NavMeshHit navMeshHit;
         int currentMask = -1;
+
+        if(_PoseEstimation.GetCurrentFloor() == destinationFloor)
+        {
+            return;
+        }
+        // Check if the navmesh agent is on the mesh
         if (!_NavMeshAgent.SamplePathPosition(NavMesh.AllAreas, 0f, out navMeshHit))
         {
             currentMask = navMeshHit.mask;
         }
+        // Check if the user is on stairs
         if (currentMask == stairsMask)
         {
 
             PauseNavigation();
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredStairs);
         }
+        // Check if the user is on the elevator
         else if (currentMask == elevatorMask)
         {
             PauseNavigation();
@@ -205,7 +213,7 @@ public class Navigation : MonoBehaviour
      */
     public int GetDestinationFloor()
     {
-        return lastDestinationFloor;
+        return destinationFloor;
     }
 
     /**

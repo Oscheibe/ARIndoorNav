@@ -15,7 +15,7 @@ public class PoseEstimation : MonoBehaviour
     public TrackingErrorHandling _TrackingErrorHandling; 
 
     private float rotationDegree = 0.5f;
-    private int currentFloor = -1;
+    private int currentFloor = 3;
 
     public enum NewPosReason
     {
@@ -135,6 +135,11 @@ public class PoseEstimation : MonoBehaviour
     public Quaternion GetUserRotation()
     {
         return _ARCoreFPSTransform.rotation;
+    }
+
+    public int GetCurrentFloor()
+    {
+        return currentFloor;
     }
 
     /**
