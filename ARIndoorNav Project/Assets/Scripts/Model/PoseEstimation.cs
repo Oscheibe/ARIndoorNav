@@ -111,10 +111,10 @@ public class PoseEstimation : MonoBehaviour
                 //TODO
                 break;
             case NewPosReason.EnteredStairs:
-                _NavigationPresenter.SendTakeStairsMessage(currentFloor, destinationFloor);
+                _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, NewPosReason.EnteredStairs);
                 break;
             case NewPosReason.EnteredElevator:
-                _NavigationPresenter.SendTakeElevatorMessage(currentFloor, destinationFloor);
+                _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, NewPosReason.EnteredElevator);
                 break;
             default:
                 break;

@@ -6,6 +6,7 @@ using TMPro;
 public class UserMessageUI : MonoBehaviour
 {
     public SystemInformationHeaderController _SystemInformationHeaderController;
+    public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
     public GameObject _destinationReachedText;
     public GameObject _walkStairsText;
@@ -34,22 +35,41 @@ public class UserMessageUI : MonoBehaviour
         _destinationReachedText.SetActive(false);
     }
 
-    public void ShowStairsText(string currentFloor, string destinationFloor)
+    private void ShowStairsText(string floorDifference, string relativeMovement, string destinationFloor)
     {
         _takeElevatorText.SetActive(false);
         _walkStairsText.SetActive(true);
-        _walkStairsText.GetComponent<TMP_Text>().text = "Please take the stairs to floor: " + destinationFloor;
+        // String example: "Please take the stairs down 2 floors to floor 1"
+        _walkStairsText.GetComponent<TMP_Text>().text = "Please take the stairs " + relativeMovement + " " + floorDifference + " floors to floor " + destinationFloor;
     }
 
 
-    public void ShowElevatorText(string currentFloor, string destinationFloor)
+    private void ShowElevatorText(string floorDifference, string relativeMovement, string destinationFloor)
     {
         _walkStairsText.SetActive(false);
         _takeElevatorText.SetActive(true);
-        _takeElevatorText.GetComponent<TMP_Text>().text = "Please take the elevator to floor: " + destinationFloor;
+        // String example: "Please take the elevator down to floor 1";
+        _takeElevatorText.GetComponent<TMP_Text>().text = "Please take the elevator " + relativeMovement + " to floor " + destinationFloor;
     }
 
+    public void DisplayObstacleMessage(int currentFloor, int destinationFloor, PoseEstimation.NewPosReason obstacle)
+    {
+        _UIMenuSwitchingManager.OpenConfirmScreen();
 
+        var floorDifference = (destinationFloor - currentFloor);
+        string relativeMovement = "";
+        if(floorDifference > 0)
+            relativeMovement = "up";
+        else 
+            relativeMovement = "down";
+
+        if(obstacle == PoseEstimation.NewPosReason.EnteredStairs)
+        {
+            ShowStairsText(Mathf.Abs(floorDifference).ToString(), relativeMovement, destinationFloor.ToString());
+        }
+        else
+            ShowElevatorText(Mathf.Abs(floorDifference).ToString(), relativeMovement, destinationFloor.ToString());
+    }
 
 
 

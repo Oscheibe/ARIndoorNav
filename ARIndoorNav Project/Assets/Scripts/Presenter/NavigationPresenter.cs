@@ -82,24 +82,14 @@ public class NavigationPresenter : MonoBehaviour
     }
 
     /**
-     * Called when the users enters a "Stairs" area.
-     * The user must walk the stairs and then re-locate
+     * Called when the users enters either an "Elevator" or "Stairs" area.
+     * The user must walk up or down the obstacle before resuming navigation!
      */
-    public void SendTakeStairsMessage(int currentFloor, int destinationFloor)
+    public void SendObstacleMessage(int currentFloor, int destinationFloor, PoseEstimation.NewPosReason obstacle)
     {
-        _UIMenuSwitchingManager.OpenConfirmScreen();
-        _UserMessageUI.ShowStairsText(currentFloor.ToString(), destinationFloor.ToString());
+        _UserMessageUI.DisplayObstacleMessage(currentFloor, destinationFloor, obstacle);
     }
 
-    /**
-     * Called when the users enters a "Elevator" area.
-     * The user must walk the elevator and then re-locate
-     */
-    public void SendTakeElevatorMessage(int currentFloor, int destinationFloor)
-    {
-        _UIMenuSwitchingManager.OpenConfirmScreen();
-        _UserMessageUI.ShowElevatorText(currentFloor.ToString(), destinationFloor.ToString());
-    }
     /**
      * Resets the destination information and clears AR elements AR elements
      */
