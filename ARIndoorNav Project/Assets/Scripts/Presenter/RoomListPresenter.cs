@@ -8,9 +8,6 @@ using UnityEngine;
  */
 public class RoomListPresenter : MonoBehaviour
 {
-    // Model
-    public RoomDatabase _RoomDatabase;
-
     // View
     public RoomListUI _RoomListUI;
     public RecommendedUI _RecommendedUI;

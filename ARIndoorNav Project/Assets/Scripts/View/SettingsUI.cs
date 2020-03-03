@@ -5,11 +5,6 @@ using UnityEngine;
 public class SettingsUI : MonoBehaviour
 {
     public SystemStatePresenter _SystemStatePresenter;
-    
-    public void StartMarkerDetection()
-    {
-        _SystemStatePresenter.RequestMarkerTracking();
-    }
 
     public void TestMessage()
     {

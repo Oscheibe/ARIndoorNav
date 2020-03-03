@@ -10,13 +10,10 @@ using UnityEngine.UI;
  */
 public class SystemStatePresenter : MonoBehaviour
 {
-    // Model
-    public PoseEstimation _PoseEstimation;
-    public UserMessageUI _UserMessageUI;
-
     // View
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
     public MarkerDetectionUI _MarkerDetectionUI;
+    public UserMessageUI _UserMessageUI;
 
     // Other presenter? TODO
     public NavigationPresenter _NavigationPresenter;
@@ -29,11 +26,6 @@ public class SystemStatePresenter : MonoBehaviour
     public void DisplayUserMessage(string message)
     {
         _UserMessageUI.SendUserMessage(message);
-    }
-
-    public void RequestMarkerTracking()
-    {
-        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
     }
 
     public void TestMessage()
