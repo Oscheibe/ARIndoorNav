@@ -13,7 +13,6 @@ using UnityEngine.AI;
 public class Navigation : MonoBehaviour
 {
     public NavMeshAgent _NavMeshAgent;
-    public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
     public PoseEstimation _PoseEstimation;
 
