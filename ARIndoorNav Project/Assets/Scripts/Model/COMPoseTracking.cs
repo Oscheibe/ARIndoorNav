@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GoogleARCore;
 
-public class ARPositionTracking : MonoBehaviour
+public class COMPoseTracking : MonoBehaviour
 {
     public Transform _ARCoreOriginTransform;
     public Transform _ARCoreFPSTransform;

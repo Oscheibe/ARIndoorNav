@@ -5,7 +5,7 @@ using GoogleARCore;
 
 public class PoseEstimation : MonoBehaviour
 {
-    public ARPositionTracking _ARPositionTracking;
+    public COMPoseTracking _ARPositionTracking;
     public MarkerDetection _MarkerDetection;
     public Navigation _Navigation;
     public TrackingErrorHandling _TrackingErrorHandling; 
