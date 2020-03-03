@@ -13,20 +13,15 @@ using UnityEngine.AI;
 public class Navigation : MonoBehaviour
 {
     public NavMeshAgent _NavMeshAgent;
-    public NavMeshSurface _MapModelMesh;
     public NavigationPresenter _NavigationPresenter;
     public PoseEstimation _PoseEstimation;
+    public ModelDatabase _ModelDatabase;
 
-    public Transform _Floor3;
-    public Transform _Floor2;
-    public Transform _Floor1;
-    public Transform _Floor0;
-
-    public float _goalReachedDistance = 2.0f; // In meters
+    public float _goalReachedDistance = 8.0f; // In meters
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
-    private int lastDestinationFloor = -1;
+    private int destinationFloor = -1;
     private bool isPaused = false;
 
     private int stairsMask = 8;
@@ -36,12 +31,19 @@ public class Navigation : MonoBehaviour
     void Update()
     {
         if (destination == null || _NavMeshAgent == null || isPaused == true) return;
-        var currentDistance = GetDistanceToUser(destination);
-        _NavigationPresenter.UpdateNavigationInformation(_NavMeshAgent.remainingDistance, GetPath());
+        
+        var nextFloorPath = GetPathToNextFloor();
+        var currentDistance = GetPathDistance(GetTotalPath());
 
-        if (currentDistance < _goalReachedDistance)
+        _NavigationPresenter.UpdateNavigationInformation(currentDistance, nextFloorPath);
+
+        /**
+         * Due to a bug, the first frame of changing the destination will no calculate the correct distance
+         * NavMesh will calculate a path after the first update, which means that the first update will result in a 0 distance
+         * Using the unity distance will avoid that behavior
+         */ 
+        if (GetUnityDistanceToUser(destination) < _goalReachedDistance)
         {
-
             StopNavigation();
         }
         ProcessCurrentArea();
@@ -54,9 +56,9 @@ public class Navigation : MonoBehaviour
     public void UpdateDestination(Room destination)
     {
         this.destination = destination;
-        lastDestinationFloor = destination.Floor;
+        destinationFloor = destination.Floor;
         // Setting the destination height to the ground level
-        var floorTransform = GetFloorTransform(destination.Floor);
+        var floorTransform = _ModelDatabase.GetFloorTransform(destination.Floor);
         if (floorTransform == null)
         {
             Debug.Log("NO FLOOR FOUND AT ROOM: " + destination.Name);
@@ -64,7 +66,9 @@ public class Navigation : MonoBehaviour
         destinationPos = new Vector3(destination.Location.position.x, floorTransform.position.y, destination.Location.position.z);
 
         _NavMeshAgent.SetDestination(destinationPos);
-        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, GetDistanceToUser(destination), GetPath());
+        var nextFloorPath = GetPathToNextFloor();
+        var totalDistance = GetPathDistance(GetTotalPath());
+        _NavigationPresenter.DisplayNavigationInformation(totalDistance, nextFloorPath);
     }
 
     /**
@@ -78,16 +82,18 @@ public class Navigation : MonoBehaviour
             return;
         }
         _NavMeshAgent.SetDestination(destinationPos);
-        _NavigationPresenter.DisplayNavigationInformation(destination.Name, GetDistanceToUser(destination), GetPath());
+        var nextFloorPath = GetPathToNextFloor();
+        var totalDistance = GetPathDistance(GetTotalPath());
+        _NavigationPresenter.DisplayNavigationInformation(totalDistance, nextFloorPath);
     }
 
     /**
         Warps the NavMesh agent to the Vector3 position
         Returns true if successfull.
-        This Method is used after the PoseEstimation has updated to user position to warp
+        This Method is used after the PoseEstimation has updated the user position to warp
         an eventually stuck NavMesh agent out of its stuck position
     */
-    public bool WarpNavMeshAgent(Vector3 warpPosition)
+    public bool ReportUserJump(Vector3 warpPosition)
     {
         var hasWarped = _NavMeshAgent.Warp(warpPosition);
         UpdateDestination();
@@ -98,7 +104,7 @@ public class Navigation : MonoBehaviour
         NavMesh constantly updates the path based on the user and destination position.
         The path that was updated during the current frame can be accessed here
      */
-    private Vector3[] GetPath()
+    private Vector3[] GetTotalPath()
     {
         return _NavMeshAgent.path.corners;
     }
@@ -115,18 +121,13 @@ public class Navigation : MonoBehaviour
     /**
         Returns the distance between the user and the destination coordinate with its Y value on the floor
     */
-    public float GetDistanceToUser(Room room)
+    public float GetUnityDistanceToUser(Room room)
     {
-        var floorY = GetFloorTransform(room.Floor).position.y;
+        var floorY = _ModelDatabase.GetFloorTransform(room.Floor).position.y;
         var roomPosition = room.Location.position;
         var destinationPosition = new Vector3(room.Location.position.x, floorY, room.Location.position.z);
 
         return Vector3.Distance(_PoseEstimation.GetUserPosition(), destinationPosition);
-    }
-
-    private float CalculateDistance(Transform startPosition, Transform endPosition)
-    {
-        return Vector3.Distance(startPosition.position, endPosition.position);
     }
 
     /**
@@ -177,19 +178,30 @@ public class Navigation : MonoBehaviour
     {
         NavMeshHit navMeshHit;
         int currentMask = -1;
+
+        if(_PoseEstimation.GetCurrentFloor() == destinationFloor)
+        {
+            return;
+        }
+        // Check if the navmesh agent is on the mesh
         if (!_NavMeshAgent.SamplePathPosition(NavMesh.AllAreas, 0f, out navMeshHit))
         {
             currentMask = navMeshHit.mask;
         }
+        // Check if the user is on stairs
         if (currentMask == stairsMask)
         {
-
             PauseNavigation();
+            var currentFloor = _PoseEstimation.GetCurrentFloor();
+            _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredStairs);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredStairs);
         }
+        // Check if the user is on the elevator
         else if (currentMask == elevatorMask)
         {
             PauseNavigation();
+            var currentFloor = _PoseEstimation.GetCurrentFloor();
+            _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredElevator);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredElevator);
         }
     }
@@ -199,35 +211,43 @@ public class Navigation : MonoBehaviour
      */
     public int GetDestinationFloor()
     {
-        return lastDestinationFloor;
+        return destinationFloor;
     }
 
     /**
-     * returns the floor transform of floor 0 to 3
+     * Calculates the distance between all the points on a path
      */
-    private Transform GetFloorTransform(int floorNumber)
+    private float GetPathDistance(Vector3[] path)
     {
-        if (floorNumber < 0 || floorNumber > 3)
-            return null;
-
-        // No breaks needed when return is called
-        switch (floorNumber)
+        float result = 0;
+        // Iterates over each path corner expect the last and 
+        // calculates the distance between each one
+        for (int i = 0; i < path.Length - 1; i++)
         {
-            case 0:
-                return _Floor0;
-
-            case 1:
-                return _Floor1;
-
-            case 2:
-                return _Floor2;
-
-            case 3:
-                return _Floor3;
-
-            default:
-                return null;
+            result += Vector3.Distance(path[i], path[i + 1]);
         }
 
+        return result;
+    }
+
+    /**
+     * Returns the path to the next floor-changing corner
+     * This method allows for navigation to stairs or elevators without displaying the path beyond them
+     * and cleaning up visual clutter this way
+     */
+    private Vector3[] GetPathToNextFloor()
+    {
+        var totalPath = GetTotalPath();
+        List<Vector3> pathToFloor = new List<Vector3>();
+        Vector3 lastCorner = totalPath[0];
+        foreach (var corner in totalPath)
+        {
+            if(corner.y != lastCorner.y)
+                break;
+
+            pathToFloor.Add(corner);
+            lastCorner = corner;
+        }
+        return pathToFloor.ToArray();
     }
 }

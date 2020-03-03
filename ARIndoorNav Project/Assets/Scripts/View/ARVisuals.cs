@@ -116,7 +116,7 @@ public class ARVisuals : MonoBehaviour
             y = onScreenPos.y * Screen.height;
         }
 
-        onScreenPos = new Vector2(x, y);
-        _2DArrow.transform.position = onScreenPos;
+        var arrowPos = new Vector3(x, 0, y);
+        _2DArrow.transform.position = arrowPos;
     }
 }

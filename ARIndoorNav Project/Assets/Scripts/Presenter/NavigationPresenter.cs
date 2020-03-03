@@ -9,18 +9,26 @@ using UnityEngine;
  */
 public class NavigationPresenter : MonoBehaviour
 {
-    public ARVisuals _ARVisuals;
-    public TargetDestinationUI _TargetDestinationUI;
+    // Model
     public PoseEstimation _PoseEstimation;
     public Navigation _Navigation;
+
+    // View
+    public ARVisuals _ARVisuals;
+    public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
     private string _currentDestination;
 
-    public void DisplayNavigationInformation(string destinationName, float destinationDistance, Vector3[] path)
+    public void UpdateDestination(Room destination)
     {
-        _currentDestination = destinationName;
+        _currentDestination = destination.Name;
+        _Navigation.UpdateDestination(destination);
+    }
+
+    public void DisplayNavigationInformation(float destinationDistance, Vector3[] path)
+    {
         _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance);
         _ARVisuals.SendNavigationPath(path);
     }
@@ -45,21 +53,6 @@ public class NavigationPresenter : MonoBehaviour
         _UserMessageUI.ShowDestinationReachedText();
     }
 
-    /**
-     * Method that starts the following steps:
-     * 1 Save current Transform data of the user
-     * 2 Send a snapshot of the camera image to an OCR service
-     * 3 Display a loading animation while waiting for a response
-     * 4a Receive response and calculate user position
-     * 4b Handle response timeout (TODO)
-     * (5 optional) Initiate manual rotation adjustment
-     * 6 Send confirmation message to user
-     */
-    public void InitiateMarkerDetection()
-    {
-        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
-    }
-
     public Vector3 GetNextPathPosition()
     {
         return _Navigation.GetNextCorner();
@@ -82,24 +75,14 @@ public class NavigationPresenter : MonoBehaviour
     }
 
     /**
-     * Called when the users enters a "Stairs" area.
-     * The user must walk the stairs and then re-locate
+     * Called when the users enters either an "Elevator" or "Stairs" area.
+     * The user must walk up or down the obstacle before resuming navigation!
      */
-    public void SendTakeStairsMessage(int currentFloor, int destinationFloor)
+    public void SendObstacleMessage(int currentFloor, int destinationFloor, PoseEstimation.NewPosReason obstacle)
     {
-        _UIMenuSwitchingManager.OpenConfirmScreen();
-        _UserMessageUI.ShowStairsText(currentFloor.ToString(), destinationFloor.ToString());
+        _UserMessageUI.DisplayObstacleMessage(currentFloor, destinationFloor, obstacle);
     }
 
-    /**
-     * Called when the users enters a "Elevator" area.
-     * The user must walk the elevator and then re-locate
-     */
-    public void SendTakeElevatorMessage(int currentFloor, int destinationFloor)
-    {
-        _UIMenuSwitchingManager.OpenConfirmScreen();
-        _UserMessageUI.ShowElevatorText(currentFloor.ToString(), destinationFloor.ToString());
-    }
     /**
      * Resets the destination information and clears AR elements AR elements
      */

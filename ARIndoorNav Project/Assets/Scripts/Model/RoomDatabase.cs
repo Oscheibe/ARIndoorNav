@@ -93,7 +93,7 @@ public class RoomDatabase : MonoBehaviour
     {
         foreach (var room in roomList)
         {
-            room.DistanceToUser = _Navigation.GetDistanceToUser(room).ToString();
+            room.DistanceToUser = _Navigation.GetUnityDistanceToUser(room);
         }
     }
 

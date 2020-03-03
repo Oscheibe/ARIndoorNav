@@ -5,7 +5,7 @@ using UnityEngine;
 public class RoomListUI : MonoBehaviour
 {
     public GameObject _buttonTemplate;
-    public RoomListPresenter _RoomListPresenter;
+    public NavigationPresenter _NavigationPresenter;
 
     private List<GameObject> buttonGameobjects = new List<GameObject>();
 
@@ -26,7 +26,7 @@ public class RoomListUI : MonoBehaviour
 
     public void ChooseDestination(Room destination)
     {
-        _RoomListPresenter.UpdateDestination(destination);
+        _NavigationPresenter.UpdateDestination(destination);
     }
 
     private void GenButtons(Room room)

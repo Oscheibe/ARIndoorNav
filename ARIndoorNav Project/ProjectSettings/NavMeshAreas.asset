@@ -14,7 +14,7 @@ NavMeshProjectSettings:
   - name: Stairs
     cost: 1
   - name: Elevator
-    cost: 5
+    cost: 50
   - name: 
     cost: 1
   - name: 

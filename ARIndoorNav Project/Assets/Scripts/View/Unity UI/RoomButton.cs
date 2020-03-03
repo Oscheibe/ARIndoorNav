@@ -8,10 +8,10 @@ public class RoomButton : MonoBehaviour
 {
     public RoomListUI _RoomListUI;
     
-    public Text _RoomNameText;
-    public Text _RoomInformationText;
+    public TMP_Text _RoomNameText;
+    public TMP_Text _RoomInformationText;
     public TMP_Text _DistanceToRoomText;
-    public Image _RoomImage;
+    //public Image _RoomImage;
 
     private string allText;
 
@@ -24,14 +24,13 @@ public class RoomButton : MonoBehaviour
         _RoomNameText.text = room.Name;
         _RoomInformationText.text = room.Description;
         _DistanceToRoomText.text = distanceToRoom;
-        if(room.Image != null) _RoomImage = room.Image;
 
         allText = _RoomNameText.text + " " + _RoomInformationText.text;
     }
 
     public void UpdateDistanceToRoom()
     {
-        _DistanceToRoomText.text = room.DistanceToUser + " m";
+        _DistanceToRoomText.text = "(" + room.DistanceToUser.ToString("0.00") + " m)";
     }
 
     public void OnClick()

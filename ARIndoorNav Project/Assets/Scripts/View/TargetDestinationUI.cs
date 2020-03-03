@@ -15,7 +15,7 @@ public class TargetDestinationUI : MonoBehaviour
     public void DisplayTargetInformation(string destinationName, float targetDistance)
     {
         lastDestinationName = destinationName;
-        _DestinationName.text = "Destination: " + destinationName;
+        _DestinationName.text =  destinationName;
         _DestinationDistance.text = "(" + targetDistance.ToString("0.00") + " m)";
     }
 
