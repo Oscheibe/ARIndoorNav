@@ -49,7 +49,7 @@ public class PoseEstimation : MonoBehaviour
         CorrectRotationOffset(arPosBefore, arPosAfter);
         UpdateUserPosition(virtualMarkerTransform.position, worldMarkerPose.position);
 
-        _Navigation.WarpNavMeshAgent(_ARCoreFPSTransform.position);
+        _Navigation.ReportUserJump(_ARCoreFPSTransform.position);
     }
 
     /**
@@ -70,6 +70,7 @@ public class PoseEstimation : MonoBehaviour
 
         var newPosition = _ARCoreOriginTransform.position + targetPosDelta;
         _TrackingErrorHandling.AnnouncePositionJump(newPosition);
+
         _ARCoreOriginTransform.position = newPosition;
     }
 
@@ -87,7 +88,10 @@ public class PoseEstimation : MonoBehaviour
     private void CorrectRotationOffset(Vector3 arPosBefore, Vector3 arPosAfter)
     {
         var posOffset = arPosAfter - arPosBefore;
-        _ARCoreOriginTransform.position -= posOffset;
+        var newPosition = _ARCoreOriginTransform.position - posOffset;
+        _TrackingErrorHandling.AnnouncePositionJump(newPosition);
+
+        _ARCoreOriginTransform.position = newPosition;
     }
 
     /**
@@ -97,7 +101,6 @@ public class PoseEstimation : MonoBehaviour
      */
     public void RequestNewPosition(NewPosReason reason)
     {
-        var destinationFloor = _Navigation.GetDestinationFloor();
         
         switch (reason)
         {

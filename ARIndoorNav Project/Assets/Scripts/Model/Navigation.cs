@@ -94,10 +94,10 @@ public class Navigation : MonoBehaviour
     /**
         Warps the NavMesh agent to the Vector3 position
         Returns true if successfull.
-        This Method is used after the PoseEstimation has updated to user position to warp
+        This Method is used after the PoseEstimation has updated the user position to warp
         an eventually stuck NavMesh agent out of its stuck position
     */
-    public bool WarpNavMeshAgent(Vector3 warpPosition)
+    public bool ReportUserJump(Vector3 warpPosition)
     {
         var hasWarped = _NavMeshAgent.Warp(warpPosition);
         UpdateDestination();
