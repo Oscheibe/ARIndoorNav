@@ -72,7 +72,7 @@ public class Navigation : MonoBehaviour
         _NavMeshAgent.SetDestination(destinationPos);
         var nextFloorPath = GetPathToNextFloor();
         var totalDistance = GetPathDistance(GetTotalPath());
-        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, totalDistance, nextFloorPath);
+        _NavigationPresenter.DisplayNavigationInformation(totalDistance, nextFloorPath);
     }
 
     /**
@@ -88,7 +88,7 @@ public class Navigation : MonoBehaviour
         _NavMeshAgent.SetDestination(destinationPos);
         var nextFloorPath = GetPathToNextFloor();
         var totalDistance = GetPathDistance(GetTotalPath());
-        _NavigationPresenter.DisplayNavigationInformation(this.destination.Name, totalDistance, nextFloorPath);
+        _NavigationPresenter.DisplayNavigationInformation(totalDistance, nextFloorPath);
     }
 
     /**

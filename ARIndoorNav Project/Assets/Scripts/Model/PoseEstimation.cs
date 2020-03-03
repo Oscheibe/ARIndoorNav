@@ -8,7 +8,7 @@ public class PoseEstimation : MonoBehaviour
     public COMPoseTracking _ARPositionTracking;
     public MarkerDetection _MarkerDetection;
     public Navigation _Navigation;
-    public TrackingErrorHandling _TrackingErrorHandling; 
+    public TrackingErrorHandling _TrackingErrorHandling;
 
     private float rotationDegree = 0.5f;
     private int currentFloor = 3;
@@ -26,7 +26,7 @@ public class PoseEstimation : MonoBehaviour
         _TrackingErrorHandling.AnnouncePositionJump(_ARPositionTracking.GetUnityPosition());
     }
 
-    void Update() 
+    void Update()
     {
         // Reporting the current position for error evaluation
         _TrackingErrorHandling.ReportCurrentUserPosition(_ARPositionTracking.GetUnityPosition());
@@ -94,13 +94,20 @@ public class PoseEstimation : MonoBehaviour
     }
 
     /**
-        This method is called when the accumulated tracking error exceed a limit OR
-        When it is called manually
-        Tracking will be stopped and a user prompt initiated that asks the user to scan a marker
-     */
+    * This method is called when the accumulated tracking error exceed a limit OR
+    * When it is called manually
+    * Tracking will be stopped and a user prompt initiated that asks the user to scan a marker
+    * 1 Save current Transform data of the user
+    * 2 Send a snapshot of the camera image to an OCR service
+    * 3 Display a loading animation while waiting for a response
+    * 4a Receive response and calculate user position
+    * 4b Handle response timeout (TODO)
+    * (5 optional) Initiate manual rotation adjustment
+    * 6 Send confirmation message to user
+    */
     public void RequestNewPosition(NewPosReason reason)
     {
-        
+
         switch (reason)
         {
             case NewPosReason.Manual:
@@ -166,7 +173,7 @@ public class PoseEstimation : MonoBehaviour
     private void ResetARCore()
     {
         //TODO
-        
+
     }
 
 }

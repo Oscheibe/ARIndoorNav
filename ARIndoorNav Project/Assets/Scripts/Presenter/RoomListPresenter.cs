@@ -8,26 +8,12 @@ using UnityEngine;
  */
 public class RoomListPresenter : MonoBehaviour
 {
+    // Model
+    public RoomDatabase _RoomDatabase;
+
+    // View
     public RoomListUI _RoomListUI;
     public RecommendedUI _RecommendedUI;
-    public Navigation _Navigation;
-    public RoomDatabase _RoomDatabase;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        // send lists
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    public void UpdateDestination(Room destination)
-    {
-        _Navigation.UpdateDestination(destination);
-    }
 
     public void UpdateRoomList(List<Room> roomList)
     {

@@ -9,18 +9,26 @@ using UnityEngine;
  */
 public class NavigationPresenter : MonoBehaviour
 {
-    public ARVisuals _ARVisuals;
-    public TargetDestinationUI _TargetDestinationUI;
+    // Model
     public PoseEstimation _PoseEstimation;
     public Navigation _Navigation;
+
+    // View
+    public ARVisuals _ARVisuals;
+    public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
     private string _currentDestination;
 
-    public void DisplayNavigationInformation(string destinationName, float destinationDistance, Vector3[] path)
+    public void UpdateDestination(Room destination)
     {
-        _currentDestination = destinationName;
+        _currentDestination = destination.Name;
+        _Navigation.UpdateDestination(destination);
+    }
+
+    public void DisplayNavigationInformation(float destinationDistance, Vector3[] path)
+    {
         _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance);
         _ARVisuals.SendNavigationPath(path);
     }
@@ -43,21 +51,6 @@ public class NavigationPresenter : MonoBehaviour
     public void ReachedDestination()
     {
         _UserMessageUI.ShowDestinationReachedText();
-    }
-
-    /**
-     * Method that starts the following steps:
-     * 1 Save current Transform data of the user
-     * 2 Send a snapshot of the camera image to an OCR service
-     * 3 Display a loading animation while waiting for a response
-     * 4a Receive response and calculate user position
-     * 4b Handle response timeout (TODO)
-     * (5 optional) Initiate manual rotation adjustment
-     * 6 Send confirmation message to user
-     */
-    public void InitiateMarkerDetection()
-    {
-        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
     }
 
     public Vector3 GetNextPathPosition()

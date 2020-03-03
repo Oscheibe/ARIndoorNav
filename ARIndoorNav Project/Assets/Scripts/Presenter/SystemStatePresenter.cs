@@ -10,10 +10,15 @@ using UnityEngine.UI;
  */
 public class SystemStatePresenter : MonoBehaviour
 {
+    // Model
     public PoseEstimation _PoseEstimation;
     public UserMessageUI _UserMessageUI;
+
+    // View
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
     public MarkerDetectionUI _MarkerDetectionUI;
+
+    // Other presenter? TODO
     public NavigationPresenter _NavigationPresenter;
     
     public void SendWarningMessage(string warning)
