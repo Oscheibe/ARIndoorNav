@@ -195,14 +195,17 @@ public class Navigation : MonoBehaviour
         // Check if the user is on stairs
         if (currentMask == stairsMask)
         {
-
             PauseNavigation();
+            var currentFloor = _PoseEstimation.GetCurrentFloor();
+            _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredStairs);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredStairs);
         }
         // Check if the user is on the elevator
         else if (currentMask == elevatorMask)
         {
             PauseNavigation();
+            var currentFloor = _PoseEstimation.GetCurrentFloor();
+            _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredElevator);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredElevator);
         }
     }

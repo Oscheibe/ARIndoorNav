@@ -9,7 +9,6 @@ public class PoseEstimation : MonoBehaviour
     public Transform _ARCoreFPSTransform;
 
     public MarkerDetection _MarkerDetection;
-    public NavigationPresenter _NavigationPresenter;
     public SystemStatePresenter _SystemStatePresenter;
     public Navigation _Navigation;
     public TrackingErrorHandling _TrackingErrorHandling; 
@@ -111,10 +110,10 @@ public class PoseEstimation : MonoBehaviour
                 //TODO
                 break;
             case NewPosReason.EnteredStairs:
-                _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, NewPosReason.EnteredStairs);
+                // TODO
                 break;
             case NewPosReason.EnteredElevator:
-                _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, NewPosReason.EnteredElevator);
+                // TODO
                 break;
             default:
                 break;
