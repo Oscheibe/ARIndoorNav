@@ -24,7 +24,7 @@ public class MarkerDetection : MonoBehaviour
 
     private CameraImageBytes image;
     private Pose userPose;
-    private Transform roomTransform;
+    private Room markerRoom;
 
 
     /**
@@ -104,7 +104,7 @@ public class MarkerDetection : MonoBehaviour
     {
         _isWaiting = false;
         SaveRoomPosition(potentialMarkerList);
-        SendDetectionResults(roomTransform, userPose);
+        SendDetectionResults(markerRoom, userPose);
     }
 
     private void SaveRoomPosition(List<string> potentialMarkerList)
@@ -122,9 +122,8 @@ public class MarkerDetection : MonoBehaviour
         if (resultRoomList != null)
         {
             //TODO: more than 1 room found
-            roomTransform = resultRoomList[0].Location;
+            markerRoom = resultRoomList[0];
             _SystemStatePresenter.DisplayCurrentPosition(resultRoomList[0].Name);
-            _PoseEstimation.ReportCurrentFloor(resultRoomList[0].Floor);
         }
         else
         {
@@ -132,9 +131,10 @@ public class MarkerDetection : MonoBehaviour
         }
     }
 
-    private void SendDetectionResults(Transform roomTransform, Pose userPose)
+    private void SendDetectionResults(Room markerRoom, Pose userPose)
     {
-        _PoseEstimation.ReportMarkerPose(roomTransform, userPose);
+        _PoseEstimation.ReportMarkerPose(markerRoom.Location, userPose);
+        _PoseEstimation.ReportCurrentFloor(markerRoom.Floor);
     }
 
     private void TimeOutWaiting()
