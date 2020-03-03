@@ -9,7 +9,6 @@ public class PoseEstimation : MonoBehaviour
     public Transform _ARCoreFPSTransform;
 
     public MarkerDetection _MarkerDetection;
-    public SystemStatePresenter _SystemStatePresenter;
     public Navigation _Navigation;
     public TrackingErrorHandling _TrackingErrorHandling; 
 
@@ -51,7 +50,6 @@ public class PoseEstimation : MonoBehaviour
         UpdateUserPosition(virtualMarkerTransform.position, worldMarkerPose.position);
 
         _Navigation.WarpNavMeshAgent(_ARCoreFPSTransform.position);
-        _SystemStatePresenter.HideMarkerDetectionMenu();
     }
 
     /**

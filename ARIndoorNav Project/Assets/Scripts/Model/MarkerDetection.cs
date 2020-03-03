@@ -135,6 +135,7 @@ public class MarkerDetection : MonoBehaviour
     {
         _PoseEstimation.ReportMarkerPose(markerRoom.Location, userPose);
         _PoseEstimation.ReportCurrentFloor(markerRoom.Floor);
+        _SystemStatePresenter.HideMarkerDetectionMenu();
     }
 
     private void TimeOutWaiting()
