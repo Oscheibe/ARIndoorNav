@@ -5,8 +5,9 @@ using GoogleARCore;
 
 public class ARPositionTracking : MonoBehaviour
 {
-    public TrackingErrorHandling _TrackingErrorHandling;
-    
+    public Transform _ARCoreOriginTransform;
+    public Transform _ARCoreFPSTransform;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,6 +19,69 @@ public class ARPositionTracking : MonoBehaviour
     void Update()
     {
         // Maybe FeaturePoint drift
+    }
+
+    /**
+     * Returns the origin position of ARCore
+     * The origin is a point in space relative to the ARCore first person camera
+     */
+    public Vector3 GetOriginPosition()
+    {
+        return _ARCoreOriginTransform.position;
+    }
+
+    /**
+     * Sets the ARCore origin position to the new value
+     * Called when PoseEstimation calculated a new pose
+     */
+    public void SetOriginPosition(Vector3 newPosition)
+    {
+        _ARCoreOriginTransform.position = newPosition;
+    }
+
+    /**
+    * Returns the origin rotation of ARCore
+    * The origin is a point in space relative to the ARCore first person camera
+    */
+    public Quaternion GetOriginRotation()
+    {
+        return _ARCoreOriginTransform.rotation;
+    }
+
+    /**
+     * Sets the ARCore origin rotation to the new value
+     * Called when PoseEstimation calculated a new pose
+     */
+    public void SetOriginRotation(Quaternion newRotation)
+    {
+        _ARCoreOriginTransform.rotation = newRotation;
+    }
+
+    /**
+     * Rotates the origin around a point
+     * Used when the user manually adjusts the rotation 
+     */
+    public void RotateAroundOrigin(float rotationDegree)
+    {
+        _ARCoreOriginTransform.transform.RotateAround(_ARCoreFPSTransform.transform.position, Vector3.up, rotationDegree);
+    }
+
+    /**
+     * Returns the total position of the ARCore first person camera
+     * The origin pose is included in this
+     */
+    public Vector3 GetUnityPosition()
+    {
+        return _ARCoreFPSTransform.position;
+    }
+
+    /**
+     * Returns the total rotation of the ARCore first person camera
+     * The origin pose is included in this
+     */
+    public Quaternion GetUnityRotation()
+    {
+        return _ARCoreFPSTransform.rotation;
     }
 
 
