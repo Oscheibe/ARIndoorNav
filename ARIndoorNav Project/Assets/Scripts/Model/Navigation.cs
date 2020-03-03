@@ -15,11 +15,7 @@ public class Navigation : MonoBehaviour
     public NavMeshAgent _NavMeshAgent;
     public NavigationPresenter _NavigationPresenter;
     public PoseEstimation _PoseEstimation;
-
-    public Transform _Floor3;
-    public Transform _Floor2;
-    public Transform _Floor1;
-    public Transform _Floor0;
+    public ModelDatabase _ModelDatabase;
 
     public float _goalReachedDistance = 8.0f; // In meters
 
@@ -62,7 +58,7 @@ public class Navigation : MonoBehaviour
         this.destination = destination;
         destinationFloor = destination.Floor;
         // Setting the destination height to the ground level
-        var floorTransform = GetFloorTransform(destination.Floor);
+        var floorTransform = _ModelDatabase.GetFloorTransform(destination.Floor);
         if (floorTransform == null)
         {
             Debug.Log("NO FLOOR FOUND AT ROOM: " + destination.Name);
@@ -127,7 +123,7 @@ public class Navigation : MonoBehaviour
     */
     public float GetUnityDistanceToUser(Room room)
     {
-        var floorY = GetFloorTransform(room.Floor).position.y;
+        var floorY = _ModelDatabase.GetFloorTransform(room.Floor).position.y;
         var roomPosition = room.Location.position;
         var destinationPosition = new Vector3(room.Location.position.x, floorY, room.Location.position.z);
 
@@ -216,34 +212,6 @@ public class Navigation : MonoBehaviour
     public int GetDestinationFloor()
     {
         return destinationFloor;
-    }
-
-    /**
-     * returns the floor transform of floor 0 to 3
-     */
-    private Transform GetFloorTransform(int floorNumber)
-    {
-        if (floorNumber < 0 || floorNumber > 3)
-            return null;
-
-        // No breaks needed when return is called
-        switch (floorNumber)
-        {
-            case 0:
-                return _Floor0;
-
-            case 1:
-                return _Floor1;
-
-            case 2:
-                return _Floor2;
-
-            case 3:
-                return _Floor3;
-
-            default:
-                return null;
-        }
     }
 
     /**
