@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="FrameApi.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -123,16 +123,11 @@ namespace GoogleARCoreInternal
 
             Quaternion mainLightRotation = Quaternion.identity;
             Color mainLightColor = Color.black;
-
-            // TODO: remove if condition when b/132436697 is fixed.
-            if (state == LightEstimateState.Valid)
-            {
-                m_NativeSession.LightEstimateApi.GetMainDirectionalLight(
-                    m_NativeSession.SessionHandle, lightEstimateHandle,
-                    out mainLightRotation, out mainLightColor);
-                m_NativeSession.LightEstimateApi.GetAmbientSH(m_NativeSession.SessionHandle,
-                    lightEstimateHandle, m_AmbientSH);
-            }
+            m_NativeSession.LightEstimateApi.GetMainDirectionalLight(
+                m_NativeSession.SessionHandle, lightEstimateHandle,
+                out mainLightRotation, out mainLightColor);
+            m_NativeSession.LightEstimateApi.GetAmbientSH(m_NativeSession.SessionHandle,
+                lightEstimateHandle, m_AmbientSH);
 
             m_NativeSession.LightEstimateApi.Destroy(lightEstimateHandle);
             return new LightEstimate(state, colorCorrection.a,

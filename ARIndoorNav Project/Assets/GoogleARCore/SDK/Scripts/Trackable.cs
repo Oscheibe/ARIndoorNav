@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="Trackable.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ namespace GoogleARCore
 
         /// <summary>
         /// Creates an Anchor at the given <c>Pose</c> that is attached to the Trackable where
-        /// semantics of the attachment relationship are defined by the subcass of Trackable (e.g.
+        /// semantics of the attachment relationship are defined by the subcass of Trackable (e.g.,
         /// DetectedPlane).   Note that the relative offset between the Pose of multiple Anchors
         /// attached to the same Trackable may change over time as ARCore refines its understanding
         /// of the world.

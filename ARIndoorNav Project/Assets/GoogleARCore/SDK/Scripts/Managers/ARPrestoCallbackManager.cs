@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARPrestoCallbackManager.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ namespace GoogleARCoreInternal
     internal class ARPrestoCallbackManager
     {
         private static ARPrestoCallbackManager s_Instance;
+
+        private static IAndroidPermissionsCheck s_AndroidPermissionCheck;
 
         private CheckApkAvailabilityResultCallback m_CheckApkAvailabilityResultCallback;
 
@@ -81,12 +83,20 @@ namespace GoogleARCoreInternal
 
         public event Action<IntPtr> BeforeResumeSession;
 
+        public event Action<IntPtr, IntPtr> OnSetConfiguration;
+
         public static ARPrestoCallbackManager Instance
         {
             get
             {
                 if (s_Instance == null)
                 {
+                    if (s_AndroidPermissionCheck == null &&
+                        !InstantPreviewManager.IsProvidingPlatform)
+                    {
+                        s_AndroidPermissionCheck = AndroidPermissionsManager.GetInstance();
+                    }
+
                     s_Instance = new ARPrestoCallbackManager();
                     s_Instance._Initialize();
                 }
@@ -137,6 +147,18 @@ namespace GoogleARCoreInternal
             return task;
         }
 
+        internal static void ResetInstance()
+        {
+            s_Instance = null;
+            s_AndroidPermissionCheck = null;
+        }
+
+        internal static void SetAndroidPermissionCheck(
+            IAndroidPermissionsCheck androidPermissionsCheck)
+        {
+            s_AndroidPermissionCheck = androidPermissionsCheck;
+        }
+
         [AOT.MonoPInvokeCallback(typeof(CheckApkAvailabilityResultCallback))]
         private static void _OnCheckApkAvailabilityResultTrampoline(
             ApiAvailability status, IntPtr context)
@@ -171,7 +193,10 @@ namespace GoogleARCoreInternal
         private static void _BeforeSetConfigurationTrampoline(
             IntPtr sessionHandle, IntPtr configHandle)
         {
-            ExperimentManager.Instance.OnBeforeSetConfiguration(sessionHandle, configHandle);
+            if (Instance.OnSetConfiguration != null)
+            {
+                Instance.OnSetConfiguration(sessionHandle, configHandle);
+            }
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnBeforeResumeSessionCallback))]
@@ -247,11 +272,15 @@ namespace GoogleARCoreInternal
             IntPtr context)
         {
             const string cameraPermissionName = "android.permission.CAMERA";
-            AndroidPermissionsManager.RequestPermission(cameraPermissionName)
-                .ThenAction((grantResult) =>
-                {
-                    onComplete(grantResult.IsAllGranted, context);
-                });
+
+            if (s_AndroidPermissionCheck != null)
+            {
+                s_AndroidPermissionCheck.RequestAndroidPermission(cameraPermissionName)
+                    .ThenAction((grantResult) =>
+                    {
+                        onComplete(grantResult.IsAllGranted, context);
+                    });
+            }
         }
 
         private struct ExternApi

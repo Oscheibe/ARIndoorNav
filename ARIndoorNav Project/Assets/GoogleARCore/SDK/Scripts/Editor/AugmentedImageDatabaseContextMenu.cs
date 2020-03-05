@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="AugmentedImageDatabaseContextMenu.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,8 +54,9 @@ namespace GoogleARCoreInternal
             if (unsupportedImagesSelected)
             {
                 var message = string.Format(
-                    "Some selected images could not be added to the AugmentedImageDatabase " +
-                    "because they are not in a supported format.  Supported image formats are {0}.",
+                    "One or more selected images could not be added to the " +
+                    "AugmentedImageDatabase because they are not in a supported format. " +
+                    "Supported image formats are: {0}",
                     k_SupportedImageFormatListMessage);
                 Debug.LogWarningFormat(message);
                 EditorUtility.DisplayDialog("Unsupported Images Selected", message, "Ok");

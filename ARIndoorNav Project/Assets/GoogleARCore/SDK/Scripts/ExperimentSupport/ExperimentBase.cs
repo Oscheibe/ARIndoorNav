@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ExperimentBase.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,11 +64,11 @@ namespace GoogleARCoreInternal
         }
 
         /// <summary>
-        /// Called before a configuration is set.
+        /// Called before a native configuration is set.
         /// </summary>
         /// <param name="sessionHandle">The session handle the config is being set on.</param>
         /// <param name="configHandle">The handle to the native configuration.</param>
-        public virtual void OnBeforeSetConfiguration(IntPtr sessionHandle, IntPtr configHandle)
+        public virtual void OnSetConfiguration(IntPtr sessionHandle, IntPtr configHandle)
         {
         }
 

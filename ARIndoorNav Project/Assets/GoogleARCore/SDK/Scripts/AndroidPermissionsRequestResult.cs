@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="AndroidPermissionsRequestResult.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ namespace GoogleARCore
         public string[] PermissionNames { get; private set; }
 
         /// <summary>
-        /// Gets a collection of results corresponding to {@link PermissionNames}.
+        /// Gets a collection of results corresponding to <see cref="PermissionNames"/>.
         /// </summary>
         public bool[] GrantResults { get; private set; }
 

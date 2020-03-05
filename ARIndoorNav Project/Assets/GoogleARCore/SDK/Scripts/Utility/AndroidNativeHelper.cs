@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="AndroidNativeHelper.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@
 
 namespace GoogleARCoreInternal
 {
+    using System.Diagnostics.CodeAnalysis;
     using UnityEngine;
+
 
     /// <summary>
     /// Static stateless Utility methods for performing native Android calls.
@@ -30,6 +32,9 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// Mirrors Android <c>Surface</c> constants for display rotation.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+         Justification = "Internal.")]
         public enum AndroidSurfaceRotation
         {
             Rotation0 = 0,

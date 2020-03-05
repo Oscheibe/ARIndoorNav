@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="EnvironmentalLight.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ namespace GoogleARCore
     {
         /// <summary>
         /// The directional light used by
-        /// <see cref="LightEstimationMode.EnvironmentalHDRWithReflections"/> and
-        /// <see cref="LightEstimationMode.EnvironmentalHDRWithoutReflections"/>.
+        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithReflections</c> and
+        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithoutReflections</c>.
         /// The rotation and color will be updated automatically by this component.
         /// </summary>
         public Light DirectionalLight;
@@ -44,8 +44,9 @@ namespace GoogleARCore
         private long m_LightEstimateTimestamp = -1;
 
         /// <summary>
-        /// Unity update method that sets global light estimation shader constant to match
-        /// ARCore's calculated values.
+        /// Unity update method that sets global light estimation shader constant and
+        /// <a href="https://docs.unity3d.com/ScriptReference/RenderSettings.html">
+        /// RenderSettings</a> to match ARCore's calculated values.
         /// </summary>
         [SuppressMemoryAllocationError(
             IsWarning = true, Reason = "Requires further investigation.")]

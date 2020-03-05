@@ -1,7 +1,7 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="LightEstimate.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ namespace GoogleARCore
         /// the overall intensity will not be significantly changed.
         /// </param>
         /// @deprecated Please use constructor LightEstimate(LightEstimateState, float, Color,
-        /// Quaternion, Color, float[,]) instead.
+        /// Quaternion, Color, float[,], long) instead.
         [System.Obsolete("LightEstimate(LightEstimateState, float, Color) has been deprecated. " +
              "Please use new constructor instead.")]
         public LightEstimate(
@@ -94,7 +94,7 @@ namespace GoogleARCore
 
             // Apply the energy conservation term to the light color directly since Unity doesn't
             // apply the term in their standard shader.
-            m_DirectionalLightColor = directionalLightColor / Mathf.PI;
+            m_DirectionalLightColor = directionalLightColor;
 
             // Apply gamma correction to the light color. Unity light color is in gamma space.
             m_DirectionalLightColor = m_DirectionalLightColor.gamma;
@@ -107,7 +107,7 @@ namespace GoogleARCore
                 {
                     for (int j = 0; j < 9; j++)
                     {
-                        ambientProbe[i, j] = ambientSHCoefficients[j, i] / Mathf.PI;
+                        ambientProbe[i, j] = ambientSHCoefficients[j, i];
                     }
                 }
             }
@@ -252,13 +252,12 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Gets the reflection cubemap from the light estimation. The pixel values are
-        /// in linear color space. For performance reasons, the cubemap will only be
-        /// created when this function is called on the LightEstimate object. It will return null
-        /// when the LightEstimateState is invalid or LightEstimationMode is not one of
-        /// the Environmental HDR modes.
+        /// Gets the reflection cubemap from the light estimation.
+        /// For performance reasons, the cubemap will only be created when this function
+        /// is called on the LightEstimate object. It will return null
+        /// when the LightEstimateState is invalid or LightEstimationMode is not
+        /// EnvironmentalHDRWithReflections.
         /// </summary>
-        /// <returns>The reflection cubemap from the light estimation.</returns>
         public Cubemap ReflectionProbe
         {
             get

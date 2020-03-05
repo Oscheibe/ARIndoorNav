@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreIOSLifecycleManager.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ namespace GoogleARCoreInternal
     using System.Reflection;
     using System.Runtime.InteropServices;
     using GoogleARCore;
+    using GoogleARCoreInternal.CrossPlatform;
     using UnityEngine;
 
     internal class ARCoreIOSLifecycleManager : ILifecycleManager
@@ -50,7 +51,11 @@ namespace GoogleARCoreInternal
         public event Action EarlyUpdate;
 
         public event Action<bool> OnSessionSetEnabled;
+
+        public event Action<IntPtr, IntPtr> OnSetConfiguration;
 #pragma warning restore 67, 414
+
+        public event Action OnResetInstance;
 
         public static ARCoreIOSLifecycleManager Instance
         {
@@ -149,7 +154,25 @@ namespace GoogleARCoreInternal
                 m_SessionHandle = IntPtr.Zero;
             }
 
+            if (NativeSession != null)
+            {
+                NativeSession.MarkDestroyed();
+            }
+
             _Initialize();
+        }
+
+        /// <summary>
+        /// Force reset the singleton instance to null. Should only be used in Unit Test.
+        /// </summary>
+        internal static void ResetInstance()
+        {
+            if (s_Instance != null && s_Instance.OnResetInstance != null)
+            {
+                s_Instance.OnResetInstance();
+            }
+
+            s_Instance = null;
         }
 
 #if ARCORE_IOS_SUPPORT
