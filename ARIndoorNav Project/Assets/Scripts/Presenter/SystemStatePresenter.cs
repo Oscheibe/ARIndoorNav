@@ -10,9 +10,6 @@ using UnityEngine.UI;
  */
 public class SystemStatePresenter : MonoBehaviour
 {
-    //Model
-    public PoseEstimation _PoseEstimation;
-    
     // View
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
     public MarkerDetectionUI _MarkerDetectionUI;
@@ -56,13 +53,5 @@ public class SystemStatePresenter : MonoBehaviour
     public void ShowLoadingAnimation()
     {
         _MarkerDetectionUI.ShowLoadingAnimation();
-    }
-
-    /**
-     * Method that starts markter detection when the user confirms the process
-     */
-    public void ConfirmMarkerTracking()
-    {
-        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
     }
 }

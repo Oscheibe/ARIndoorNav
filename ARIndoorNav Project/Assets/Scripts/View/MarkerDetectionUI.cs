@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class MarkerDetectionUI : MonoBehaviour
 {
-    public SystemStatePresenter _SystemStatePresenter;
-
     public GameObject _loadingAnimationGO;
     public float _loadingTime = 1.0f;
 
@@ -20,13 +18,5 @@ public class MarkerDetectionUI : MonoBehaviour
         _loadingAnimationGO.SetActive(false);
     }
 
-    /**
-     * Called by a button
-     * Method to start the marker detection process
-     */
-    public void StartMarkerDetection()
-    {
-        _SystemStatePresenter.ConfirmMarkerTracking();
-    }
 
 }
