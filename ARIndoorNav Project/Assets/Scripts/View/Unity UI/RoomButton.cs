@@ -11,7 +11,6 @@ public class RoomButton : MonoBehaviour
     public TMP_Text _RoomNameText;
     public TMP_Text _RoomInformationText;
     public TMP_Text _DistanceToRoomText;
-    //public Image _RoomImage;
 
     private string allText;
 
@@ -42,5 +41,10 @@ public class RoomButton : MonoBehaviour
     public bool ContainsText(string text)
     {
         return allText.ToLower().Contains(text.ToLower());
+    }
+
+    public float GetDistance()
+    {
+        return room.DistanceToUser;
     }
 }
