@@ -10,6 +10,8 @@ public class MarkerDatabase : MonoBehaviour
 
     private List<GameObject> markerList;
 
+    private string missingRoomsJSON = "";
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -77,8 +79,10 @@ public class MarkerDatabase : MonoBehaviour
             {
                 matched1to1 = false;
                 Debug.Log("No room for marker: " + markerName);
+                //missingRoomsJSON += "{\"RoomName\": \"" + markerName + "\",\n\"Description\": \"\"\n},";
             }
         }
+        //Debug.Log(missingRoomsJSON);
         return matched1to1;
     }
 }

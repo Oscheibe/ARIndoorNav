@@ -291,7 +291,7 @@
     "RoomName": "2.100",
     "Description": ""
   },
-    {
+  {
     "RoomName": "2.100",
     "Description": ""
   },
@@ -570,7 +570,7 @@
   {
     "RoomName": "2.253",
     "Description": ""
-  }
+  },
   {
     "RoomName": "T202",
     "Description": "Stairs"
@@ -594,5 +594,533 @@
   {
     "RoomName": "T207",
     "Description": "Stairs"
+  },
+  {
+    "RoomName": "1.101",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.122",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.123",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.124",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.125",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.126",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.127",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.128",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.129",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.131",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.135",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.204",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.205",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.206",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.207",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.208/1.210",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "1.213",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.214",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.215",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.216",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.217",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.218",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.219",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.220",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.221",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.222",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.223",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.224",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.225",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.102",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.103",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.104",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.105",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.106",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.107",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.110",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.111",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.112",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.113",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.114",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.115",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.116",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.117",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.118",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.119",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.120",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.201",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.202",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.203",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.226",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.227",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.228",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.229",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.230",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.231",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.232",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.233",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.234",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.235a",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.235",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.236",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.237",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.238",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.239",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.240",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.241",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.242a",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.242",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.243",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.244",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.245",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.246",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.247",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.248",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.249",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.208/1.209",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "1.210/1.211",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "1.109",
+    "Description": ""
+  },
+  {
+    "RoomName": "1.121",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.115",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.116",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.117",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.118",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.119",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.120",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.121",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.122",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.123",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.124/0.125",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "0.126/0.127",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "0.128/0.129",
+    "Description": "Shower"
+  },
+  {
+    "RoomName": "0.130/0.131",
+    "Description": "Shower"
+  },
+  {
+    "RoomName": "0.202",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.208",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.209",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.209a",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.210",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.210a",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.212",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.100",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.101",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.102",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.103",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.104",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.105",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.106",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.107",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.108",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.109",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.110",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.111",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.112",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.113",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.114",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.213",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.214",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.215",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.216",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.217",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.218",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.219",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.220",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.221",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.222",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.223",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.224",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.225",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.226",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.227",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.228",
+    "Description": ""
+  },
+  {
+    "RoomName": "0.208/0.209",
+    "Description": "Toilet, WC"
+  },
+  {
+    "RoomName": "0.210/0.211",
+    "Description": "Toilet, WC"
   }
 ]

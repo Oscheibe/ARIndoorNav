@@ -22,6 +22,7 @@ public class RoomListUI : MonoBehaviour
         {
             GenButtons(room);
         }
+        SortListByName();
     }
 
     public void ChooseDestination(Room destination)
@@ -91,7 +92,7 @@ public class RoomListUI : MonoBehaviour
      */
     public void SortList(System.Comparison<GameObject> comparison)
     {
-        buttonGameobjects.Sort(SortByDistanceComparator);
+        buttonGameobjects.Sort(comparison);
         foreach (var button in buttonGameobjects)
         {
             /**
@@ -138,9 +139,8 @@ public class RoomListUI : MonoBehaviour
      */
     private int SortByNameComparator(GameObject roomButton1, GameObject roomButton2)
     {
-        string name1 = roomButton1.GetComponent<RoomButton>().name;
-        string name2 = roomButton2.GetComponent<RoomButton>().name;
-
+        string name1 = roomButton1.GetComponent<RoomButton>().GetName();
+        string name2 = roomButton2.GetComponent<RoomButton>().GetName();
         return name1.CompareTo(name2);
     }
 

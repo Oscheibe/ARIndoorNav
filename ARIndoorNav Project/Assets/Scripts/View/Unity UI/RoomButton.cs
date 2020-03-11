@@ -47,4 +47,9 @@ public class RoomButton : MonoBehaviour
     {
         return room.DistanceToUser;
     }
+
+    public string GetName()
+    {
+        return room.Name;
+    }
 }
