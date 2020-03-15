@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/AR Campus Navigation.unity
+    guid: 455545482e519dc449795d2c03b12196
   m_configObjects: {}
