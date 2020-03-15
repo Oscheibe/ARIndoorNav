@@ -29,13 +29,13 @@ public class MarkerDetection : MonoBehaviour
 
     /**
         Starts the marker detection with ARCore AugmentedImages
-        Is called by PoseEstimation
+        Step 1: Calculate and save the user pose during scanning
+        Step 2: Request a OCR result from the connected service
+        Step 3: Wait for result and process it when it arrives
+        Called by: PoseEstimation
      */
     public void StartDetection()
     {
-        Debug.Log("Started marker detection");
-        _SystemStatePresenter.DisplayUserMessage("Started marker detection");
-
         SaveUserPosition();
         InitiateOCRDetection();
         WaitForResponse();
