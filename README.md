@@ -37,3 +37,10 @@ The current OCR method relies on the Google Cloud Vision API, which requires a p
 
 ### UI improvements
 The current UI design was made based on the intuition and experience of the developer. Since there has not been a formal approach to this design, it could also not be evaluated. The interaction of the user with the AR elements and their exact design need to be formerly tested and improved on in the future. The current goal was to provide a usable interface that displays necessary information about the destination and tracking accuracy.
+
+### Test environment
+The application has been developed and tested with the following tools: 
+* Unity version 2018.3.14f1 
+* Huawei P20 Pro, EMUI version 9.1.0 (Android version 9) 
+* ARCore SDK for Android version 1.15 
+* ARCore SDK for Unity version 1.15
