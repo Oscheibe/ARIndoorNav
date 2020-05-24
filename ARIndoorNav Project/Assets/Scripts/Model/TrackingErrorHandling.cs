@@ -14,6 +14,7 @@ public class TrackingErrorHandling : MonoBehaviour
     private float errorAccumulationTime = 300f; // time in seconds
     private float timeLeft;
     private List<Vector3> announcedPositionJumps = new List<Vector3>();
+    private bool isTracking = false; // if the error accumulation is beeing tracked
 
     void Update()
     {
@@ -88,6 +89,7 @@ public class TrackingErrorHandling : MonoBehaviour
     private void StartErrorAccumulationTimer()
     {
         timeLeft = errorAccumulationTime;
+        isTracking = true;
     }
 
     /** 
@@ -95,6 +97,10 @@ public class TrackingErrorHandling : MonoBehaviour
      */
     private void DecreaseTimer()
     {
+        // Stop logic when the error accumulation is not beeing tracked
+        if(!isTracking) 
+            return;
+
         timeLeft -= Time.deltaTime;
         if(timeLeft < 0)
         {
