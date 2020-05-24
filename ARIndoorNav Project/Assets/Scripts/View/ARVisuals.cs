@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ARVisuals : MonoBehaviour
+public class ARVisuals : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
     public SystemStatePresenter _SystemStatePresenter;
@@ -12,9 +12,52 @@ public class ARVisuals : MonoBehaviour
     public Camera _ARCamera;
     public LineRenderer _Line;
 
+    Gradient gradient;
+    GradientColorKey[] colorKey;
+    GradientAlphaKey[] alphaKey;
+
+    void Start()
+    {
+
+    }
+
     void Update()
     {
         _Line.material.SetTextureOffset("_MainTex", Vector2.left * Time.time);
+        
+    }
+
+    /**
+     * Colors the navigation line red if the tracking accuracy reached 0%
+     */
+    public void IndicateTrackingAccuracy(int percentage)
+    {
+
+    }
+
+    /**
+     * Doesn't work
+     */
+    private void SetLineGradient()
+    {
+        
+        gradient = new Gradient();
+
+        // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+        colorKey = new GradientColorKey[2];
+        colorKey[0].color = Color.red;
+        colorKey[0].time = 0.0f;
+        colorKey[1].color = Color.blue;
+        colorKey[1].time = 1.0f;
+        // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+        alphaKey = new GradientAlphaKey[2];
+        alphaKey[0].alpha = 1.0f;
+        alphaKey[0].time = 0.0f;
+        alphaKey[1].alpha = 0.0f;
+        alphaKey[1].time = 1.0f;
+
+        gradient.SetKeys(colorKey, alphaKey);
+        _Line.colorGradient = gradient;
     }
 
     /**
@@ -49,7 +92,7 @@ public class ARVisuals : MonoBehaviour
      * Clears current ARDisplay GameObjects
      * Will be overritten by the next SendNavigationPath() call
      */
-    public void StopARDisplay()
+    public void ClearARDisplay()
     {
         _Line.positionCount = 0;
         _2DArrow.SetActive(false);

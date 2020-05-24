@@ -14,7 +14,7 @@ public class NavigationPresenter : MonoBehaviour
     public Navigation _Navigation;
 
     // View
-    public ARVisuals _ARVisuals;
+    public IARVisuals _ARVisuals;
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
@@ -88,7 +88,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void ResetPathDisplay()
     {
-        _ARVisuals.StopARDisplay();
+        _ARVisuals.ClearARDisplay();
         _TargetDestinationUI.ResetTargetInformation();
     }
 
@@ -97,7 +97,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void ClearPathDisplay()
     {
-        _ARVisuals.StopARDisplay();
+        _ARVisuals.ClearARDisplay();
     }
 
     /**
