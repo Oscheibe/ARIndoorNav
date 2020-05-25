@@ -10,7 +10,7 @@ public class MarkerDatabase : MonoBehaviour
 
     private List<GameObject> markerList;
 
-    private string missingRoomsJSON = "";
+    // private string missingRoomsJSON = ""; USED FOR DEBUGGING IN LINE 82
 
     // Start is called before the first frame update
     void Awake()

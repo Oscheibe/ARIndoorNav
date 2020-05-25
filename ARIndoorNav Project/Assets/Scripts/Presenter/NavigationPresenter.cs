@@ -14,18 +14,18 @@ public class NavigationPresenter : MonoBehaviour
     public Navigation _Navigation;
 
     // View
-    public ARVisuals _DefaultARVisuals;
+    public ARVisuals_ArrowLine _DefaultARVisuals;
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
-    public IARVisuals _ARVisuals;
+    private IARVisuals _ActiveARVisuals;
     private string _currentDestination;
 
 
     void Start()
     {
-    SetARVisuals(_DefaultARVisuals);
+        SetARVisuals(_DefaultARVisuals);
     }
 
     /**
@@ -35,7 +35,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void SetARVisuals(IARVisuals newARVisuals)
     {
-        _ARVisuals = newARVisuals;
+        _ActiveARVisuals = newARVisuals;
     }
 
     public void UpdateDestination(Room destination)
@@ -47,13 +47,13 @@ public class NavigationPresenter : MonoBehaviour
     public void DisplayNavigationInformation(float destinationDistance, Vector3[] path)
     {
         _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance);
-        _ARVisuals.SendNavigationPath(path);
+        _ActiveARVisuals.SendNavigationPath(path);
     }
 
     public void UpdateNavigationInformation(float destinationDistance, Vector3[] path)
     {
         _TargetDestinationUI.UpdateDistance(destinationDistance);
-        _ARVisuals.SendNavigationPath(path);
+        _ActiveARVisuals.SendNavigationPath(path);
     }
 
     public void UpdateLastMarker(string markerName)
@@ -105,7 +105,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void ResetPathDisplay()
     {
-        _ARVisuals.ClearARDisplay();
+        _ActiveARVisuals.ClearARDisplay();
         _TargetDestinationUI.ResetTargetInformation();
     }
 
@@ -114,7 +114,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void ClearPathDisplay()
     {
-        _ARVisuals.ClearARDisplay();
+        _ActiveARVisuals.ClearARDisplay();
     }
 
     /**
