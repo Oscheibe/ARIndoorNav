@@ -14,12 +14,29 @@ public class NavigationPresenter : MonoBehaviour
     public Navigation _Navigation;
 
     // View
-    public IARVisuals _ARVisuals;
+    public ARVisuals _DefaultARVisuals;
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
+    public IARVisuals _ARVisuals;
     private string _currentDestination;
+
+
+    void Start()
+    {
+    SetARVisuals(_DefaultARVisuals);
+    }
+
+    /**
+     * Method to change the currently active AR visual display
+     * I'd rather just change the public variable, but unity doesn't allow for serialized interfaces
+     * (And I don't know enough about them to understand why you shouldn't have them)
+     */
+    public void SetARVisuals(IARVisuals newARVisuals)
+    {
+        _ARVisuals = newARVisuals;
+    }
 
     public void UpdateDestination(Room destination)
     {
