@@ -20,7 +20,6 @@ public class NavigationPresenter : MonoBehaviour
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
     private IARVisuals _ActiveARVisuals;
-    private string _currentDestination;
 
 
     void Start()
@@ -40,20 +39,19 @@ public class NavigationPresenter : MonoBehaviour
 
     public void UpdateDestination(Room destination)
     {
-        _currentDestination = destination.Name;
         _Navigation.UpdateDestination(destination);
     }
 
-    public void DisplayNavigationInformation(float destinationDistance, Vector3[] path)
+    public void DisplayNavigationInformation(NavigationInformation navigationInformation)
     {
-        _TargetDestinationUI.DisplayTargetInformation(_currentDestination, destinationDistance);
-        _ActiveARVisuals.SendNavigationPath(path);
+        _TargetDestinationUI.DisplayTargetInformation(navigationInformation.GetDestinationName(), navigationInformation.GetTotalDistance());
+        _ActiveARVisuals.SendNavigationPath(navigationInformation.GetPath());
     }
 
-    public void UpdateNavigationInformation(float destinationDistance, Vector3[] path)
+    public void UpdateNavigationInformation(NavigationInformation navigationInformation)
     {
-        _TargetDestinationUI.UpdateDistance(destinationDistance);
-        _ActiveARVisuals.SendNavigationPath(path);
+        _TargetDestinationUI.UpdateDistance(navigationInformation.GetTotalDistance());
+        _ActiveARVisuals.SendNavigationPath(navigationInformation.GetPath());
     }
 
     public void UpdateLastMarker(string markerName)

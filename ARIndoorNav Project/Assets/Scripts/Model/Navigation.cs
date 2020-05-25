@@ -21,27 +21,34 @@ public class Navigation : MonoBehaviour
 
     private Room destination;
     private Vector3 destinationPos; // Destination position with a y value of the _GroundFloor
+    private NavigationInformation navigationInformation;
     private int destinationFloor = -1;
     private bool isPaused = false;
 
     private int stairsMask = 8;
     private int elevatorMask = 16;
 
+    void Start()
+    {
+        navigationInformation = new NavigationInformation();
+    }
+
     // Sends periodic updates of the current navigation state
     void Update()
     {
         if (destination == null || _NavMeshAgent == null || isPaused == true) return;
-        
+
         var nextFloorPath = GetPathToNextFloor();
         var currentDistance = GetPathDistance(GetTotalPath());
 
-        _NavigationPresenter.UpdateNavigationInformation(currentDistance, nextFloorPath);
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition);
+        _NavigationPresenter.UpdateNavigationInformation(navigationInformation);
 
         /**
          * Due to a bug, the first frame of changing the destination will no calculate the correct distance
          * NavMesh will calculate a path after the first update, which means that the first update will result in a 0 distance
          * Using the unity distance will avoid that behavior
-         */ 
+         */
         if (GetUnityDistanceToUser(destination) < _goalReachedDistance)
         {
             StopNavigation();
@@ -68,7 +75,11 @@ public class Navigation : MonoBehaviour
         _NavMeshAgent.SetDestination(destinationPos);
         var nextFloorPath = GetPathToNextFloor();
         var totalDistance = GetPathDistance(GetTotalPath());
-        _NavigationPresenter.DisplayNavigationInformation(totalDistance, nextFloorPath);
+
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition);
+        navigationInformation.SetDestinationName(destination.Name);
+        
+        _NavigationPresenter.DisplayNavigationInformation(navigationInformation);
     }
 
     /**
@@ -84,7 +95,9 @@ public class Navigation : MonoBehaviour
         _NavMeshAgent.SetDestination(destinationPos);
         var nextFloorPath = GetPathToNextFloor();
         var totalDistance = GetPathDistance(GetTotalPath());
-        _NavigationPresenter.DisplayNavigationInformation(totalDistance, nextFloorPath);
+
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition);
+        _NavigationPresenter.DisplayNavigationInformation(navigationInformation);
     }
 
     /**
@@ -179,7 +192,7 @@ public class Navigation : MonoBehaviour
         NavMeshHit navMeshHit;
         int currentMask = -1;
 
-        if(_PoseEstimation.GetCurrentFloor() == destinationFloor)
+        if (_PoseEstimation.GetCurrentFloor() == destinationFloor)
         {
             return;
         }
@@ -242,7 +255,7 @@ public class Navigation : MonoBehaviour
         Vector3 lastCorner = totalPath[0];
         foreach (var corner in totalPath)
         {
-            if(corner.y != lastCorner.y)
+            if (corner.y != lastCorner.y)
                 break;
 
             pathToFloor.Add(corner);
