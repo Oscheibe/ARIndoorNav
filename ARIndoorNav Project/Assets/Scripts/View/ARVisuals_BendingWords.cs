@@ -10,6 +10,9 @@ using UnityEngine;
 public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
+    public BendingWordsController _BendingWordsController; 
+    public GameObject WordsPrefab1;
+    public GameObject WordsPrefab2;
 
     public void ClearARDisplay()
     {
@@ -18,18 +21,30 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
-        throw new System.NotImplementedException();
+        var nextCorner = navigationInformation.GetNextCorner();
+        var nextNextCorner = navigationInformation.GetNextNextCorner();
+        var currentUserPos = navigationInformation.GetCurrentUserPos();
+
+        WordsPrefab1.GetComponent<RectTransform>().position = nextCorner;
+        WordsPrefab1.GetComponent<RectTransform>().transform.LookAt(currentUserPos);
+
+        WordsPrefab2.GetComponent<RectTransform>().position = nextCorner;
+        WordsPrefab2.GetComponent<RectTransform>().transform.LookAt(nextNextCorner);
+
+        _BendingWordsController.UpdateWords("Go", navigationInformation.GetTurnInstruction());
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
+
+
 }

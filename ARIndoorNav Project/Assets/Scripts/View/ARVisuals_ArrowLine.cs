@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -28,12 +29,27 @@ public class ARVisuals_ArrowLine : MonoBehaviour, IARVisuals
         
     }
 
+    
+    /**
+     * Gets called each update by NavigationPresenter
+     */
+    public void SendNavigationInformation(NavigationInformation navigationInformation)
+    {
+        Vector3[] path = navigationInformation.GetPath();
+        DrawPath(path);
+        if (path.Length == 1)
+            _AR_Screen_Elements.IndicateDirection(path[0]);
+        else
+            _AR_Screen_Elements.IndicateDirection(path[1]);
+    }
+
+
     /**
      * Colors the navigation line red if the tracking accuracy reached 0%
      */
     public void IndicateTrackingAccuracy(int percentage)
     {
-
+        //TODO
     }
 
     /**
@@ -77,18 +93,8 @@ public class ARVisuals_ArrowLine : MonoBehaviour, IARVisuals
         _NavigationPresenter.RotatePathToLeft();
     }
 
-    /**
-     * Gets called each update by NavigationPresenter
-     */
-    public void SendNavigationInformation(NavigationInformation navigationInformation)
-    {
-        Vector3[] path = navigationInformation.GetPath();
-        DrawPath(path);
-        if (path.Length == 1)
-            _AR_Screen_Elements.IndicateDirection(path[0]);
-        else
-            _AR_Screen_Elements.IndicateDirection(path[1]);
-    }
+
+
 
     /**
      * Clears current ARDisplay GameObjects

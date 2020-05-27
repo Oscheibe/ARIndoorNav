@@ -11,36 +11,60 @@ using System;
  */
 public class HelperFunctions : MonoBehaviour
 {
+    /**
+     * Calculates the direction between fwd and targetDir
+     * Returns -1 when left, 1 to the right, and 0 for forward/backward
+     * Source (accessed 27.05.2020): https://forum.unity.com/threads/left-right-test-function.31420/
+     */
+    public static float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
+    {
+        Vector3 perp = Vector3.Cross(fwd, targetDir);
+        float dir = Vector3.Dot(perp, up);
 
-    
-	// Converted to C#, originally from https://girlscancode.wordpress.com/2015/03/02/unity3d-flipping-a-texture/
-  	public static Texture2D FlipTexture2D(Texture2D original, bool flipHorizontal, bool flipVertical)
-	{
-		// We create a new texture so we don't change the old one!
-		Texture2D flip = new Texture2D(original.width,original.height, original.format, false, false);
+        if (dir > 0.0f)
+        {
+            return 1.0f;
+        }
+        else if (dir < 0.0f)
+        {
+            return -1.0f;
+        }
+        else
+        {
+            return 0.0f;
+        }
+    }
+
+    // Converted to C#, originally from https://girlscancode.wordpress.com/2015/03/02/unity3d-flipping-a-texture/
+    public static Texture2D FlipTexture2D(Texture2D original, bool flipHorizontal, bool flipVertical)
+    {
+        // We create a new texture so we don't change the old one!
+        Texture2D flip = new Texture2D(original.width, original.height, original.format, false, false);
         int startX = flip.width, startY = flip.height;
-        
-        if(!flipHorizontal && !flipVertical) return original;
 
-		// These for loops are for running through each individual pixel and then replacing them in the new texture.
-		for(int x=0; x <= flip.width; x++) {
-			for(int y=0; y <= flip.height; y++) {
-				// Flip Vertical only
-                if(flipVertical) flip.SetPixel(startX-x, y, original.GetPixel(x,y));
+        if (!flipHorizontal && !flipVertical) return original;
+
+        // These for loops are for running through each individual pixel and then replacing them in the new texture.
+        for (int x = 0; x <= flip.width; x++)
+        {
+            for (int y = 0; y <= flip.height; y++)
+            {
+                // Flip Vertical only
+                if (flipVertical) flip.SetPixel(startX - x, y, original.GetPixel(x, y));
                 // Flip Horizontal only
-                else if(flipHorizontal) flip.SetPixel(x, startY-y, original.GetPixel(x,y));
+                else if (flipHorizontal) flip.SetPixel(x, startY - y, original.GetPixel(x, y));
                 // Flip both sides
-                else flip.SetPixel(startX-x, startY-y, original.GetPixel(x,y));
-			}
-		}
+                else flip.SetPixel(startX - x, startY - y, original.GetPixel(x, y));
+            }
+        }
 
-		// We apply the changes to our new texture
-		flip.Apply();
-		// Then we send it on our marry little way!
-		return flip;
-	}
-    
-    
+        // We apply the changes to our new texture
+        flip.Apply();
+        // Then we send it on our marry little way!
+        return flip;
+    }
+
+
     public static Transform CalculateAverageTransfrom(List<Transform> transformList)
     {
         Transform resultTransform = new GameObject().transform;
@@ -58,7 +82,7 @@ public class HelperFunctions : MonoBehaviour
         return resultTransform;
     }
 
-        public static Pose CalculateAveragePose(List<Pose> poseList)
+    public static Pose CalculateAveragePose(List<Pose> poseList)
     {
         Pose resultPose = new Pose();
 
@@ -78,7 +102,7 @@ public class HelperFunctions : MonoBehaviour
     public static Quaternion AverageQuaternion(List<Transform> transformList)
     {
         Quaternion qAverage = Quaternion.identity;
-        float averageWeight = 1f/transformList.Count;
+        float averageWeight = 1f / transformList.Count;
         foreach (var q in transformList)
         {
             qAverage *= Quaternion.Slerp(Quaternion.identity, q.rotation, averageWeight);
@@ -87,10 +111,10 @@ public class HelperFunctions : MonoBehaviour
         return qAverage;
     }
 
-        public static Quaternion AverageQuaternion(List<Pose> poseList)
+    public static Quaternion AverageQuaternion(List<Pose> poseList)
     {
         Quaternion qAverage = Quaternion.identity;
-        float averageWeight = 1f/poseList.Count;
+        float averageWeight = 1f / poseList.Count;
         foreach (var q in poseList)
         {
             qAverage *= Quaternion.Slerp(Quaternion.identity, q.rotation, averageWeight);
@@ -151,6 +175,16 @@ public class HelperFunctions : MonoBehaviour
         return new Quaternion(x, y, z, w);
     }
 }
+
+
+
+
+
+
+
+
+
+// Helper class for the helper functions
 
 public class Math3d : MonoBehaviour
 {

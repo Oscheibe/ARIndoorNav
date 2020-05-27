@@ -15,6 +15,7 @@ public class NavigationPresenter : MonoBehaviour
 
     // View
     public ARVisuals_ArrowLine _DefaultARVisuals;
+    public ARVisuals_BendingWords _BendingWords;
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
@@ -46,12 +47,16 @@ public class NavigationPresenter : MonoBehaviour
     {
         _TargetDestinationUI.DisplayTargetInformation(navigationInformation.GetDestinationName(), navigationInformation.GetTotalDistance());
         _ActiveARVisuals.SendNavigationInformation(navigationInformation);
+
+        _BendingWords.SendNavigationInformation(navigationInformation);
     }
 
     public void UpdateNavigationInformation(NavigationInformation navigationInformation)
     {
         _TargetDestinationUI.UpdateDistance(navigationInformation.GetTotalDistance());
         _ActiveARVisuals.SendNavigationInformation(navigationInformation);
+
+        _BendingWords.SendNavigationInformation(navigationInformation);
     }
 
     public void UpdateLastMarker(string markerName)
