@@ -16,7 +16,7 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
         throw new System.NotImplementedException();
     }
 
-    public void SendNavigationPath(Vector3[] path)
+    public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
         throw new System.NotImplementedException();
     }

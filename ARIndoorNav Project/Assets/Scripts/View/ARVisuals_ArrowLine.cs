@@ -80,8 +80,9 @@ public class ARVisuals_ArrowLine : MonoBehaviour, IARVisuals
     /**
      * Gets called each update by NavigationPresenter
      */
-    public void SendNavigationPath(Vector3[] path)
+    public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
+        Vector3[] path = navigationInformation.GetPath();
         DrawPath(path);
         if (path.Length == 1)
             _AR_Screen_Elements.IndicateDirection(path[0]);

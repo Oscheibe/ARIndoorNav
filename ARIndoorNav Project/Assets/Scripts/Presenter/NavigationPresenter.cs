@@ -45,13 +45,13 @@ public class NavigationPresenter : MonoBehaviour
     public void DisplayNavigationInformation(NavigationInformation navigationInformation)
     {
         _TargetDestinationUI.DisplayTargetInformation(navigationInformation.GetDestinationName(), navigationInformation.GetTotalDistance());
-        _ActiveARVisuals.SendNavigationPath(navigationInformation.GetPath());
+        _ActiveARVisuals.SendNavigationInformation(navigationInformation);
     }
 
     public void UpdateNavigationInformation(NavigationInformation navigationInformation)
     {
         _TargetDestinationUI.UpdateDistance(navigationInformation.GetTotalDistance());
-        _ActiveARVisuals.SendNavigationPath(navigationInformation.GetPath());
+        _ActiveARVisuals.SendNavigationInformation(navigationInformation);
     }
 
     public void UpdateLastMarker(string markerName)
