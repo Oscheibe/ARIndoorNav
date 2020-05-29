@@ -16,6 +16,8 @@ public class NavigationPresenter : MonoBehaviour
     // View
     public ARVisuals_ArrowLine _DefaultARVisuals;
     public ARVisuals_BendingWords _BendingWords;
+    public ARVisuals_HapticFeedback _HapticFeedback;
+
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
@@ -25,8 +27,9 @@ public class NavigationPresenter : MonoBehaviour
 
     void Start()
     {
-        SetARVisuals(_DefaultARVisuals);
-        SetARVisuals(_BendingWords);
+        AddARVisuals((IARVisuals) _DefaultARVisuals);
+        AddARVisuals((IARVisuals) _BendingWords);
+        AddARVisuals((IARVisuals) _HapticFeedback);
     }
 
     /**
@@ -34,7 +37,7 @@ public class NavigationPresenter : MonoBehaviour
      * I'd rather just change the public variable, but unity doesn't allow for serialized interfaces
      * (And I don't know enough about them to understand why you shouldn't have them)
      */
-    public void SetARVisuals(IARVisuals newARVisuals)
+    public void AddARVisuals(IARVisuals newARVisuals)
     {
         _ActiveARVisuals.Add(newARVisuals);
     }
