@@ -12,6 +12,16 @@ using System;
 public class HelperFunctions : MonoBehaviour
 {
     /**
+     * Calculates a value of how close x is to the middle of max
+     * returns 1 if (x = the middle)
+     * return 0 if (x = 0 or max)
+     */
+    public static float BetweenZeroAndOne(float x, float max)
+    {
+        return 1 - ( Mathf.Abs(x-(max/2)) / (max/2) );
+    }
+    
+    /**
      * Calculates the direction between fwd and targetDir
      * Returns -1 when left, 1 to the right, and 0 for forward/backward
      * Source (accessed 27.05.2020): https://forum.unity.com/threads/left-right-test-function.31420/

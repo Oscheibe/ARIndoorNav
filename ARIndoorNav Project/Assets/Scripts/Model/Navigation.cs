@@ -16,6 +16,7 @@ public class Navigation : MonoBehaviour
     public NavigationPresenter _NavigationPresenter;
     public PoseEstimation _PoseEstimation;
     public ModelDatabase _ModelDatabase;
+    public Camera _ARCamera;
 
     public float _goalReachedDistance = 8.0f; // In meters
 
@@ -41,7 +42,7 @@ public class Navigation : MonoBehaviour
         var nextFloorPath = GetPathToNextFloor();
         var currentDistance = GetPathDistance(GetTotalPath());
 
-        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition);
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition, _ARCamera);
         _NavigationPresenter.UpdateNavigationInformation(navigationInformation);
 
         /**
@@ -76,7 +77,7 @@ public class Navigation : MonoBehaviour
         var nextFloorPath = GetPathToNextFloor();
         var totalDistance = GetPathDistance(GetTotalPath());
 
-        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition);
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition, _ARCamera);
         navigationInformation.SetDestinationName(destination.Name);
         
         _NavigationPresenter.DisplayNavigationInformation(navigationInformation);
@@ -96,7 +97,7 @@ public class Navigation : MonoBehaviour
         var nextFloorPath = GetPathToNextFloor();
         var totalDistance = GetPathDistance(GetTotalPath());
 
-        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition);
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition, _ARCamera);
         _NavigationPresenter.DisplayNavigationInformation(navigationInformation);
     }
 

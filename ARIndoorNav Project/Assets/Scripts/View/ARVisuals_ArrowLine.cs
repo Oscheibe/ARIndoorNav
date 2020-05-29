@@ -37,10 +37,7 @@ public class ARVisuals_ArrowLine : MonoBehaviour, IARVisuals
     {
         Vector3[] path = navigationInformation.GetPath();
         DrawPath(path);
-        if (path.Length == 1)
-            _AR_Screen_Elements.IndicateDirection(path[0]);
-        else
-            _AR_Screen_Elements.IndicateDirection(path[1]);
+        _AR_Screen_Elements.IndicateDirection(navigationInformation);
     }
 
 

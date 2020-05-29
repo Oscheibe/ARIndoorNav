@@ -9,7 +9,7 @@ public class NavigationInformation : MonoBehaviour
     private Vector3[] path;
 
     // Next Corner position
-    private Vector3 nextCorner;
+    private Vector3 nextCorner = Vector3.zero;
 
     // Position of corner after next corner 
     private Vector3 nextNextCorner;
@@ -32,7 +32,10 @@ public class NavigationInformation : MonoBehaviour
     // Current destination name
     private string destinationName;
 
-    public void UpdateNavigationInformation(Vector3[] path, Vector3 currentUserPos)
+    // A reference to the ARCamera, used to calculate screen positions 
+    private Camera ARCamera;
+
+    public void UpdateNavigationInformation(Vector3[] path, Vector3 currentUserPos, Camera ARCamera)
     {
         this.path = path;
 
@@ -78,6 +81,8 @@ public class NavigationInformation : MonoBehaviour
         this.currentUserPos = currentUserPos;
 
         var angle = Vector3.Angle(currentUserPos, nextCorner);
+
+        this.ARCamera = ARCamera;
     }
 
     private string GenerateTurnInstruction(Vector3[] path, Vector3 currentUserPos)
@@ -87,15 +92,15 @@ public class NavigationInformation : MonoBehaviour
         var targetVector = nextNextCorner;
 
         // if the next corner is too far away OR the goal is the last corner, the user needs to go straight
-        if (distanceToNextCorner >= maxDistanceToNextCorner || path.Length <= 2) 
+        if (distanceToNextCorner >= maxDistanceToNextCorner || path.Length <= 2)
         {
             return "straight";
         }
 
         // -1 = left, 1 = right, 0 = backwards/forwards 
         var directionResult = HelperFunctions.AngleDir(forwardVector, targetVector, upwardsVector);
-        
-        if (directionResult == -1) 
+
+        if (directionResult == -1)
         {
             return "left";
         }
@@ -162,6 +167,97 @@ public class NavigationInformation : MonoBehaviour
     public void SetDestinationName(string newDestinationName)
     {
         destinationName = newDestinationName;
+    }
+
+    public Camera GetARCamera()
+    {
+        return ARCamera;
+    }
+
+    public bool IsVector3InView(params Vector3[] vector3)
+    {
+        Vector3 nextCorner;
+        if (vector3.Length >= 1)
+        {
+            nextCorner = vector3[0];
+        }
+
+        else nextCorner = this.nextCorner;
+        var screenPos = ARCamera.WorldToViewportPoint(nextCorner);
+        if (screenPos.x >= 0 && screenPos.x <= 1 && screenPos.y >= 0 && screenPos.y <= 1 && screenPos.z >= 0)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    /**
+     * Calculates a screen position x,y (x = 0 to screen.width / y = 0 to screen.height) based on a 
+     * given Vector3. If the Vector3 is out of screen, the position will be at the edge of the screen
+     * 
+     * I tried something fancy with params. Only the first param will get computed
+     * the next corner of the path is the standard value if no param was provided
+     */
+    public Vector2 Vector3ToScreenPos(params Vector3[] vector3)
+    {
+        Vector2 arrowPos;
+        Vector3 nextCorner;
+        if (vector3.Length >= 1)
+        {
+            nextCorner = vector3[0];
+        }
+        else nextCorner = this.nextCorner;
+
+        // Source: https://answers.unity.com/questions/1037969/arrows-pointing-to-offscreen-enemy.html
+        var screenPos = ARCamera.WorldToViewportPoint(nextCorner);
+        float x = 0;
+        float y = 0;
+
+        if (screenPos.x >= 0 && screenPos.x <= 1 && screenPos.y >= 0 && screenPos.y <= 1 && screenPos.z >= 0)
+        {
+            var screenPointUnscaled = ARCamera.WorldToScreenPoint(nextCorner);
+            x = screenPointUnscaled.x; // / _Canvas.scaleFactor;
+            y = screenPointUnscaled.y; // / _Canvas.scaleFactor;
+
+            return new Vector2(x, y);
+        }
+
+        var onScreenPos = new Vector2(screenPos.x - 0.5f, screenPos.y - 0.5f) * 2;
+        var max = Mathf.Max(Mathf.Abs(onScreenPos.x), Mathf.Abs(onScreenPos.y));
+        onScreenPos = (onScreenPos / (max * 2)) + new Vector2(0.5f, 0.5f);
+
+
+
+        /**
+         * This part of the code is to counteract a bug found within the app
+         * The bug was that after a 90° turn away from the next corner of the path (nextCorner) 
+         * the x and y axis would flip their respective values. (For example, if the corner is on the left side
+         * the 2D arrow would jump from the left side of the screen to the right)
+         * The y axis (may) still not be fixed. 
+         */
+        // Looking away from corner
+
+        if (screenPos.z < Camera.main.nearClipPlane)
+        {
+            // Right side
+            if (screenPos.x >= 0)
+                x = 0;
+            // Left side
+            else
+                x = Screen.width;
+            y = onScreenPos.y * Screen.height;
+        }
+        // Looking towards corner
+        else
+        {
+            x = onScreenPos.x * Screen.width;
+            y = onScreenPos.y * Screen.height;
+        }
+
+        arrowPos = new Vector3(x, y, 0);
+
+
+        return arrowPos;
     }
 
 }
