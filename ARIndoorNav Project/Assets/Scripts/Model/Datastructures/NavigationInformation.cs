@@ -86,7 +86,8 @@ public class NavigationInformation : MonoBehaviour
         var upwardsVector = Vector3.up;
         var targetVector = nextNextCorner;
 
-        if (distanceToNextCorner >= maxDistanceToNextCorner) // if the next corner is too far away, the user needs to go straight
+        // if the next corner is too far away OR the goal is the last corner, the user needs to go straight
+        if (distanceToNextCorner >= maxDistanceToNextCorner || path.Length <= 2) 
         {
             return "straight";
         }

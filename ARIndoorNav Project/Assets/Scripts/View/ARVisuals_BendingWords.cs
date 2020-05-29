@@ -16,11 +16,15 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 
     public void ClearARDisplay()
     {
-        throw new System.NotImplementedException();
+        WordsPrefab1.SetActive(false);
+        WordsPrefab2.SetActive(false);
     }
 
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
+        WordsPrefab1.SetActive(true);
+        WordsPrefab2.SetActive(true);
+
         var nextCorner = navigationInformation.GetNextCorner();
         var nextNextCorner = navigationInformation.GetNextNextCorner();
         var currentUserPos = navigationInformation.GetCurrentUserPos();

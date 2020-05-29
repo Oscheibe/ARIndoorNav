@@ -20,12 +20,13 @@ public class NavigationPresenter : MonoBehaviour
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
-    private IARVisuals _ActiveARVisuals;
+    private List<IARVisuals> _ActiveARVisuals = new List<IARVisuals>();
 
 
     void Start()
     {
         SetARVisuals(_DefaultARVisuals);
+        SetARVisuals(_BendingWords);
     }
 
     /**
@@ -35,7 +36,7 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void SetARVisuals(IARVisuals newARVisuals)
     {
-        _ActiveARVisuals = newARVisuals;
+        _ActiveARVisuals.Add(newARVisuals);
     }
 
     public void UpdateDestination(Room destination)
@@ -46,17 +47,13 @@ public class NavigationPresenter : MonoBehaviour
     public void DisplayNavigationInformation(NavigationInformation navigationInformation)
     {
         _TargetDestinationUI.DisplayTargetInformation(navigationInformation.GetDestinationName(), navigationInformation.GetTotalDistance());
-        _ActiveARVisuals.SendNavigationInformation(navigationInformation);
-
-        _BendingWords.SendNavigationInformation(navigationInformation);
+        UpdateAllVisuals(navigationInformation);
     }
 
     public void UpdateNavigationInformation(NavigationInformation navigationInformation)
     {
         _TargetDestinationUI.UpdateDistance(navigationInformation.GetTotalDistance());
-        _ActiveARVisuals.SendNavigationInformation(navigationInformation);
-
-        _BendingWords.SendNavigationInformation(navigationInformation);
+        UpdateAllVisuals(navigationInformation);
     }
 
     public void UpdateLastMarker(string markerName)
@@ -108,8 +105,8 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void ResetPathDisplay()
     {
-        _ActiveARVisuals.ClearARDisplay();
         _TargetDestinationUI.ResetTargetInformation();
+        ClearPathDisplay();
     }
 
     /**
@@ -117,7 +114,12 @@ public class NavigationPresenter : MonoBehaviour
      */
     public void ClearPathDisplay()
     {
-        _ActiveARVisuals.ClearARDisplay();
+        foreach (var visual in _ActiveARVisuals)
+        {
+            visual.ClearARDisplay();
+        }
+        //_ActiveARVisuals.ClearARDisplay();
+        //_BendingWords.ClearARDisplay();
     }
 
     /**
@@ -127,4 +129,20 @@ public class NavigationPresenter : MonoBehaviour
     {
         _Navigation.ContinueNavigation();
     }
+
+    /**
+     * Function to clean up visuals updates
+     */
+    private void UpdateAllVisuals(NavigationInformation navigationInformation)
+    {
+        foreach (var visual in _ActiveARVisuals)
+        {
+            //Debug.Log("Updating: " + visual);
+            visual.SendNavigationInformation(navigationInformation);
+        }
+        //_ActiveARVisuals.SendNavigationInformation(navigationInformation);
+        //_BendingWords.SendNavigationInformation(navigationInformation);
+    }
+
+
 }
