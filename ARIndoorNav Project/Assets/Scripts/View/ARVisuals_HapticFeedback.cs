@@ -16,10 +16,11 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
 
     private bool isVibrating = false;
     private bool stopAll = false;
+    private bool startedOnce = false;
 
     void Update()
     {
-        if (stopAll)
+        if (stopAll || startedOnce == false)
             return;
 
         PulseVibrate();
@@ -31,7 +32,6 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
      */
     private void PulseVibrate()
     {
-        Debug.Log(period);
         if (Time.time > nextActionTime)
         {
             nextActionTime += period;
@@ -63,6 +63,7 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
         _StartStopButton.SetActive(true);
+        startedOnce = true;
         Vector2 screen = navigationInformation.Vector3ToScreenPos();
         var tmpx = screen.x;
         var tmpy = screen.y;

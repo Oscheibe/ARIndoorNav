@@ -24,7 +24,10 @@ public class RoomButton : MonoBehaviour
         _RoomInformationText.text = room.Description;
         _DistanceToRoomText.text = distanceToRoom;
 
-        allText = _RoomNameText.text + " " + _RoomInformationText.text;
+        var oldName = _RoomNameText.text;
+        var newName = _RoomNameText.text.Replace(".", "").Replace("/",""); // removing the . and / for easy searchability
+        
+        allText = oldName + " " + newName + " " + _RoomInformationText.text + " ";
     }
 
     public void UpdateDistanceToRoom()
