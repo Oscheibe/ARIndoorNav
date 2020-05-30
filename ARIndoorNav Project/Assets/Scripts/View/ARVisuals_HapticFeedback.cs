@@ -6,6 +6,7 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
     public GameObject _StartStopButton;
+    public GameObject _WhiteScreen;
 
     float closenessBreakpoint1 = 0.81f; // 0.9 x 0.9
     float closenessBreakpoint2 = 0.25f; // 0.5 x 0.5
@@ -39,20 +40,33 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
             if (isVibrating)
             {
                 Vibration.Cancel();
+                HideWhiteScreen();
                 isVibrating = false;
             }
             else
             {
                 Handheld.Vibrate();
+                ShowWhiteScreen();
                 isVibrating = true;
             }
         }
+    }
+
+    private void ShowWhiteScreen()
+    {
+        _WhiteScreen.SetActive(true);
+    }
+
+    private void HideWhiteScreen()
+    {
+        _WhiteScreen.SetActive(false);
     }
 
     public void ClearARDisplay()
     {
         StopVibration();
         _StartStopButton.SetActive(false);
+        HideWhiteScreen();
     }
 
     /**
