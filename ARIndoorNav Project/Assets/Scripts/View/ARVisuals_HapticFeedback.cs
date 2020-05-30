@@ -5,15 +5,64 @@ using UnityEngine;
 public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
+    public GameObject _StartStopButton;
 
+    float closenessBreakpoint1 = 0.81f; // 0.9 x 0.9
+    float closenessBreakpoint2 = 0.25f; // 0.5 x 0.5
+    float closenessBreakpoint3 = 0.04f; // 0.2 x 0.2
+
+    private float nextActionTime = 0.0f;
+    private float period = 0.1f;
+
+    private bool isVibrating = false;
+    private bool stopAll = false;
+
+    void Update()
+    {
+        if (stopAll)
+            return;
+
+        PulseVibrate();
+    }
+
+    /**
+     * This function is called each update cycle.
+     * It will alternate between vibrating the phone and pausing for "period" seconds
+     */
+    private void PulseVibrate()
+    {
+        Debug.Log(period);
+        if (Time.time > nextActionTime)
+        {
+            nextActionTime += period;
+
+            if (isVibrating)
+            {
+                Vibration.Cancel();
+                isVibrating = false;
+            }
+            else
+            {
+                Handheld.Vibrate();
+                isVibrating = true;
+            }
+        }
+    }
 
     public void ClearARDisplay()
     {
-        throw new System.NotImplementedException();
+        StopVibration();
+        _StartStopButton.SetActive(false);
     }
 
+    /**
+     * Called by NavigationPresenter each update cycle after a destination has been chosen
+     * After calculating the position of the next set relative towards where the user is pointing
+     * their device, a vibration pattern will be generated to guide them
+     */
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
+        _StartStopButton.SetActive(true);
         Vector2 screen = navigationInformation.Vector3ToScreenPos();
         var tmpx = screen.x;
         var tmpy = screen.y;
@@ -21,18 +70,63 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
         float middleX = HelperFunctions.BetweenZeroAndOne(tmpx, Screen.width);
         float middleY = HelperFunctions.BetweenZeroAndOne(tmpy, Screen.height);
 
-        Debug.Log("x:" + middleX + " y:" + middleY);
+        float closeness = middleX * middleY;
+
+        if (closeness >= closenessBreakpoint1)
+        {
+
+            //Vibrate(pattern1);
+            period = 0.1f;
+        }
+        else if (closeness >= closenessBreakpoint2)
+        {
+
+            //Vibrate(pattern2);
+            period = 0.2f;
+        }
+        else if (closeness >= closenessBreakpoint3)
+        {
+
+            //Vibrate(pattern3);
+            period = 0.3f;
+        }
+        else
+        {
+
+            //NoVibrate();
+            period = 0.4f;
+            //Vibrate(pattern4);
+        }
+
+
+        //Debug.Log("Closeness: " + closeness);
+
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void StartStop()
     {
-
+        if (stopAll)
+        {
+            StartVibration();
+        }
+        else
+        {
+            StopVibration();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void StopVibration()
     {
-
+        Vibration.Cancel();
+        isVibrating = false;
+        stopAll = true;
     }
+
+    private void StartVibration()
+    {
+        stopAll = false;
+    }
+
+
+
 }

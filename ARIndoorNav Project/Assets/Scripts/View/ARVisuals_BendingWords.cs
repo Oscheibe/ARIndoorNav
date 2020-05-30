@@ -34,7 +34,7 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 
         WordsPrefab2.GetComponent<RectTransform>().position = nextCorner;
         WordsPrefab2.GetComponent<RectTransform>().transform.LookAt(nextNextCorner);
-
+        
         _BendingWordsController.UpdateWords("Go", navigationInformation.GetTurnInstruction());
     }
 
