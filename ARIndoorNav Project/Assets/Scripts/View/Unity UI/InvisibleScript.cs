@@ -9,18 +9,36 @@ public class InvisibleScript : MonoBehaviour
 {
     public Material _invisibleMaterial;
     public Material _visibleMaterial;
+    public Material _ConcreteMaterial;
+
+    public bool _invisibleMaterialBool;
+    public bool _visibleMaterialBool;
+    public bool _ConcreteMaterialBool;
+
     public List<GameObject> _walls;
 
+    private Material activeMaterial;
     private bool isInvisible = false;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (_invisibleMaterialBool)
+            activeMaterial = _invisibleMaterial;
+
+        if (_visibleMaterialBool)
+            activeMaterial = _visibleMaterial;
+
+        if (_ConcreteMaterialBool)
+            activeMaterial = _ConcreteMaterial;
 
         foreach (var wall in _walls)
         {
-            ChangeChildrenMaterial(_invisibleMaterial, wall);
+            ChangeChildrenMaterial(activeMaterial, wall);
         }
         isInvisible = true;
+
+
     }
 
     private void ChangeChildrenMaterial(Material invisMat, GameObject wall)

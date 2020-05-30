@@ -5,6 +5,8 @@ using UnityEngine;
 public class ARVisuals_WIM : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
+    public Camera _WIMCamera;
+    public Camera _ARCamera;
 
     public void ClearARDisplay()
     {
@@ -25,6 +27,6 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
     // Update is called once per frame
     void Update()
     {
-        
+        _WIMCamera.transform.rotation = _ARCamera.transform.rotation;
     }
 }
