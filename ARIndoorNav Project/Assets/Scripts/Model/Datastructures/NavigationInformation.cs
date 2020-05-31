@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NavigationInformation : MonoBehaviour
+public class NavigationInformation
 {
     // List of all path 3D coordinates in Unity worldspace
     private Vector3[] path;
@@ -32,10 +32,13 @@ public class NavigationInformation : MonoBehaviour
     // Current destination name
     private string destinationName;
 
+    // Destination position with a y value of the _GroundFloor detected by Navigation.cs
+    private Vector3 destinationPos;
+
     // A reference to the ARCamera, used to calculate screen positions 
     private Camera ARCamera;
 
-    public void UpdateNavigationInformation(Vector3[] path, Vector3 currentUserPos, Camera ARCamera)
+    public void UpdateNavigationInformation(Vector3[] path, Vector3 currentUserPos, Vector3 destinationPos, Camera ARCamera)
     {
         this.path = path;
 
@@ -79,6 +82,8 @@ public class NavigationInformation : MonoBehaviour
         totalDistance = GetPathDistance(path);
 
         this.currentUserPos = currentUserPos;
+
+        this.destinationPos = destinationPos;
 
         var angle = Vector3.Angle(currentUserPos, nextCorner);
 
@@ -162,6 +167,11 @@ public class NavigationInformation : MonoBehaviour
     public string GetDestinationName()
     {
         return destinationName;
+    }
+
+    public Vector3 GetDestinationPos()
+    {
+        return destinationPos;
     }
 
     public void SetDestinationName(string newDestinationName)

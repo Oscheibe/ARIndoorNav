@@ -17,6 +17,7 @@ public class NavigationPresenter : MonoBehaviour
     public ARVisuals_ArrowLine _DefaultARVisuals;
     public ARVisuals_BendingWords _BendingWords;
     public ARVisuals_HapticFeedback _HapticFeedback;
+    public ARVisuals_Avatar _Avatar;
 
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
@@ -28,8 +29,9 @@ public class NavigationPresenter : MonoBehaviour
     void Start()
     {
         AddARVisuals((IARVisuals) _DefaultARVisuals);
-        AddARVisuals((IARVisuals) _BendingWords);
-        AddARVisuals((IARVisuals) _HapticFeedback);
+        //AddARVisuals((IARVisuals) _BendingWords);
+        //AddARVisuals((IARVisuals) _HapticFeedback);
+        AddARVisuals((IARVisuals) _Avatar);
     }
 
     /**
