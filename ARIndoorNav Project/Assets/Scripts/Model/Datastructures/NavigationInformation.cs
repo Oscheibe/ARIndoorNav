@@ -38,7 +38,10 @@ public class NavigationInformation
     // A reference to the ARCamera, used to calculate screen positions 
     private Camera ARCamera;
 
-    public void UpdateNavigationInformation(Vector3[] path, Vector3 currentUserPos, Vector3 destinationPos, Camera ARCamera)
+    // Signals if the NavMesh has finished its calculations 
+    private bool hasPath = false;
+
+    public void UpdateNavigationInformation(Vector3[] path, Vector3 currentUserPos, Vector3 destinationPos, Camera ARCamera, bool hasPath)
     {
         this.path = path;
 
@@ -88,6 +91,8 @@ public class NavigationInformation
         var angle = Vector3.Angle(currentUserPos, nextCorner);
 
         this.ARCamera = ARCamera;
+
+        this.hasPath = hasPath;
     }
 
     private string GenerateTurnInstruction(Vector3[] path, Vector3 currentUserPos)
@@ -199,6 +204,11 @@ public class NavigationInformation
             return true;
         }
         else return false;
+    }
+
+    public bool HasPath()
+    {
+        return hasPath;
     }
 
     /**

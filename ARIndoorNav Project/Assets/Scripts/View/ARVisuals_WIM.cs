@@ -10,18 +10,21 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
 
     public void ClearARDisplay()
     {
-        throw new System.NotImplementedException();
+        _WIMCamera.enabled = false;
     }
 
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
-        throw new System.NotImplementedException();
+        // Only start calculations when the original path is finished
+        if (navigationInformation.HasPath() == false)
+            return;
+        _WIMCamera.enabled = true;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame

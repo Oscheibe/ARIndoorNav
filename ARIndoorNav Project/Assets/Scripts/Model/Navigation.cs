@@ -97,7 +97,7 @@ public class Navigation : MonoBehaviour
         This Method is used after the PoseEstimation has updated the user position to warp
         an eventually stuck NavMesh agent out of its stuck position
     */
-    public bool ReportUserJump(Vector3 warpPosition)
+    public bool ReportUserPosJump(Vector3 warpPosition)
     {
         var hasWarped = _NavMeshAgent.Warp(warpPosition);
         UpdateDestination();
@@ -242,7 +242,7 @@ public class Navigation : MonoBehaviour
     private void SetDestinationInfos()
     {
         var nextFloorPath = GetPathToNextFloor();
-        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition, destinationPos, _ARCamera);
+        navigationInformation.UpdateNavigationInformation(nextFloorPath, _NavMeshAgent.nextPosition, destinationPos, _ARCamera, !_NavMeshAgent.pathPending);
         _NavigationPresenter.DisplayNavigationInformation(navigationInformation);
     }
 }

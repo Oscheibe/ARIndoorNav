@@ -10,6 +10,7 @@ public class RobotInterface : MonoBehaviour
     public float waitingTime = 5;
 
     bool moving = false;
+    bool looking = false;
 
     Animator animator;
 
@@ -17,10 +18,12 @@ public class RobotInterface : MonoBehaviour
     Vector3 targetPosition;
     Quaternion playerRot;
 
+    bool isJumping = false;
 
 
-    // Start is called before the first frame update
-    void Start()
+
+    // Awake to counter a bug where the animator would not get loaded on the first Update after activation 
+    void Awake()
     {
         animator = GetComponent<Animator>();
     }
@@ -29,7 +32,8 @@ public class RobotInterface : MonoBehaviour
     void Update()
     {
         //ClickToSetTarget();
-        if (moving) Move();
+        //if (moving) Move();
+        if (looking) Looking();
     }
 
 
@@ -65,7 +69,7 @@ public class RobotInterface : MonoBehaviour
         {
             moving = false;
             TriggerIdleAnimation();
-        } 
+        }
         else
         {
             TriggerWalkingAnimation();
@@ -73,17 +77,41 @@ public class RobotInterface : MonoBehaviour
 
     }
 
+    private void Looking()
+    {
+        transform.rotation = Quaternion.Slerp(transform.rotation, playerRot, rotSpeed * Time.deltaTime);
+    }
+
+    public void LookAtPos(Vector3 pos)
+    {
+        playerRot = Quaternion.LookRotation(pos);
+    }
+
     public void TriggerIdleAnimation()
     {
+        isJumping = false;
+        looking = false;
         animator.SetInteger("condition", 0);
     }
 
     public void TriggerWalkingAnimation()
     {
+        isJumping = false;
+        looking = false;
         animator.SetInteger("condition", 1);
     }
+
     public void TriggerJumpingAnimation()
     {
+        // The avatar should look at the user when jumping 
+        looking = true;
+        
+        // Skip this function if the avatar is already jumping 
+        if (isJumping)
+        {
+            return;
+        }
+        isJumping = true;
         animator.SetInteger("condition", 2);
     }
 

@@ -26,15 +26,19 @@ public class ARVisuals_ArrowLine : MonoBehaviour, IARVisuals
     void Update()
     {
         _Line.material.SetTextureOffset("_MainTex", Vector2.left * Time.time);
-        
+
     }
 
-    
+
     /**
      * Gets called each update by NavigationPresenter
      */
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
+        // Only start calculations when the original path is finished
+        if (navigationInformation.HasPath() == false)
+            return;
+        
         Vector3[] path = navigationInformation.GetPath();
         DrawPath(path);
         _AR_Screen_Elements.IndicateDirection(navigationInformation);
@@ -54,7 +58,7 @@ public class ARVisuals_ArrowLine : MonoBehaviour, IARVisuals
      */
     private void SetLineGradient()
     {
-        
+
         gradient = new Gradient();
 
         // Populate the color keys at the relative time 0 and 1 (0 and 100%)

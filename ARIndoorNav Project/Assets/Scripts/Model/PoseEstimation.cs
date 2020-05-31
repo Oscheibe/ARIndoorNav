@@ -47,7 +47,7 @@ public class PoseEstimation : MonoBehaviour
         CorrectRotationOffset(arPosBefore, arPosAfter);
         UpdateUserPosition(virtualMarkerTransform.position, worldMarkerPose.position);
 
-        _Navigation.ReportUserJump(_ARPositionTracking.GetUnityPosition());
+        _Navigation.ReportUserPosJump(_ARPositionTracking.GetUnityPosition());
     }
 
     /**

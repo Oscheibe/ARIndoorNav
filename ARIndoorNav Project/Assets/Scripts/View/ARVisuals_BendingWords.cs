@@ -10,7 +10,7 @@ using UnityEngine;
 public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
-    public BendingWordsController _BendingWordsController; 
+    public BendingWordsController _BendingWordsController;
     public GameObject WordsPrefab1;
     public GameObject WordsPrefab2;
 
@@ -22,6 +22,10 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
+        // Only start calculations when the original path is finished
+        if (navigationInformation.HasPath() == false)
+            return;
+
         WordsPrefab1.SetActive(true);
         WordsPrefab2.SetActive(true);
 
@@ -34,7 +38,7 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
 
         WordsPrefab2.GetComponent<RectTransform>().position = nextCorner;
         WordsPrefab2.GetComponent<RectTransform>().transform.LookAt(nextNextCorner);
-        
+
         _BendingWordsController.UpdateWords("Go", navigationInformation.GetTurnInstruction());
     }
 

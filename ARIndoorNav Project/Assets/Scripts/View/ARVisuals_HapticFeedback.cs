@@ -76,6 +76,11 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
      */
     public void SendNavigationInformation(NavigationInformation navigationInformation)
     {
+        // Only start calculations when the original path is finished
+        if (navigationInformation.HasPath() == false)
+            return;
+
+
         _StartStopButton.SetActive(true);
         startedOnce = true;
         Vector2 screen = navigationInformation.Vector3ToScreenPos();
