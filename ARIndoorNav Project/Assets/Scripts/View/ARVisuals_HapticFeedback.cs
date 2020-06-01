@@ -8,9 +8,9 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
     public GameObject _StartStopButton;
     public GameObject _WhiteScreen;
 
-    float closenessBreakpoint1 = 0.81f; // 0.9 x 0.9
-    float closenessBreakpoint2 = 0.25f; // 0.5 x 0.5
-    float closenessBreakpoint3 = 0.04f; // 0.2 x 0.2
+    float closenessBreakpoint1 = 1f; // 0.9 x 0.9
+    float closenessBreakpoint2 = 0.5f; // 0.5 x 0.5
+    float closenessBreakpoint3 = 0.25f; // 0.2 x 0.2
 
     private float nextActionTime = 0.0f;
     private float period = 0.1f;
@@ -80,7 +80,6 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
         if (navigationInformation.HasPath() == false)
             return;
 
-
         _StartStopButton.SetActive(true);
         startedOnce = true;
         Vector2 screen = navigationInformation.Vector3ToScreenPos();
@@ -90,37 +89,24 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
         float middleX = HelperFunctions.BetweenZeroAndOne(tmpx, Screen.width);
         float middleY = HelperFunctions.BetweenZeroAndOne(tmpy, Screen.height);
 
-        float closeness = middleX * middleY;
+        float closeness = middleX; // * middleY;
 
         if (closeness >= closenessBreakpoint1)
         {
-
-            //Vibrate(pattern1);
             period = 0.1f;
         }
         else if (closeness >= closenessBreakpoint2)
         {
-
-            //Vibrate(pattern2);
             period = 0.2f;
         }
         else if (closeness >= closenessBreakpoint3)
         {
-
-            //Vibrate(pattern3);
             period = 0.3f;
         }
         else
         {
-
-            //NoVibrate();
             period = 0.4f;
-            //Vibrate(pattern4);
         }
-
-
-        //Debug.Log("Closeness: " + closeness);
-
     }
 
     public void StartStop()
