@@ -37,16 +37,7 @@ public class NavigationPresenter : MonoBehaviour
 
     void Start()
     {
-        if (useArrow)
-            AddARVisuals((IARVisuals)_ArrowLineARVisuals);
-        if (useWords)
-            AddARVisuals((IARVisuals)_BendingWords);
-        if (useHapticFeedback)
-            AddARVisuals((IARVisuals)_HapticFeedback);
-        if (useAvatar)
-            AddARVisuals((IARVisuals)_Avatar);
-        if (useWIM)
-            AddARVisuals((IARVisuals)_WIM);
+        UpdateARVisualSetting();
     }
 
     /**
@@ -54,9 +45,21 @@ public class NavigationPresenter : MonoBehaviour
      * I'd rather just change the public variable, but unity doesn't allow for serialized interfaces
      * (And I don't know enough about them to understand why you shouldn't have them)
      */
-    public void AddARVisuals(IARVisuals newARVisuals)
+    public void UpdateARVisualSetting()
     {
-        _ActiveARVisuals.Add(newARVisuals);
+        ClearPathDisplay();
+        _ActiveARVisuals.Clear();
+
+        if (useArrow)
+            _ActiveARVisuals.Add((IARVisuals)_ArrowLineARVisuals);
+        if (useWords)
+            _ActiveARVisuals.Add((IARVisuals)_BendingWords);
+        if (useHapticFeedback)
+            _ActiveARVisuals.Add((IARVisuals)_HapticFeedback);
+        if (useAvatar)
+            _ActiveARVisuals.Add((IARVisuals)_Avatar);
+        if (useWIM)
+            _ActiveARVisuals.Add((IARVisuals)_WIM);
     }
 
     public void UpdateDestination(Room destination)
@@ -163,6 +166,38 @@ public class NavigationPresenter : MonoBehaviour
         //_ActiveARVisuals.SendNavigationInformation(navigationInformation);
         //_BendingWords.SendNavigationInformation(navigationInformation);
     }
+
+
+    public void UseArrow()
+    {
+        useArrow = !useArrow;
+        UpdateARVisualSetting();
+    }
+
+    public void UseWords()
+    {
+        useWords = !useWords;
+        UpdateARVisualSetting();
+    }
+
+    public void UseHapticFeedback()
+    {
+        useHapticFeedback = !useHapticFeedback;
+        UpdateARVisualSetting();
+    }
+
+    public void UseAvatar()
+    {
+        useAvatar = !useAvatar;
+        UpdateARVisualSetting();
+    }
+
+    public void UseWIM()
+    {
+        useWIM = !useWIM;
+        UpdateARVisualSetting();
+    }
+
 
 
 }

@@ -36,9 +36,6 @@ public class InvisibleScript : MonoBehaviour
         {
             ChangeChildrenMaterial(activeMaterial, wall);
         }
-        isInvisible = true;
-
-
     }
 
     private void ChangeChildrenMaterial(Material invisMat, GameObject wall)
@@ -63,7 +60,7 @@ public class InvisibleScript : MonoBehaviour
         {
             foreach (var wall in _walls)
             {
-                ChangeChildrenMaterial(_visibleMaterial, wall);
+                ChangeChildrenMaterial(activeMaterial, wall);
             }
             isInvisible = false;
         }
