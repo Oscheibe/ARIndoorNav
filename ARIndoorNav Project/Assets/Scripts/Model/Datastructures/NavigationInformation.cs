@@ -21,7 +21,7 @@ public class NavigationInformation
     private float distanceToNextCorner;
 
     // When below this distance, the turn instruction is "go straight"
-    private float maxDistanceToNextCorner = 20; // in meter
+    private float maxDistanceToNextCorner = 15; // in meter
 
     // Distance to target
     private float totalDistance;
@@ -95,11 +95,19 @@ public class NavigationInformation
         this.hasPath = hasPath;
     }
 
+    /**
+     * Calculates the turn direction based on the user position, next corner, and nextNext corner
+     * Returns "left", "right", or "straight" if the target is far away or the goal is the next corner
+     */
     private string GenerateTurnInstruction(Vector3[] path, Vector3 currentUserPos)
     {
-        var forwardVector = currentUserPos;
         var upwardsVector = Vector3.up;
-        var targetVector = nextNextCorner;
+
+        Quaternion targetAngle = Quaternion.LookRotation(nextCorner - currentUserPos);
+        var unitVectorForward = targetAngle * Vector3.forward;
+
+        Quaternion targetAngle2 = Quaternion.LookRotation(nextNextCorner - nextCorner);
+        var unitVectorForward2 = targetAngle2 * Vector3.forward;
 
         // if the next corner is too far away OR the goal is the last corner, the user needs to go straight
         if (distanceToNextCorner >= maxDistanceToNextCorner || path.Length <= 2)
@@ -108,7 +116,7 @@ public class NavigationInformation
         }
 
         // -1 = left, 1 = right, 0 = backwards/forwards 
-        var directionResult = HelperFunctions.AngleDir(forwardVector, targetVector, upwardsVector);
+        var directionResult = HelperFunctions.AngleDir(unitVectorForward, unitVectorForward2, upwardsVector);
 
         if (directionResult == -1)
         {

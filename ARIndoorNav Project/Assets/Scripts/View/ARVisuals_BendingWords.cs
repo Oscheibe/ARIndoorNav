@@ -14,6 +14,8 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
     public GameObject WordsPrefab1;
     public GameObject WordsPrefab2;
 
+    public float wordsDistance = 2;
+
     public void ClearARDisplay()
     {
         WordsPrefab1.SetActive(false);
@@ -33,26 +35,47 @@ public class ARVisuals_BendingWords : MonoBehaviour, IARVisuals
         var nextNextCorner = navigationInformation.GetNextNextCorner();
         var currentUserPos = navigationInformation.GetCurrentUserPos();
 
-        WordsPrefab1.GetComponent<RectTransform>().position = nextCorner;
-        WordsPrefab1.GetComponent<RectTransform>().transform.LookAt(currentUserPos);
+        PlaceWordsPrefab1(currentUserPos, nextCorner);
 
-        WordsPrefab2.GetComponent<RectTransform>().position = nextCorner;
-        WordsPrefab2.GetComponent<RectTransform>().transform.LookAt(nextNextCorner);
+        if (navigationInformation.GetTurnInstruction().Equals("straight"))
+        {
+
+            PlaceWordsPrefab2(currentUserPos, nextCorner, wordsDistance * 4);
+        }
+        else
+            PlaceWordsPrefab2(nextCorner, nextNextCorner, wordsDistance);
 
         _BendingWordsController.UpdateWords("Go", navigationInformation.GetTurnInstruction());
     }
 
-    // Start is called before the first frame update
-    void Start()
+    /**
+     * Calculates the position of the "go" instruction
+     */
+    private void PlaceWordsPrefab1(Vector3 currentUserPos, Vector3 nextCorner)
     {
+        // Calculating the relative angle between the two vectors
+        Quaternion targetAngle = Quaternion.LookRotation(nextCorner - currentUserPos);
+        // Make the vector longer, depending on how far away the new point has to be
+        var unitVectorForward = targetAngle * Vector3.forward * wordsDistance;
+        var resultVector = currentUserPos + unitVectorForward;
 
+        WordsPrefab1.GetComponent<RectTransform>().position = resultVector;
+        WordsPrefab1.GetComponent<RectTransform>().transform.LookAt(currentUserPos);
     }
 
-    // Update is called once per frame
-    void Update()
+    /**
+     * Calculates the position of the turn instruction
+     * If the user has to go "straight", the instruction position will not rely on the next and nextNextCorner
+     */
+    private void PlaceWordsPrefab2(Vector3 nextCorner, Vector3 nextNextCorner, float secondWordDistance)
     {
-
+        // Calculating the relative angle between the two vectors
+        Quaternion targetAngle = Quaternion.LookRotation(nextNextCorner - nextCorner);
+        // Make the vector longer, depending on how far away the new point has to be
+        var unitVectorForward = targetAngle * Vector3.forward * secondWordDistance;
+        var resultVector = nextCorner + unitVectorForward;
+        WordsPrefab2.GetComponent<RectTransform>().position = resultVector;
+        WordsPrefab2.GetComponent<RectTransform>().transform.LookAt(nextNextCorner);
     }
-
 
 }
