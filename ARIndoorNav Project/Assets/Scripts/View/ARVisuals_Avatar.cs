@@ -121,8 +121,6 @@ public class ARVisuals_Avatar : MonoBehaviour, IARVisuals
         Quaternion targetAngle = Quaternion.LookRotation(nextCorner - userPos);
         var unitVectorForward = targetAngle * Vector3.forward * avatarDistance;
         var resultVector = userPos + unitVectorForward;
-        Debug.Log("User Pos: " + userPos + " NextCorner: " + nextCorner);
-        Debug.Log("Unit: " + unitVectorForward + " Angle: " + targetAngle + " Result: " + (resultVector));
         return resultVector;
     }
 
