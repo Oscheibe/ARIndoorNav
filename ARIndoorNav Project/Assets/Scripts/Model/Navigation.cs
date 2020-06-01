@@ -182,6 +182,11 @@ public class Navigation : MonoBehaviour
     {
         NavMeshHit navMeshHit;
         int currentMask = -1;
+        var currentFloor = _PoseEstimation.GetCurrentFloor();
+
+        // Hide the map above the users floor so that its not in the way
+        //Debug.Log("Current Floor: " + currentFloor);
+        _ModelDatabase.HideFloorsUntil(currentFloor);
 
         if (_PoseEstimation.GetCurrentFloor() == destinationFloor)
         {
@@ -196,7 +201,7 @@ public class Navigation : MonoBehaviour
         if (currentMask == stairsMask)
         {
             PauseNavigation();
-            var currentFloor = _PoseEstimation.GetCurrentFloor();
+
             _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredStairs);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredStairs);
         }
@@ -204,10 +209,11 @@ public class Navigation : MonoBehaviour
         else if (currentMask == elevatorMask)
         {
             PauseNavigation();
-            var currentFloor = _PoseEstimation.GetCurrentFloor();
             _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredElevator);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredElevator);
         }
+
+
     }
 
     /**

@@ -9,9 +9,10 @@ public class PoseEstimation : MonoBehaviour
     public MarkerDetection _MarkerDetection;
     public Navigation _Navigation;
     public TrackingErrorHandling _TrackingErrorHandling;
+    public int currentFloor = 3;
 
     private float rotationDegree = 0.5f;
-    private int currentFloor = 3;
+
 
     public enum NewPosReason
     {
@@ -55,6 +56,7 @@ public class PoseEstimation : MonoBehaviour
      */
     public void ReportCurrentFloor(int currentFloor)
     {
+        Debug.Log("Changed current floor to: " + currentFloor);
         this.currentFloor = currentFloor;
     }
 
