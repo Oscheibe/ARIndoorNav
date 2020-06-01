@@ -8,9 +8,8 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
     public GameObject _StartStopButton;
     public GameObject _WhiteScreen;
 
-    float closenessBreakpoint1 = 1f; // 0.9 x 0.9
-    float closenessBreakpoint2 = 0.5f; // 0.5 x 0.5
-    float closenessBreakpoint3 = 0.25f; // 0.2 x 0.2
+    float closenessBreakpointCenter = 0.7f; // Near the center 
+    float closenessBreakpointEdge = 0f; // Near the edge
 
     private float nextActionTime = 0.0f;
     private float period = 0.1f;
@@ -89,23 +88,19 @@ public class ARVisuals_HapticFeedback : MonoBehaviour, IARVisuals
         float middleX = HelperFunctions.BetweenZeroAndOne(tmpx, Screen.width);
         float middleY = HelperFunctions.BetweenZeroAndOne(tmpy, Screen.height);
 
-        float closeness = middleX; // * middleY;
+        float closeness = middleX;
 
-        if (closeness >= closenessBreakpoint1)
+        if (closeness >= closenessBreakpointCenter)
         {
             period = 0.1f;
         }
-        else if (closeness >= closenessBreakpoint2)
+        else if (closeness > closenessBreakpointEdge)
         {
-            period = 0.2f;
-        }
-        else if (closeness >= closenessBreakpoint3)
-        {
-            period = 0.3f;
+            period = 0.25f;
         }
         else
         {
-            period = 0.4f;
+            period = 0.5f;
         }
     }
 

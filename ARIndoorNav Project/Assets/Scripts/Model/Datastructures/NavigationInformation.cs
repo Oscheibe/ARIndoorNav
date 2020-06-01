@@ -101,6 +101,12 @@ public class NavigationInformation
      */
     private string GenerateTurnInstruction(Vector3[] path, Vector3 currentUserPos)
     {
+        // if the next corner is too far away OR the goal is the last corner, the user needs to go straight
+        if (distanceToNextCorner >= maxDistanceToNextCorner || path.Length <= 2)
+        {
+            return "straight";
+        }
+
         var upwardsVector = Vector3.up;
 
         Quaternion targetAngle = Quaternion.LookRotation(nextCorner - currentUserPos);
@@ -108,12 +114,6 @@ public class NavigationInformation
 
         Quaternion targetAngle2 = Quaternion.LookRotation(nextNextCorner - nextCorner);
         var unitVectorForward2 = targetAngle2 * Vector3.forward;
-
-        // if the next corner is too far away OR the goal is the last corner, the user needs to go straight
-        if (distanceToNextCorner >= maxDistanceToNextCorner || path.Length <= 2)
-        {
-            return "straight";
-        }
 
         // -1 = left, 1 = right, 0 = backwards/forwards 
         var directionResult = HelperFunctions.AngleDir(unitVectorForward, unitVectorForward2, upwardsVector);
