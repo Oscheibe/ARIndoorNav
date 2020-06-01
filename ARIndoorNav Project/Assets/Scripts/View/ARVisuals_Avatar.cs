@@ -7,6 +7,9 @@ public class ARVisuals_Avatar : MonoBehaviour, IARVisuals
 {
     public NavigationPresenter _NavigationPresenter;
     public GameObject _Guide;
+    public float avatarDistance = 4; // in meters in front of the user
+
+
     private NavMeshAgent _GuideNavMeshAgent;
     private RobotInterface _RobotInterface;
 
@@ -104,11 +107,23 @@ public class ARVisuals_Avatar : MonoBehaviour, IARVisuals
     }
 
     /** 
-     * Calculate the middle between the user and the next corner
+     * Calculate the a point in a distance from the user towards the next corner
+     * This will allow the avatar to always walk 4 meters in front of the user
+     * If the next corner is too close, the avatar will wait there for the user 
      */
     private Vector3 CalculateTargetPos(Vector3 userPos, Vector3 nextCorner)
     {
-        return (userPos + nextCorner) / 2;
+        if(Vector3.Distance(userPos, nextCorner) <= avatarDistance)
+        {
+            return nextCorner;
+        }
+
+        Quaternion targetAngle = Quaternion.LookRotation(nextCorner - userPos);
+        var unitVectorForward = targetAngle * Vector3.forward * avatarDistance;
+        var resultVector = userPos + unitVectorForward;
+        Debug.Log("User Pos: " + userPos + " NextCorner: " + nextCorner);
+        Debug.Log("Unit: " + unitVectorForward + " Angle: " + targetAngle + " Result: " + (resultVector));
+        return resultVector;
     }
 
     private bool CountDown()
