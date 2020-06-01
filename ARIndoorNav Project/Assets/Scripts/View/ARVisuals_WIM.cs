@@ -7,10 +7,17 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
     public NavigationPresenter _NavigationPresenter;
     public Camera _WIMCamera;
     public Camera _ARCamera;
+    public GameObject _WIMPlane;
+    public GameObject _WIMImage;
+    public GameObject _CameraPos;
+    
+    public float rotSpeed = 15;
 
     public void ClearARDisplay()
     {
         _WIMCamera.enabled = false;
+        _WIMPlane.SetActive(false);
+        _WIMImage.SetActive(false);
     }
 
     public void SendNavigationInformation(NavigationInformation navigationInformation)
@@ -19,6 +26,10 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
         if (navigationInformation.HasPath() == false)
             return;
         _WIMCamera.enabled = true;
+        _WIMPlane.SetActive(true);
+        _WIMImage.SetActive(true);
+        
+        RotatePlaneTo(_CameraPos.transform.position);
     }
 
     // Start is called before the first frame update
@@ -30,6 +41,14 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
     // Update is called once per frame
     void Update()
     {
-        _WIMCamera.transform.rotation = _ARCamera.transform.rotation;
+        //_WIMCamera.transform.rotation = _ARCamera.transform.rotation;
+        RotatePlaneTo(_CameraPos.transform.position);
+    }
+
+    private void RotatePlaneTo(Vector3 lookAtDir)
+    {
+        //var playerRot = Quaternion.LookRotation(lookAtDir);
+        //_WIMPlane.transform.rotation = Quaternion.Slerp(_WIMPlane.transform.rotation, playerRot, rotSpeed * Time.deltaTime);
+        _WIMPlane.transform.LookAt(lookAtDir);
     }
 }

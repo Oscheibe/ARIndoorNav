@@ -14,24 +14,39 @@ public class NavigationPresenter : MonoBehaviour
     public Navigation _Navigation;
 
     // View
-    public ARVisuals_ArrowLine _DefaultARVisuals;
+    public ARVisuals_ArrowLine _ArrowLineARVisuals;
     public ARVisuals_BendingWords _BendingWords;
     public ARVisuals_HapticFeedback _HapticFeedback;
     public ARVisuals_Avatar _Avatar;
+    public ARVisuals_WIM _WIM;
 
     public TargetDestinationUI _TargetDestinationUI;
     public UserMessageUI _UserMessageUI;
     public UIMenuSwitchingManager _UIMenuSwitchingManager;
 
+    public bool useArrow = false;
+    public bool useWords = false;
+    public bool useHapticFeedback = false;
+    public bool useAvatar = false;
+    public bool useWIM = false;
+
+
     private List<IARVisuals> _ActiveARVisuals = new List<IARVisuals>();
+
 
 
     void Start()
     {
-        AddARVisuals((IARVisuals) _DefaultARVisuals);
-        //AddARVisuals((IARVisuals) _BendingWords);
-        //AddARVisuals((IARVisuals) _HapticFeedback);
-        AddARVisuals((IARVisuals) _Avatar);
+        if (useArrow)
+            AddARVisuals((IARVisuals)_ArrowLineARVisuals);
+        if (useWords)
+            AddARVisuals((IARVisuals)_BendingWords);
+        if (useHapticFeedback)
+            AddARVisuals((IARVisuals)_HapticFeedback);
+        if (useAvatar)
+            AddARVisuals((IARVisuals)_Avatar);
+        if (useWIM)
+            AddARVisuals((IARVisuals)_WIM);
     }
 
     /**
