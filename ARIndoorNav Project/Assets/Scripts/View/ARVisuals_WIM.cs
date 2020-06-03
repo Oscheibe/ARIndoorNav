@@ -10,6 +10,7 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
     public GameObject _WIMPlane;
     public GameObject _WIMImage;
     public GameObject _CameraPos;
+    public GameObject _CornerMarker;
     
     public float rotSpeed = 15;
 
@@ -18,6 +19,7 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
         _WIMCamera.enabled = false;
         _WIMPlane.SetActive(false);
         _WIMImage.SetActive(false);
+        _CornerMarker.SetActive(false);
     }
 
     public void SendNavigationInformation(NavigationInformation navigationInformation)
@@ -28,7 +30,9 @@ public class ARVisuals_WIM : MonoBehaviour, IARVisuals
         _WIMCamera.enabled = true;
         _WIMPlane.SetActive(true);
         _WIMImage.SetActive(true);
+        _CornerMarker.SetActive(true);
         
+        _CornerMarker.transform.position = navigationInformation.GetNextCorner() + new Vector3(0,3,0); // make the corner marker 3 units higher
         RotatePlaneTo(_CameraPos.transform.position);
     }
 
