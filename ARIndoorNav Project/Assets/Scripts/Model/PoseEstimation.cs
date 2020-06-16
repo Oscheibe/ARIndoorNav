@@ -11,7 +11,7 @@ public class PoseEstimation : MonoBehaviour
     public TrackingErrorHandling _TrackingErrorHandling;
     public int currentFloor = 3;
 
-    private float rotationDegree = 0.5f;
+    private float rotationDegree = 2.5f;
 
 
     public enum NewPosReason
