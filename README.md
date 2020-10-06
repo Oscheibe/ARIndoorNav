@@ -1,8 +1,12 @@
 # ARIndoorNav - ARCampus Navigation
 
-ARCampus is an ongoing project of the TH Köln – University of Applied Science to explore the potential of augmented reality in several different contexts. This application was done as part of this project. Its purpose was to test the capabilities of Google’s AR tool, ARCore in the context of pedestrian navigation within a building.
+This application was used as a basis for my bachelor's thesis: "Overcoming the problem of uncertain tracking errors in an AR navigation application“. It was initially developed as part of the ARCampus project of the TH Köln – University of Applied Science which seeks to explore the potential of augmented reality in several different contexts. 
 
-![ARCampus Navigation - Navigation UI](https://i.imgur.com/nsFFAF5.png)
+The following picture shows the prototype display techniques that were developed for this thesis. The goal for each different technique was to guide the user towards their goal using different approaches which in turn allows for an analysis on how each approach would perform under worse and worse tracking conditions. (More on this ![here](https://github.com/Oscheibe/ARIndoorNav/blob/master/Documentation/Oliver%20Scheibert%20-%202020%20-%20Overcoming%20the%20problem%20of%20uncertain%20tracking%20errors%20in%20an%20AR%20navigation%20application%20(edited).pdf))
+
+![ARCampus Navigation - Display Techniques](https://i.imgur.com/zxTW1qo.png)
+
+This README provides a documentation of the initial project created for my bachelor's thesis: 
 
 The application has been developed using a model-view-presenter (MVP) software architecture pattern that was implemented within Unity. A virtual model of the main building of the campus Gummersbach has been created which is then used to calculate navigation related data, such as paths or destination locations, as well as generate AR guiding elements that are incorporated with the camera feed. To acquire the initial position and rotation (pose) of the user within the building, a marker-based approach is used that relies on detecting the room name from glass plates that are located besides every door within the building. After the initial localization, users can choose a room within the building and start their navigation towards it. A line will be displayed on the ground that leads to the destination with occasional text prompts to help users navigate safely across floor levels.
 
