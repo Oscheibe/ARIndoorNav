@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ILifecycleManager.cs" company="Google">
+// <copyright file="ILifecycleManager.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ namespace GoogleARCoreInternal
     using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-    [SuppressMessage("UnityRules.UnityStyleRules", "US1101:NonPublicFieldsMustHavePrefixM",
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1108:NonPublicPropertiesMustBeLowerCamelCase",
      Justification = "This is an interface so fields are already public.")]
     internal interface ILifecycleManager
     {

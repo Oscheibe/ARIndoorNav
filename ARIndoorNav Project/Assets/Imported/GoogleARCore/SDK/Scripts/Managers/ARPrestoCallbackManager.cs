@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ARPrestoCallbackManager.cs" company="Google">
+// <copyright file="ARPrestoCallbackManager.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,26 +35,28 @@ namespace GoogleARCoreInternal
 
     internal class ARPrestoCallbackManager
     {
-        private static ARPrestoCallbackManager s_Instance;
+        internal const string _cameraPermissionName = "android.permission.CAMERA";
 
-        private static IAndroidPermissionsCheck s_AndroidPermissionCheck;
+        private static ARPrestoCallbackManager _instance;
 
-        private CheckApkAvailabilityResultCallback m_CheckApkAvailabilityResultCallback;
+        private static IAndroidPermissionsCheck _androidPermissionCheck;
 
-        private RequestApkInstallationResultCallback m_RequestApkInstallationResultCallback;
+        private CheckApkAvailabilityResultCallback _checkApkAvailabilityResultCallback;
 
-        private CameraPermissionRequestProvider m_RequestCameraPermissionCallback;
+        private RequestApkInstallationResultCallback _requestApkInstallationResultCallback;
 
-        private EarlyUpdateCallback m_EarlyUpdateCallback;
+        private CameraPermissionRequestProvider _requestCameraPermissionCallback;
 
-        private OnBeforeSetConfigurationCallback m_OnBeforeSetConfigurationCallback;
+        private EarlyUpdateCallback _earlyUpdateCallback;
 
-        private OnBeforeResumeSessionCallback m_OnBeforeResumeSessionCallback;
+        private OnBeforeSetConfigurationCallback _onBeforeSetConfigurationCallback;
 
-        private List<Action<ApkAvailabilityStatus>> m_PendingAvailabilityCheckCallbacks =
+        private OnBeforeResumeSessionCallback _onBeforeResumeSessionCallback;
+
+        private List<Action<ApkAvailabilityStatus>> _pendingAvailabilityCheckCallbacks =
             new List<Action<ApkAvailabilityStatus>>();
 
-        private List<Action<ApkInstallationStatus>> m_PendingInstallationRequestCallbacks =
+        private List<Action<ApkInstallationStatus>> _pendingInstallationRequestCallbacks =
             new List<Action<ApkInstallationStatus>>();
 
         public delegate void EarlyUpdateCallback();
@@ -62,7 +64,8 @@ namespace GoogleARCoreInternal
         private delegate void OnBeforeSetConfigurationCallback(
             IntPtr sessionHandle, IntPtr configHandle);
 
-        private delegate void OnBeforeResumeSessionCallback(IntPtr sessionHandle);
+        private delegate ApiPrestoCallbackResult OnBeforeResumeSessionCallback(
+            IntPtr sessionHandle);
 
         private delegate void CameraPermissionRequestProvider(
             CameraPermissionsResultCallback onComplete, IntPtr context);
@@ -81,7 +84,7 @@ namespace GoogleARCoreInternal
 
         public event Action EarlyUpdate;
 
-        public event Action<IntPtr> BeforeResumeSession;
+        public event Func<IntPtr, ApiPrestoCallbackResult> BeforeResumeSession;
 
         public event Action<IntPtr, IntPtr> OnSetConfiguration;
 
@@ -89,19 +92,19 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                if (s_Instance == null)
+                if (_instance == null)
                 {
-                    if (s_AndroidPermissionCheck == null &&
+                    if (_androidPermissionCheck == null &&
                         !InstantPreviewManager.IsProvidingPlatform)
                     {
-                        s_AndroidPermissionCheck = AndroidPermissionsManager.GetInstance();
+                        _androidPermissionCheck = AndroidPermissionsManager.GetInstance();
                     }
 
-                    s_Instance = new ARPrestoCallbackManager();
-                    s_Instance._Initialize();
+                    _instance = new ARPrestoCallbackManager();
+                    _instance.Initialize();
                 }
 
-                return s_Instance;
+                return _instance;
             }
         }
 
@@ -118,10 +121,10 @@ namespace GoogleARCoreInternal
                 return task;
             }
 
-            ExternApi.ArPresto_checkApkAvailability(m_CheckApkAvailabilityResultCallback,
+            ExternApi.ArPresto_checkApkAvailability(_checkApkAvailabilityResultCallback,
                 IntPtr.Zero);
 
-            m_PendingAvailabilityCheckCallbacks.Add(onComplete);
+            _pendingAvailabilityCheckCallbacks.Add(onComplete);
 
             return task;
         }
@@ -140,48 +143,53 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArPresto_requestApkInstallation(userRequested,
-                m_RequestApkInstallationResultCallback, IntPtr.Zero);
+                _requestApkInstallationResultCallback, IntPtr.Zero);
 
-            m_PendingInstallationRequestCallbacks.Add(onComplete);
+            _pendingInstallationRequestCallbacks.Add(onComplete);
 
             return task;
         }
 
+        public bool IsCameraPermissionGranted()
+        {
+            return AndroidPermissionsManager.IsPermissionGranted(_cameraPermissionName);
+        }
+
         internal static void ResetInstance()
         {
-            s_Instance = null;
-            s_AndroidPermissionCheck = null;
+            _instance = null;
+            _androidPermissionCheck = null;
         }
 
         internal static void SetAndroidPermissionCheck(
             IAndroidPermissionsCheck androidPermissionsCheck)
         {
-            s_AndroidPermissionCheck = androidPermissionsCheck;
+            _androidPermissionCheck = androidPermissionsCheck;
         }
 
         [AOT.MonoPInvokeCallback(typeof(CheckApkAvailabilityResultCallback))]
-        private static void _OnCheckApkAvailabilityResultTrampoline(
+        private static void OnCheckApkAvailabilityResultTrampoline(
             ApiAvailability status, IntPtr context)
         {
-            Instance._OnCheckApkAvailabilityResult(status.ToApkAvailabilityStatus());
+            Instance.OnCheckApkAvailabilityResult(status.ToApkAvailabilityStatus());
         }
 
         [AOT.MonoPInvokeCallback(typeof(RequestApkInstallationResultCallback))]
-        private static void _OnApkInstallationResultTrampoline(
+        private static void OnApkInstallationResultTrampoline(
             ApiApkInstallationStatus status, IntPtr context)
         {
-            Instance._OnRequestApkInstallationResult(status.ToApkInstallationStatus());
+            Instance.OnRequestApkInstallationResult(status.ToApkInstallationStatus());
         }
 
         [AOT.MonoPInvokeCallback(typeof(CameraPermissionRequestProvider))]
-        private static void _RequestCameraPermissionTrampoline(
+        private static void RequestCameraPermissionTrampoline(
             CameraPermissionsResultCallback onComplete, IntPtr context)
         {
-            Instance._RequestCameraPermission(onComplete, context);
+            Instance.RequestCameraPermission(onComplete, context);
         }
 
         [AOT.MonoPInvokeCallback(typeof(EarlyUpdateCallback))]
-        private static void _EarlyUpdateTrampoline()
+        private static void EarlyUpdateTrampoline()
         {
             if (Instance.EarlyUpdate != null)
             {
@@ -190,7 +198,7 @@ namespace GoogleARCoreInternal
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnBeforeSetConfigurationCallback))]
-        private static void _BeforeSetConfigurationTrampoline(
+        private static void BeforeSetConfigurationTrampoline(
             IntPtr sessionHandle, IntPtr configHandle)
         {
             if (Instance.OnSetConfiguration != null)
@@ -200,24 +208,28 @@ namespace GoogleARCoreInternal
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnBeforeResumeSessionCallback))]
-        private static void _BeforeResumeSessionTrampoline(IntPtr sessionHandle)
+        private static ApiPrestoCallbackResult BeforeResumeSessionTrampoline(IntPtr sessionHandle)
         {
             if (Instance.BeforeResumeSession != null)
             {
-                Instance.BeforeResumeSession(sessionHandle);
+                return Instance.BeforeResumeSession(sessionHandle);
+            }
+            else
+            {
+                return ApiPrestoCallbackResult.Success;
             }
         }
 
-        private void _Initialize()
+        private void Initialize()
         {
-            m_EarlyUpdateCallback = new EarlyUpdateCallback(_EarlyUpdateTrampoline);
+            _earlyUpdateCallback = new EarlyUpdateCallback(EarlyUpdateTrampoline);
 
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 // Instant preview does not support updated function signature returning 'bool'.
-                ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback);
+                ExternApi.ArCoreUnity_setArPrestoInitialized(_earlyUpdateCallback);
             }
-            else if (!ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback))
+            else if (!ExternApi.ArCoreUnity_setArPrestoInitialized(_earlyUpdateCallback))
             {
                 Debug.LogError(
                     "Missing Unity Engine ARCore support.  Please ensure that the Unity project " +
@@ -228,54 +240,52 @@ namespace GoogleARCoreInternal
             IntPtr activityHandle = IntPtr.Zero;
             ExternApi.ArCoreUnity_getJniInfo(ref javaVMHandle, ref activityHandle);
 
-            m_CheckApkAvailabilityResultCallback =
-                new CheckApkAvailabilityResultCallback(_OnCheckApkAvailabilityResultTrampoline);
+            _checkApkAvailabilityResultCallback =
+                new CheckApkAvailabilityResultCallback(OnCheckApkAvailabilityResultTrampoline);
 
-            m_RequestApkInstallationResultCallback =
-                new RequestApkInstallationResultCallback(_OnApkInstallationResultTrampoline);
+            _requestApkInstallationResultCallback =
+                new RequestApkInstallationResultCallback(OnApkInstallationResultTrampoline);
 
-            m_RequestCameraPermissionCallback =
-                new CameraPermissionRequestProvider(_RequestCameraPermissionTrampoline);
+            _requestCameraPermissionCallback =
+                new CameraPermissionRequestProvider(RequestCameraPermissionTrampoline);
 
-            m_OnBeforeSetConfigurationCallback =
-                new OnBeforeSetConfigurationCallback(_BeforeSetConfigurationTrampoline);
+            _onBeforeSetConfigurationCallback =
+                new OnBeforeSetConfigurationCallback(BeforeSetConfigurationTrampoline);
 
-            m_OnBeforeResumeSessionCallback =
-                new OnBeforeResumeSessionCallback(_BeforeResumeSessionTrampoline);
+            _onBeforeResumeSessionCallback =
+                new OnBeforeResumeSessionCallback(BeforeResumeSessionTrampoline);
 
             ExternApi.ArPresto_initialize(
-                javaVMHandle, activityHandle, m_RequestCameraPermissionCallback,
-                m_OnBeforeSetConfigurationCallback, m_OnBeforeResumeSessionCallback);
+                javaVMHandle, activityHandle, _requestCameraPermissionCallback,
+                _onBeforeSetConfigurationCallback, _onBeforeResumeSessionCallback);
         }
 
-        private void _OnCheckApkAvailabilityResult(ApkAvailabilityStatus status)
+        private void OnCheckApkAvailabilityResult(ApkAvailabilityStatus status)
         {
-            foreach (var onComplete in m_PendingAvailabilityCheckCallbacks)
+            foreach (var onComplete in _pendingAvailabilityCheckCallbacks)
             {
                 onComplete(status);
             }
 
-            m_PendingAvailabilityCheckCallbacks.Clear();
+            _pendingAvailabilityCheckCallbacks.Clear();
         }
 
-        private void _OnRequestApkInstallationResult(ApkInstallationStatus status)
+        private void OnRequestApkInstallationResult(ApkInstallationStatus status)
         {
-            foreach (var onComplete in m_PendingInstallationRequestCallbacks)
+            foreach (var onComplete in _pendingInstallationRequestCallbacks)
             {
                 onComplete(status);
             }
 
-            m_PendingInstallationRequestCallbacks.Clear();
+            _pendingInstallationRequestCallbacks.Clear();
         }
 
-        private void _RequestCameraPermission(CameraPermissionsResultCallback onComplete,
+        private void RequestCameraPermission(CameraPermissionsResultCallback onComplete,
             IntPtr context)
         {
-            const string cameraPermissionName = "android.permission.CAMERA";
-
-            if (s_AndroidPermissionCheck != null)
+            if (_androidPermissionCheck != null)
             {
-                s_AndroidPermissionCheck.RequestAndroidPermission(cameraPermissionName)
+                _androidPermissionCheck.RequestAndroidPermission(_cameraPermissionName)
                     .ThenAction((grantResult) =>
                     {
                         onComplete(grantResult.IsAllGranted, context);

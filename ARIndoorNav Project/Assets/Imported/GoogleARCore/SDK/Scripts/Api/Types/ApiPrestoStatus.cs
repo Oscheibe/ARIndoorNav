@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiPrestoStatus.cs" company="Google">
+// <copyright file="ApiPrestoStatus.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,5 +34,8 @@ namespace GoogleARCoreInternal
         ErrorApkNotAvailable = 201,
         ErrorPermissionNotGranted = 202,
         ErrorSessionConfigurationNotSupported = 203,
+        ErrorCameraNotAvailable = 204,
+        ErrorIllegalState = 205,
+        ErrorInvalidCameraConfig = 206,
     }
 }

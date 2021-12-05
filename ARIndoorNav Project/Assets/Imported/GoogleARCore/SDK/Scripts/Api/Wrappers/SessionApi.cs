@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="SessionApi.cs" company="Google">
+// <copyright file="SessionApi.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
+    using GoogleARCore.CrossPlatform;
     using UnityEngine;
 
 #if UNITY_IOS && !UNITY_EDITOR
@@ -36,101 +38,96 @@ namespace GoogleARCoreInternal
 
     internal class SessionApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public SessionApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public void ReportEngineType()
         {
             ExternApi.ArSession_reportEngineType(
-                m_NativeSession.SessionHandle, "Unity", Application.unityVersion);
+                _nativeSession.SessionHandle, "Unity", Application.unityVersion);
         }
 
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules",
+                         "SA1118:ParameterMustNotSpanMultipleLines",
+                         Justification = "Bypass source check.")]
         public void GetSupportedCameraConfigurationsWithFilter(
             ARCoreCameraConfigFilter cameraConfigFilter,
             IntPtr cameraConfigListHandle, List<IntPtr> supportedCameraConfigHandles,
             List<CameraConfig> supportedCameraConfigs, DeviceCameraDirection cameraFacingDirection)
         {
-            IntPtr cameraConfigFilterHandle =
-                m_NativeSession.CameraConfigFilterApi.Create(cameraConfigFilter);
-            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(m_NativeSession.SessionHandle,
-                cameraConfigFilterHandle, cameraConfigListHandle);
-            m_NativeSession.CameraConfigFilterApi.Destroy(cameraConfigFilterHandle);
+            IntPtr cameraConfigFilterHandle = _nativeSession.CameraConfigFilterApi.Create(
+                cameraFacingDirection,
+                cameraConfigFilter);
+            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(
+                _nativeSession.SessionHandle,
+                cameraConfigFilterHandle,
+                cameraConfigListHandle);
+            _nativeSession.CameraConfigFilterApi.Destroy(cameraConfigFilterHandle);
 
             supportedCameraConfigHandles.Clear();
             supportedCameraConfigs.Clear();
-            int listSize = m_NativeSession.CameraConfigListApi.GetSize(cameraConfigListHandle);
+            int listSize = _nativeSession.CameraConfigListApi.GetSize(cameraConfigListHandle);
 
             for (int i = 0; i < listSize; i++)
             {
-                IntPtr cameraConfigHandle = m_NativeSession.CameraConfigApi.Create();
-                m_NativeSession.CameraConfigListApi.GetItemAt(
+                IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
+                _nativeSession.CameraConfigListApi.GetItemAt(
                     cameraConfigListHandle, i, cameraConfigHandle);
-
-                // Skip camera config that has a different camera facing direction.
-                DeviceCameraDirection configDirection =
-                    m_NativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle)
-                        .ToDeviceCameraDirection();
-                if (configDirection != cameraFacingDirection)
-                {
-                    continue;
-                }
-
                 supportedCameraConfigHandles.Add(cameraConfigHandle);
-                supportedCameraConfigs.Add(_CreateCameraConfig(cameraConfigHandle));
+                supportedCameraConfigs.Add(CreateCameraConfig(cameraConfigHandle));
             }
         }
 
         public ApiArStatus SetCameraConfig(IntPtr cameraConfigHandle)
         {
             return ExternApi.ArSession_setCameraConfig(
-                m_NativeSession.SessionHandle, cameraConfigHandle);
+                _nativeSession.SessionHandle, cameraConfigHandle);
         }
 
         public CameraConfig GetCameraConfig()
         {
-            IntPtr cameraConfigHandle = m_NativeSession.CameraConfigApi.Create();
-
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 InstantPreviewManager.LogLimitedSupportMessage("access camera config");
                 return new CameraConfig();
             }
 
-            ExternApi.ArSession_getCameraConfig(m_NativeSession.SessionHandle, cameraConfigHandle);
-            CameraConfig currentCameraConfig = _CreateCameraConfig(cameraConfigHandle);
-            m_NativeSession.CameraConfigApi.Destroy(cameraConfigHandle);
+            IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
+            ExternApi.ArSession_getCameraConfig(_nativeSession.SessionHandle, cameraConfigHandle);
+            CameraConfig currentCameraConfig = CreateCameraConfig(cameraConfigHandle);
+            _nativeSession.CameraConfigApi.Destroy(cameraConfigHandle);
             return currentCameraConfig;
         }
 
         public void GetAllTrackables(List<Trackable> trackables)
         {
-            IntPtr listHandle = m_NativeSession.TrackableListApi.Create();
+            IntPtr listHandle = _nativeSession.TrackableListApi.Create();
             ExternApi.ArSession_getAllTrackables(
-                m_NativeSession.SessionHandle, ApiTrackableType.BaseTrackable, listHandle);
+                _nativeSession.SessionHandle, ApiTrackableType.BaseTrackable, listHandle);
 
             trackables.Clear();
-            int count = m_NativeSession.TrackableListApi.GetCount(listHandle);
+            int count = _nativeSession.TrackableListApi.GetCount(listHandle);
             for (int i = 0; i < count; i++)
             {
                 IntPtr trackableHandle =
-                    m_NativeSession.TrackableListApi.AcquireItem(listHandle, i);
+                    _nativeSession.TrackableListApi.AcquireItem(listHandle, i);
 
-                Trackable trackable = m_NativeSession.TrackableFactory(trackableHandle);
+                Trackable trackable = _nativeSession.TrackableFactory(trackableHandle);
                 if (trackable != null)
                 {
                     trackables.Add(trackable);
                 }
                 else
                 {
-                    m_NativeSession.TrackableApi.Release(trackableHandle);
+                    _nativeSession.TrackableApi.Release(trackableHandle);
                 }
             }
 
-            m_NativeSession.TrackableListApi.Destroy(listHandle);
+            _nativeSession.TrackableListApi.Destroy(listHandle);
         }
 
         public void SetDisplayGeometry(ScreenOrientation orientation, int width, int height)
@@ -158,17 +155,17 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArSession_setDisplayGeometry(
-                m_NativeSession.SessionHandle, androidOrientation, width, height);
+                _nativeSession.SessionHandle, androidOrientation, width, height);
         }
 
         public Anchor CreateAnchor(Pose pose)
         {
-            IntPtr poseHandle = m_NativeSession.PoseApi.Create(pose);
+            IntPtr poseHandle = _nativeSession.PoseApi.Create(pose);
             IntPtr anchorHandle = IntPtr.Zero;
             ExternApi.ArSession_acquireNewAnchor(
-                m_NativeSession.SessionHandle, poseHandle, ref anchorHandle);
-            var anchorResult = Anchor.Factory(m_NativeSession, anchorHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, poseHandle, ref anchorHandle);
+            var anchorResult = Anchor.Factory(_nativeSession, anchorHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return anchorResult;
         }
 
@@ -178,7 +175,7 @@ namespace GoogleARCoreInternal
             cloudAnchorHandle = IntPtr.Zero;
             var result =
                 ExternApi.ArSession_hostAndAcquireNewCloudAnchor(
-                    m_NativeSession.SessionHandle, platformAnchorHandle, ref cloudAnchorHandle);
+                    _nativeSession.SessionHandle, platformAnchorHandle, ref cloudAnchorHandle);
             return result;
         }
 
@@ -186,28 +183,171 @@ namespace GoogleARCoreInternal
         {
             cloudAnchorHandle = IntPtr.Zero;
             return ExternApi.ArSession_resolveAndAcquireNewCloudAnchor(
-                m_NativeSession.SessionHandle, cloudAnchorId, ref cloudAnchorHandle);
+                _nativeSession.SessionHandle, cloudAnchorId, ref cloudAnchorHandle);
         }
 
-        private CameraConfig _CreateCameraConfig(IntPtr cameraConfigHandle)
+        public bool IsDepthModeSupported(ApiDepthMode depthMode)
         {
+            int isSupported = 0;
+            ExternApi.ArSession_isDepthModeSupported(
+                _nativeSession.SessionHandle, depthMode, ref isSupported);
+            return isSupported != 0;
+        }
+
+        public ApiArStatus HostCloudAnchor(IntPtr platformAnchorHandle, int ttlDays,
+            out IntPtr cloudAnchorHandle)
+        {
+            cloudAnchorHandle = IntPtr.Zero;
+            var result = ExternApi.ArSession_hostAndAcquireNewCloudAnchorWithTtl(
+                _nativeSession.SessionHandle, platformAnchorHandle, ttlDays,
+                ref cloudAnchorHandle);
+            return result;
+        }
+
+        public void SetAuthToken(String authToken)
+        {
+            ExternApi.ArSession_setAuthToken(_nativeSession.SessionHandle, authToken);
+        }
+
+        public FeatureMapQuality EstimateFeatureMapQualityForHosting(Pose pose)
+        {
+            IntPtr poseHandle = _nativeSession.PoseApi.Create(pose);
+            int featureMapQuality = (int)FeatureMapQuality.Insufficient;
+            var status = ExternApi.ArSession_estimateFeatureMapQualityForHosting(
+                _nativeSession.SessionHandle, poseHandle, ref featureMapQuality);
+            _nativeSession.PoseApi.Destroy(poseHandle);
+
+            if (status != ApiArStatus.Success)
+            {
+                Debug.LogWarningFormat("Failed to estimate feature map quality with status {0}.",
+                    status);
+            }
+
+            return (FeatureMapQuality)featureMapQuality;
+        }
+
+        public PlaybackStatus GetPlaybackStatus()
+        {
+            ApiPlaybackStatus status = ApiPlaybackStatus.None;
+            ExternApi.ArSession_getPlaybackStatus(
+                _nativeSession.SessionHandle, ref status);
+            return status.ToPlaybackStatus();
+        }
+
+        public PlaybackResult SetPlaybackDataset(String datasetFilepath)
+        {
+            ApiArStatus status = ExternApi.ArSession_setPlaybackDataset(
+                _nativeSession.SessionHandle,
+                datasetFilepath);
+
+            // Only specific ArStatus responses are expected.
+            switch (status)
+            {
+                case ApiArStatus.Success:
+                    return PlaybackResult.OK;
+                case ApiArStatus.ErrorSessionNotPaused:
+                    return PlaybackResult.ErrorSessionNotPaused;
+                case ApiArStatus.ErrorSessionUnsupported:
+                    return PlaybackResult.ErrorSessionUnsupported;
+                case ApiArStatus.ErrorPlaybackFailed:
+                    return PlaybackResult.ErrorPlaybackFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to set a playback dataset path failed with "
+                                         + "unexpected status: {0}", status);
+                    break;
+            }
+
+            return PlaybackResult.ErrorPlaybackFailed;
+        }
+
+        public RecordingStatus GetRecordingStatus()
+        {
+            ApiRecordingStatus status = ApiRecordingStatus.None;
+            ExternApi.ArSession_getRecordingStatus(
+                _nativeSession.SessionHandle, ref status);
+            return status.ToRecordingStatus();
+        }
+
+        public RecordingResult StartRecording(ARCoreRecordingConfig config)
+        {
+            IntPtr recordingConfigHandle =
+                _nativeSession.RecordingConfigApi.Create(config);
+            ApiArStatus status = ExternApi.ArSession_startRecording(
+                _nativeSession.SessionHandle, recordingConfigHandle);
+
+            _nativeSession.RecordingConfigApi.Destory(recordingConfigHandle);
+
+            // Only specific ArStatus responses are expected.
+            switch (status)
+            {
+                case ApiArStatus.Success:
+                    return RecordingResult.OK;
+                case ApiArStatus.ErrorIllegalState:
+                    return RecordingResult.ErrorIllegalState;
+                case ApiArStatus.ErrorInvalidArgument:
+                    return RecordingResult.ErrorInvalidArgument;
+                case ApiArStatus.ErrorRecordingFailed:
+                    return RecordingResult.ErrorRecordingFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to start a recording failed with unexpected " +
+                        "status: {0}", status);
+                    break;
+            }
+
+            return RecordingResult.ErrorRecordingFailed;
+        }
+
+        public RecordingResult StopRecording()
+        {
+            ApiArStatus status = ExternApi.ArSession_stopRecording(_nativeSession.SessionHandle);
+
+            // Only specific ArStatus responses are expected.
+            switch (status)
+            {
+                case ApiArStatus.Success:
+                    return RecordingResult.OK;
+                case ApiArStatus.ErrorRecordingFailed:
+                    return RecordingResult.ErrorRecordingFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to stop recording failed with unexpected " +
+                        "status: {0}", status);
+                    break;
+            }
+
+            return RecordingResult.ErrorRecordingFailed;
+        }
+
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules",
+                         "SA1118:ParameterMustNotSpanMultipleLines",
+                         Justification = "Bypass source check.")]
+        private CameraConfig CreateCameraConfig(IntPtr cameraConfigHandle)
+        {
+            DeviceCameraDirection facingDirection =
+                _nativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle);
             int imageWidth = 0;
             int imageHeight = 0;
             int textureWidth = 0;
             int textureHeight = 0;
             int minFps = 0;
             int maxFps = 0;
-            CameraConfigDepthSensorUsages depthSensorUsage =
-                m_NativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
-            m_NativeSession.CameraConfigApi.GetImageDimensions(
+            CameraConfigDepthSensorUsage depthSensorUsage =
+                _nativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
+            CameraConfigStereoCameraUsage stereoCameraUsage =
+                _nativeSession.CameraConfigApi.GetStereoCameraUsage(cameraConfigHandle);
+            _nativeSession.CameraConfigApi.GetImageDimensions(
                 cameraConfigHandle, out imageWidth, out imageHeight);
-            m_NativeSession.CameraConfigApi.GetTextureDimensions(
+            _nativeSession.CameraConfigApi.GetTextureDimensions(
                 cameraConfigHandle, out textureWidth, out textureHeight);
-            m_NativeSession.CameraConfigApi.GetFpsRange(
+            _nativeSession.CameraConfigApi.GetFpsRange(
                 cameraConfigHandle, out minFps, out maxFps);
-
-            return new CameraConfig(new Vector2(imageWidth, imageHeight),
-                new Vector2(textureWidth, textureHeight), minFps, maxFps, depthSensorUsage);
+            return new CameraConfig(
+                facingDirection,
+                new Vector2(imageWidth, imageHeight),
+                new Vector2(textureWidth, textureHeight),
+                minFps,
+                maxFps,
+                stereoCameraUsage,
+                depthSensorUsage);
         }
 
         private struct ExternApi
@@ -240,7 +380,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern int ArSession_acquireNewAnchor(
                 IntPtr sessionHandle, IntPtr poseHandle, ref IntPtr anchorHandle);
-#pragma warning restore 626
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_isDepthModeSupported(
+                IntPtr sessionHandle, ApiDepthMode depthMode, ref int isSupported);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArSession_reportEngineType(
@@ -257,6 +400,40 @@ namespace GoogleARCoreInternal
                 IntPtr sessionHandle,
                 String cloudAnchorId,
                 ref IntPtr cloudAnchorHandle);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_hostAndAcquireNewCloudAnchorWithTtl(
+                IntPtr sessionHandle, IntPtr anchorHandle, int ttlDays,
+                ref IntPtr cloudAnchorHandle);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_setAuthToken(
+                IntPtr sessionHandle, String authToken);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_estimateFeatureMapQualityForHosting(
+                IntPtr sessionHandle, IntPtr poseHandle, ref int featureMapQuality);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_getRecordingStatus(
+                IntPtr sessionHandle, ref ApiRecordingStatus recordingStatus);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_startRecording(
+                IntPtr sessionHandle, IntPtr recordingConfigHandle);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_stopRecording(
+                IntPtr sessionHandle);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_getPlaybackStatus(
+                IntPtr sessionHandle, ref ApiPlaybackStatus playbackStatus);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_setPlaybackDataset(
+              IntPtr sessionHandle, String mp4DatasetFilePath);
+#pragma warning restore 626
         }
     }
 }

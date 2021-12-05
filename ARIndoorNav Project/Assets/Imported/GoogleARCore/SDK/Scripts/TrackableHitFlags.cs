@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="TrackableHitFlags.cs" company="Google">
+// <copyright file="TrackableHitFlags.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,11 +64,21 @@ namespace GoogleARCore
         FeaturePointWithSurfaceNormal = 1 << 4,
 
         /// <summary>
+        /// The collision is on the current frame's depth map.
+        ///
+        /// This is only available if Depth is supported on the device and the
+        /// <see cref="ARCoresessionConfig.DepthMode"/> is enabled for the session.
+        /// </summary>
+        Depth = 1 << 5,
+
+        /// <summary>
         /// This value is used to collide with all things good for placing objects.
         ///
         /// If you pass this into Raycast, you will collide with planes within the bounding
-        /// polygon and feature points with normals.
+        /// polygon and feature points with normals and the depth map.
         /// </summary>
-        Default = PlaneWithinPolygon | FeaturePointWithSurfaceNormal
+        Default = PlaneWithinPolygon
+                | FeaturePointWithSurfaceNormal
+                | Depth
     }
 }

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="TrackableListApi.cs" company="Google">
+// <copyright file="TrackableListApi.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,17 +35,17 @@ namespace GoogleARCoreInternal
 
     internal class TrackableListApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public TrackableListApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public IntPtr Create()
         {
             IntPtr handle = IntPtr.Zero;
-            ExternApi.ArTrackableList_create(m_NativeSession.SessionHandle, ref handle);
+            ExternApi.ArTrackableList_create(_nativeSession.SessionHandle, ref handle);
             return handle;
         }
 
@@ -57,7 +57,7 @@ namespace GoogleARCoreInternal
         public int GetCount(IntPtr listHandle)
         {
             int count = 0;
-            ExternApi.ArTrackableList_getSize(m_NativeSession.SessionHandle, listHandle, ref count);
+            ExternApi.ArTrackableList_getSize(_nativeSession.SessionHandle, listHandle, ref count);
             return count;
         }
 
@@ -65,7 +65,7 @@ namespace GoogleARCoreInternal
         {
             IntPtr trackableHandle = IntPtr.Zero;
             ExternApi.ArTrackableList_acquireItem(
-                m_NativeSession.SessionHandle, listHandle, index, ref trackableHandle);
+                _nativeSession.SessionHandle, listHandle, index, ref trackableHandle);
             return trackableHandle;
         }
 

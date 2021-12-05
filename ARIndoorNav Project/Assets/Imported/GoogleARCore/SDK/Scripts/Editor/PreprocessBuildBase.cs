@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="PreprocessBuildBase.cs" company="Google">
+// <copyright file="PreprocessBuildBase.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ namespace GoogleARCoreInternal
     internal class PreprocessBuildBase : IPreprocessBuild
 #endif
     {
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overriden property.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overriden property.")]
         public int callbackOrder
         {
             get

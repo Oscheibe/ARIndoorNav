@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ARCoreSession.cs" company="Google">
+// <copyright file="ARCoreSession.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,14 +53,14 @@ namespace GoogleARCore
         [Tooltip("Configuration options to select the camera mode and features.")]
         public ARCoreCameraConfigFilter CameraConfigFilter;
 
-        private OnChooseCameraConfigurationDelegate m_OnChooseCameraConfiguration;
+        private OnChooseCameraConfigurationDelegate _onChooseCameraConfiguration;
 
         /// <summary>
         /// Selects a camera configuration for the ARCore session being resumed.
         /// </summary>
         /// <param name="supportedConfigurations">
         /// A list of supported camera configurations. The size is dependent on
-        /// <see cref="ARCoreSession.CameraConfigFilter"/> settings.
+        /// <c><see cref="ARCoreSession.CameraConfigFilter"/></c> settings.
         /// The GPU texture resolutions are the same in all configs.
         /// Currently, most devices provide GPU texture resolution of 1920 x 1080,
         /// but devices might provide higher or lower resolution textures, depending
@@ -181,7 +181,7 @@ namespace GoogleARCore
         /// The callback should be registered before the ARCore session is enabled
         /// to ensure it is triggered on the first frame update.
         /// The callback will then be invoked each time the ARCore session is resumed,
-        /// which can happen when the <see cref="ARCoreSession"/> component is enabled or the
+        /// which can happen when the <c><see cref="ARCoreSession"/></c> component is enabled or the
         /// Android app moves from a state of 'paused' to 'resumed' state.
         ///
         /// Note: Starting in ARCore 1.12, changing the active camera config will make existing
@@ -192,12 +192,12 @@ namespace GoogleARCore
         public void RegisterChooseCameraConfigurationCallback(
             OnChooseCameraConfigurationDelegate onChooseCameraConfiguration)
         {
-            m_OnChooseCameraConfiguration = onChooseCameraConfiguration;
+            _onChooseCameraConfiguration = onChooseCameraConfiguration;
         }
 
         internal OnChooseCameraConfigurationDelegate GetChooseCameraConfigurationCallback()
         {
-            return m_OnChooseCameraConfiguration;
+            return _onChooseCameraConfiguration;
         }
     }
 }

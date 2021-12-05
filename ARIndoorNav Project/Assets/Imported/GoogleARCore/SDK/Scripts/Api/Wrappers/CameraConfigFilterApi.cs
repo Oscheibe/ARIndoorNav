@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="CameraConfigFilterApi.cs" company="Google">
+// <copyright file="CameraConfigFilterApi.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
     using UnityEngine;
 
@@ -35,25 +36,46 @@ namespace GoogleARCoreInternal
 
     internal class CameraConfigFilterApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public CameraConfigFilterApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
-        public IntPtr Create(ARCoreCameraConfigFilter filter)
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules",
+                         "SA1118:ParameterMustNotSpanMultipleLines",
+                         Justification = "Bypass source check.")]
+        public IntPtr Create(
+            DeviceCameraDirection direction,
+            ARCoreCameraConfigFilter filter)
         {
             IntPtr cameraConfigFilterHandle = IntPtr.Zero;
             ExternApi.ArCameraConfigFilter_create(
-                m_NativeSession.SessionHandle, ref cameraConfigFilterHandle);
+                _nativeSession.SessionHandle, ref cameraConfigFilterHandle);
+            ExternApi.ArCameraConfigFilter_setFacingDirection(
+                _nativeSession.SessionHandle, cameraConfigFilterHandle, direction);
 
             if (filter != null)
             {
-                ExternApi.ArCameraConfigFilter_setTargetFps(m_NativeSession.SessionHandle,
-                    cameraConfigFilterHandle, _ConvertToFpsFilter(filter.TargetCameraFramerate));
-                ExternApi.ArCameraConfigFilter_setDepthSensorUsage(m_NativeSession.SessionHandle,
-                    cameraConfigFilterHandle, _ConvertToDepthFilter(filter.DepthSensorUsage));
+                if (filter.TargetCameraFramerate != null)
+                {
+                    ExternApi.ArCameraConfigFilter_setTargetFps(_nativeSession.SessionHandle,
+                        cameraConfigFilterHandle, ConvertToFpsFilter(filter.TargetCameraFramerate));
+                }
+
+                if (filter.DepthSensorUsage != null)
+                {
+                    ExternApi.ArCameraConfigFilter_setDepthSensorUsage(_nativeSession.SessionHandle,
+                        cameraConfigFilterHandle, ConvertToDepthFilter(filter.DepthSensorUsage));
+                }
+
+                if (filter.StereoCameraUsage != null)
+                {
+                    ExternApi.ArCameraConfigFilter_setStereoCameraUsage(
+                        _nativeSession.SessionHandle, cameraConfigFilterHandle,
+                        ConvertToStereoFilter(filter.StereoCameraUsage));
+                }
             }
 
             return cameraConfigFilterHandle;
@@ -64,7 +86,7 @@ namespace GoogleARCoreInternal
             ExternApi.ArCameraConfigFilter_destroy(cameraConfigListHandle);
         }
 
-        private int _ConvertToFpsFilter(
+        private int ConvertToFpsFilter(
             ARCoreCameraConfigFilter.TargetCameraFramerateFilter targetCameraFramerate)
         {
             int fpsFilter = 0;
@@ -81,21 +103,38 @@ namespace GoogleARCoreInternal
             return fpsFilter;
         }
 
-        private int _ConvertToDepthFilter(
+        private int ConvertToDepthFilter(
             ARCoreCameraConfigFilter.DepthSensorUsageFilter depthSensorUsage)
         {
             int depthFilter = 0;
             if (depthSensorUsage.RequireAndUse)
             {
-                depthFilter |= (int)CameraConfigDepthSensorUsages.RequireAndUse;
+                depthFilter |= (int)CameraConfigDepthSensorUsage.RequireAndUse;
             }
 
             if (depthSensorUsage.DoNotUse)
             {
-                depthFilter |= (int)CameraConfigDepthSensorUsages.DoNotUse;
+                depthFilter |= (int)CameraConfigDepthSensorUsage.DoNotUse;
             }
 
             return depthFilter;
+        }
+
+        private int ConvertToStereoFilter(
+            ARCoreCameraConfigFilter.StereoCameraUsageFilter stereoCameraUsage)
+        {
+            int stereoFilter = 0;
+            if (stereoCameraUsage.RequireAndUse)
+            {
+                stereoFilter |= (int)CameraConfigStereoCameraUsage.RequireAndUse;
+            }
+
+            if (stereoCameraUsage.DoNotUse)
+            {
+                stereoFilter |= (int)CameraConfigStereoCameraUsage.DoNotUse;
+            }
+
+            return stereoFilter;
         }
 
         private struct ExternApi
@@ -109,12 +148,20 @@ namespace GoogleARCoreInternal
             public static extern void ArCameraConfigFilter_destroy(IntPtr cameraConfigFilterHandle);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArCameraConfigFilter_setFacingDirection(
+                IntPtr session, IntPtr filter, DeviceCameraDirection facing_direction_filter);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfigFilter_setTargetFps(IntPtr sessionHandle,
                 IntPtr cameraConfigFilterHandle, int fpsFilter);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfigFilter_setDepthSensorUsage(IntPtr sessionHandle,
                 IntPtr cameraConfigFilterHandle, int depthFilter);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArCameraConfigFilter_setStereoCameraUsage(
+                IntPtr sessionHandle, IntPtr cameraConfigFilterHandle, int stereoFilter);
 #pragma warning restore 626
         }
     }

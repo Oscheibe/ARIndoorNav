@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="AugmentedImageSrc.cs" company="Google">
+// <copyright file="AugmentedImageSrc.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,18 +37,18 @@ namespace GoogleARCore
         /// <param name="image">Source Texture2D image.</param>
         public AugmentedImageSrc(Texture2D image)
         {
-            this.Format = image.format;
-            this.Pixels = image.GetPixels();
-            this.Height = image.height;
-            this.Width = image.width;
+            this._format = image.format;
+            this._pixels = image.GetPixels();
+            this._height = image.height;
+            this._width = image.width;
         }
 
-        internal TextureFormat Format { get; private set; }
+        internal TextureFormat _format { get; private set; }
 
-        internal Color[] Pixels { get; private set; }
+        internal Color[] _pixels { get; private set; }
 
-        internal int Height { get; private set; }
+        internal int _height { get; private set; }
 
-        internal int Width { get; private set; }
+        internal int _width { get; private set; }
     }
 }

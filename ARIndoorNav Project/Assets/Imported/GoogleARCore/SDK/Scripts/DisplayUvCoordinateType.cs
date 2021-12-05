@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="DisplayUvCoordinateType.cs" company="Google">
+// <copyright file="DisplayUvCoordinateType.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,14 @@ namespace GoogleARCore
     {
         /// <summary>
         /// The background texture used to display the pass-through camera available from
-        /// <see cref="GoogleARCore.Frame.CameraImage.Texture"/>.
+        /// <c><see cref="GoogleARCore.Frame.CameraImage.Texture"/></c>.
         /// </summary>
         BackgroundTexture,
 
         /// <summary>
-        /// The background image bytes used for CPU access to the pass-through camera image available from
-        /// <see cref="GoogleARCore.Frame.CameraImage.AcquireCameraImageBytes"/>.
+        /// The background image bytes used for CPU access to the pass-through camera image
+        /// available from
+        /// <c><see cref="GoogleARCore.Frame.CameraImage.AcquireCameraImageBytes"/></c>.
         /// </summary>
         BackgroundImage,
 

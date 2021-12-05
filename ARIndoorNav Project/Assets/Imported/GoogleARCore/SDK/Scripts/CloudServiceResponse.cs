@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="CloudServiceResponse.cs" company="Google">
+// <copyright file="CloudServiceResponse.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 namespace GoogleARCore.CrossPlatform
 {
     /// <summary>
-    /// A response from the ARCore Cloud Anchor service.
+    /// A response from the ARCore <c><see cref="Cloud Anchor"/></c> service.
     /// </summary>
     public enum CloudServiceResponse
     {
@@ -29,7 +29,6 @@ namespace GoogleARCore.CrossPlatform
         /// The request was completed successfully.
         /// </summary>
         Success,
-
 
         /// <summary>
         /// The request is not supported by the current configuration.
@@ -42,7 +41,8 @@ namespace GoogleARCore.CrossPlatform
         ErrorNotTracking,
 
         /// <summary>
-        /// The ARCore Cloud Anchor service could not be reached via the network connection.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service could not be reached via the
+        /// network connection.
         /// </summary>
         /// @deprecated This enum value is deprecated.
         [System.Obsolete(
@@ -52,8 +52,19 @@ namespace GoogleARCore.CrossPlatform
         ErrorServiceUnreachable,
 
         /// <summary>
-        /// The authorization provided by the application is not valid; The API key included in the
-        /// application manifest should be checked for accuracy.
+        /// The authorization provided by the application is not valid.
+        /// <list type="bullet">
+        /// <item>The Google Cloud project may not have enabled the ARCore Cloud Anchor API.</item>
+        /// <item>It may fail if the operation you are trying to perform is not allowed.</item>
+        /// <item>When using API key authentication, this will happen if the API key in the manifest
+        /// is invalid, unauthorized or missing.</item>
+        /// <item>When using auth token in the iOS app, this will happen if the auth token is
+        /// invalid or missing.</item>
+        /// <item>When using keyless authentication, this will happen if the developer fails to
+        /// create OAuth client. It may also fail if Google Play Services isn't installed, is too
+        /// old, or is malfunctioning for some reason (e.g. services killed due to memory
+        /// pressure).</item>
+        /// </list>
         /// </summary>
         ErrorNotAuthorized,
 
@@ -64,17 +75,17 @@ namespace GoogleARCore.CrossPlatform
 
         /// <summary>
         /// The device needs to gather additional tracking data from the environment before the
-        /// ARCore Cloud Anchor service can fulfill the request.
+        /// ARCore <c><see cref="Cloud Anchor"/></c> service can fulfill the request.
         /// </summary>
         ErrorDatasetInadequate,
 
         /// <summary>
-        /// The request referenced a Cloud Anchor ID that was not found.
+        /// The request referenced a <c><see cref="Cloud Anchor"/></c> ID that was not found.
         /// </summary>
         ErrorCloudIdNotFound,
 
         /// <summary>
-        /// The ARCore Cloud Anchor service failed to localize.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service failed to localize.
         /// </summary>
         /// @deprecated This enum value is deprecated.
         [System.Obsolete(
@@ -83,33 +94,43 @@ namespace GoogleARCore.CrossPlatform
         ErrorLocalizationFailed,
 
         /// <summary>
-        /// The SDK version is too old to be compatible with the ARCore Cloud Anchor service.
+        /// The SDK version is too old to be compatible with the ARCore
+        /// <c><see cref="Cloud Anchor"/></c> service.
         /// </summary>
         ErrorSDKTooOld,
 
         /// <summary>
-        /// The SDK version is too new to be compatible with the ARCore Cloud Anchor service.
+        /// The SDK version is too new to be compatible with the ARCore
+        /// <c><see cref="Cloud Anchor"/></c> service.
         /// </summary>
         ErrorSDKTooNew,
 
         /// <summary>
-        /// The ARCore Cloud Anchor service experienced an internal error when processing the request.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service experienced an internal error when
+        /// processing the request.
         /// </summary>
         ErrorInternal,
 
         /// <summary>
-        /// The ARCore Cloud Anchor service was unreachable. This can happen because
-        /// of a number of reasons. The device may is in airplane mode or does not
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service was unreachable. This can happen
+        /// because of a number of reasons. The device may is in airplane mode or does not
         /// have a working internet connection. The request sent to the server could
         /// have timed out with no response, there could be a bad network
         /// connection, DNS unavailability, firewall issues, or anything that could
-        /// affect the device's ability to connect to the ARCore Cloud Anchor servce.
+        /// affect the device's ability to connect to the ARCore <c><see cref="Cloud Anchor"/></c>
+        /// service.
         /// </summary>
         ErrorHostingServiceUnavailable,
 
         /// <summary>
-        /// The ARCore Cloud Anchor service request has been cancelled.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service request has been cancelled.
         /// </summary>
         ErrorRequestCancelled,
+
+        /// <summary>
+        /// Too many Cloud Anchors are being hosted and/or resolved. To create more, destroy some
+        /// XPAnchor objects or cancel some AsyncTasks to free up resources.
+        /// </summary>
+        ErrorTooManyCloudAnchors,
     }
 }

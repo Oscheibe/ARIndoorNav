@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="EnvironmentalLight.cs" company="Google">
+// <copyright file="EnvironmentalLight.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@ namespace GoogleARCore
     {
         /// <summary>
         /// The directional light used by
-        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithReflections</c> and
-        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithoutReflections</c>.
+        /// <c><see cref="LightEstimationMode"/></c>.<c>EnvironmentalHDRWithReflections</c> and
+        /// <c><see cref="LightEstimationMode"/></c>.<c>EnvironmentalHDRWithoutReflections</c>.
         /// The rotation and color will be updated automatically by this component.
         /// </summary>
         public Light DirectionalLight;
 
-        private long m_LightEstimateTimestamp = -1;
+        private long _lightEstimateTimestamp = -1;
 
         /// <summary>
         /// Unity update method that sets global light estimation shader constant and
@@ -85,9 +85,9 @@ namespace GoogleARCore
                 // Set _GlobalLightEstimation for backward compatibility.
                 Shader.SetGlobalFloat("_GlobalLightEstimation", normalizedIntensity);
             }
-            else if (m_LightEstimateTimestamp != estimate.Timestamp)
+            else if (_lightEstimateTimestamp != estimate.Timestamp)
             {
-                m_LightEstimateTimestamp = estimate.Timestamp;
+                _lightEstimateTimestamp = estimate.Timestamp;
                 if (DirectionalLight != null)
                 {
                     if (!DirectionalLight.gameObject.activeSelf || !DirectionalLight.enabled)

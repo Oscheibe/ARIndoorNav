@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="CameraConfig.cs" company="Google">
+// <copyright file="CameraConfig.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,26 +21,54 @@
 namespace GoogleARCore
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using UnityEngine;
 
     /// <summary>
-    /// Type of depth sensor usage for a camera config.
+    /// Type of hardware depth sensor, such as a time-of-flight sensor (or ToF sensor), usage for a
+    /// camera config.
     /// </summary>
     [Flags]
-    public enum CameraConfigDepthSensorUsages
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1200:FlagsEnumsMustBePlural",
+                     Justification = "Usage is plural.")]
+    public enum CameraConfigDepthSensorUsage
     {
         /// <summary>
-        /// Indicates that a depth sensor must be present on the device,
-        /// and the depth sensor will be used by ARCore.
+        /// Indicates that a hardware depth sensor, such as a time-of-flight sensor (or ToF sensor),
+        /// must be present on the device, and the hardware depth sensor will be used by ARCore.
         /// Not supported on all devices.
         /// </summary>
         RequireAndUse = 0x0001,
 
         /// <summary>
-        /// Indicates that ARCore will not attempt to use a depth sensor, even if it is present.
+        /// Indicates that ARCore will not attempt to use a hardware depth sensor, such as a
+        /// time-of-flight sensor (or ToF sensor), even if it is present.
         /// Most commonly used to filter camera configurations when the app requires
-        /// exclusive access to the depth sensor outside of ARCore, for example to
+        /// exclusive access to the hardware depth sensor outside of ARCore, for example to
         /// support 3D mesh reconstruction. Available on all ARCore supported devices.
+        /// </summary>
+        DoNotUse = 0x0002,
+    }
+
+    /// <summary>
+    /// Type of stereo camera usage for a camera config.
+    /// </summary>
+    [Flags]
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1200:FlagsEnumsMustBePlural",
+                     Justification = "Usage is plural.")]
+    public enum CameraConfigStereoCameraUsage
+    {
+        /// <summary>
+        /// Indicates that a stereo camera must be present on the device and the stereo camera will
+        /// be used by ARCore.
+        /// Not supported on all devices.
+        /// </summary>
+        RequireAndUse = 0x0001,
+
+        /// <summary>
+        /// Indicates that ARCore will not attempt to use a stereo camera, even if one is present.
+        /// Can be used to limit power consumption.
+        /// Available on all ARCore supported devices.
         /// </summary>
         DoNotUse = 0x0002,
     }
@@ -48,17 +76,32 @@ namespace GoogleARCore
     /// <summary>
     /// A configuration for ARCore accessing the device's camera sensor.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:ParameterMustNotSpanMultipleLines",
+                     Justification = "Bypass source check.")]
     public struct CameraConfig
     {
-        internal CameraConfig(Vector2 imageSize, Vector2 textureSize, int minFPS, int maxFPS,
-            CameraConfigDepthSensorUsages depthSensor) : this()
+        internal CameraConfig(
+            DeviceCameraDirection facingDirection,
+            Vector2 imageSize,
+            Vector2 textureSize,
+            int minFPS,
+            int maxFPS,
+            CameraConfigStereoCameraUsage stereoCamera,
+            CameraConfigDepthSensorUsage depthSensor) : this()
         {
+            FacingDirection = facingDirection;
             ImageSize = imageSize;
             TextureSize = textureSize;
             MinFPS = minFPS;
             MaxFPS = maxFPS;
             DepthSensorUsage = depthSensor;
+            StereoCameraUsage = stereoCamera;
         }
+
+        /// <summary>
+        /// Gets the camera facing direction for this camera config.
+        /// </summary>
+        public DeviceCameraDirection FacingDirection { get; private set; }
 
         /// <summary>
         /// Gets the dimensions of the CPU-accessible image bytes for this camera config.
@@ -81,8 +124,14 @@ namespace GoogleARCore
         public int MaxFPS { get; private set; }
 
         /// <summary>
-        /// Gets whether the depth sensor usage for this camera config.
+        /// Gets the stereo camera usage for this camera config.
         /// </summary>
-        public CameraConfigDepthSensorUsages DepthSensorUsage { get; private set; }
+        public CameraConfigStereoCameraUsage StereoCameraUsage { get; private set; }
+
+        /// <summary>
+        /// Gets the hardware depth sensor, such as a time-of-flight sensor (or ToF sensor), usage
+        /// for this camera config.
+        /// </summary>
+        public CameraConfigDepthSensorUsage DepthSensorUsage { get; private set; }
     }
 }

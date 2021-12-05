@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ThrottledLogMessage.cs" company="Google">
+// <copyright file="ThrottledLogMessage.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ namespace GoogleARCoreInternal
     /// </summary>
     internal class ThrottledLogMessage
     {
-        private float m_LastMessageTime;
-        private float m_MinLogIntervalSeconds;
+        private float _lastMessageTime;
+        private float _minLogIntervalSeconds;
 
         public ThrottledLogMessage(float minLogIntervalSeconds)
         {
-            m_MinLogIntervalSeconds = minLogIntervalSeconds;
-            m_LastMessageTime = -minLogIntervalSeconds - 1f;
+            _minLogIntervalSeconds = minLogIntervalSeconds;
+            _lastMessageTime = -minLogIntervalSeconds - 1f;
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace GoogleARCoreInternal
         private bool ShouldLog()
         {
             float now = Time.realtimeSinceStartup;
-            if (now - m_LastMessageTime > m_MinLogIntervalSeconds)
+            if (now - _lastMessageTime > _minLogIntervalSeconds)
             {
-                m_LastMessageTime = now;
+                _lastMessageTime = now;
                 return true;
             }
 

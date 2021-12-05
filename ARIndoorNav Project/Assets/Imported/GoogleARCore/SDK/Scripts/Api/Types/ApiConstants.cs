@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiConstants.cs" company="Google">
+// <copyright file="ApiConstants.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,14 +34,18 @@ namespace GoogleARCoreInternal
         public const string ARCoreShimApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string ARPrestoApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string MediaNdk = InstantPreviewManager.InstantPreviewNativeApi;
+        public const string ARRenderingUtilsApi = "NOT_AVAILABLE";
         public const string NdkCameraApi = "NOT_AVAILABLE";
+        public const string GLESApi = "NOT_AVAILABLE";
 #elif UNITY_ANDROID
         public const string ARCoreNativeApi = "arcore_sdk_c";
         public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
         public const string ARCoreShimApi = "arcore_unity_api";
         public const string ARPrestoApi = "arpresto_api";
+        public const string ARRenderingUtilsApi = "arcore_rendering_utils_api";
         public const string MediaNdk = "mediandk";
         public const string NdkCameraApi = "camera2ndk";
+        public const string GLESApi = "GLESv3";
 #elif UNITY_IOS
 #if ARCORE_IOS_SUPPORT
         public const string ARCoreNativeApi = "__Internal";
@@ -52,15 +56,19 @@ namespace GoogleARCoreInternal
 #endif // ARCORE_IOS_SUPPORT
         public const string ARCoreShimApi = "NOT_AVAILABLE";
         public const string ARPrestoApi = "NOT_AVAILABLE";
+        public const string ARRenderingUtilsApi = "NOT_AVAILABLE";
         public const string MediaNdk = "NOT_AVAILABLE";
         public const string NdkCameraApi = "NOT_AVAILABLE";
+        public const string GLESApi = "NOT_AVAILABLE";
 #else
         public const string ARCoreNativeApi = "NOT_AVAILABLE";
         public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
         public const string ARCoreShimApi = "NOT_AVAILABLE";
         public const string ARPrestoApi = "NOT_AVAILABLE";
+        public const string ARRenderingUtilsApi = "NOT_AVAILABLE";
         public const string MediaNdk = "NOT_AVAILABLE";
         public const string NdkCameraApi = "NOT_AVAILABLE";
+        public const string GLESApi = "NOT_AVAILABLE";
 #endif
 
 #if UNITY_EDITOR_OSX

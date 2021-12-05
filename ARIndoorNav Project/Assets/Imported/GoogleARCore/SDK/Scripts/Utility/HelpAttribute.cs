@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="HelpAttribute.cs" company="Google">
+// <copyright file="HelpAttribute.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ namespace GoogleARCoreInternal
         public readonly HelpMessageType MessageType = HelpMessageType.None;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:GoogleARCoreInternal.HelpAttribute"/>
-        /// class.
+        /// Initializes a new instance of the
+        /// <c><see cref="T:GoogleARCoreInternal.HelpAttribute"/></c> class.
         /// </summary>
         /// <param name="helpMessage">Help message.</param>
         /// <param name="messageType">Message type.</param>

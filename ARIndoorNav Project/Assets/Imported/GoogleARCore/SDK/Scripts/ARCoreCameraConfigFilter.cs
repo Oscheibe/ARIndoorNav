@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ARCoreCameraConfigFilter.cs" company="Google">
+// <copyright file="ARCoreCameraConfigFilter.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ namespace GoogleARCore
     using UnityEngine;
 
     /// <summary>
-    /// The <see cref="ARCoreCameraConfigFilter"/> class derives a list of camera configurations
-    /// available on the device at runtime.
+    /// The <c><see cref="ARCoreCameraConfigFilter"/></c> class derives a list of camera
+    /// configurations available on the device at runtime.
     /// </summary>
     /// <remarks>
     /// This is used to derive a list of camera configurations available on the device at runtime
@@ -36,15 +36,15 @@ namespace GoogleARCore
     ///
     /// Beginning with ARCore SDK 1.15.0, some devices support additional camera configs with lower
     /// GPU texture resolutions than the device's default GPU texture resolution. See the
-    /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore supported
-    /// devices</a> page for details.
+    /// <a href="https://developers.google.com/ar/devices">ARCore supported
+    /// devices</a> for an up to date list of affected devices.
     ///
     /// An app may adjust its capabilities at runtime by selecting a wider range of config filters
-    /// and using ARCoreSession.RegisterChooseCameraConfigurationCallback(
-    /// ARCoreSession.OnChooseCameraConfigurationDelegate) to specify a selection function.
+    /// and using <c><see cref="ARCoreSession.RegisterChooseCameraConfigurationCallback(
+    /// ARCoreSession.OnChooseCameraConfigurationDelegate)"/></c> to specify a selection function.
     /// In that function the app may then adjust its runtime settings and select an appropriate
     /// camera configuration. If no callback is registered, ARCore will use the first
-    /// <see cref="CameraConfig"/> in the list of available configurations.
+    /// <c><see cref="CameraConfig"/></c> in the list of available configurations.
     /// </remarks>
     [CreateAssetMenu(
         fileName = "ARCoreCameraConfigFilter",
@@ -58,9 +58,15 @@ namespace GoogleARCore
         public TargetCameraFramerateFilter TargetCameraFramerate;
 
         /// <summary>
-        /// This allows an app to use or disable a hardware depth sensor if present on the device.
+        /// This allows an app to use or disable a hardware depth sensor, such as a time-of-flight
+        /// sensor (or ToF sensor), if present on the device.
         /// </summary>
         public DepthSensorUsageFilter DepthSensorUsage;
+
+        /// <summary>
+        /// This allows an app to use or disable additional cameras to improve tracking.
+        /// </summary>
+        public StereoCameraUsageFilter StereoCameraUsage;
 
         /// <summary>
         /// Unity OnValidate.
@@ -81,12 +87,24 @@ namespace GoogleARCore
 
             if (!DepthSensorUsage.DoNotUse && !DepthSensorUsage.RequireAndUse)
             {
-                Debug.LogError("No options in Depth Senor Usage are selected, " +
+                Debug.LogError("No options in Depth Sensor Usage are selected, " +
                     "there will be no camera configs and this app will fail to run.");
             }
             else if (!DepthSensorUsage.DoNotUse)
             {
                 Debug.LogWarning("DoNotUseDepthSensor is not selected, this may cause " +
+                    "no camera config be available for this filter and " +
+                    "the app may not run on all devices.");
+            }
+
+            if (!StereoCameraUsage.DoNotUse && !StereoCameraUsage.RequireAndUse)
+            {
+                Debug.LogError("No options in Stereo Camera Usage are selected, " +
+                    "there will be no camera configs and this app will fail to run.");
+            }
+            else if (!StereoCameraUsage.DoNotUse)
+            {
+                Debug.LogWarning("DoNotUseStereoCamera is not selected, this may cause " +
                     "no camera config be available for this filter and " +
                     "the app may not run on all devices.");
             }
@@ -112,7 +130,7 @@ namespace GoogleARCore
             ///
             /// Increases power consumption and may increase app memory usage.
             ///
-            /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
+            /// See the <a href="https://developers.google.com/ar/devices">
             /// ARCore supported devices</a> page for a list of
             /// devices that currently support 60fps.
             /// </summary>
@@ -121,16 +139,18 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// This allows an app to use or disable a hardware depth sensor if present on the device.
+        /// This allows an app to use or disable a hardware depth sensor, such as a time-of-flight
+        /// sensor (or ToF sensor), if present on the device.
         /// </summary>
         [Serializable]
         public class DepthSensorUsageFilter
         {
             /// <summary>
-            /// Filters for camera configs that require a depth sensor to be present on the device,
+            /// Filters for camera configs that require a hardware depth sensor, such as a
+            /// time-of-flight sensor (or ToF sensor), to be present on the device,
             /// and that will be used by ARCore.
             ///
-            /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
+            /// See the <a href="https://developers.google.com/ar/devices">
             /// ARCore supported devices</a> page for a list of
             /// devices that currently have supported depth sensors.
             /// </summary>
@@ -139,14 +159,43 @@ namespace GoogleARCore
             public bool RequireAndUse = true;
 
             /// <summary>
-            /// Filters for camera configs where a depth sensor is not present, or is present but
+            /// Filters for camera configs where a hardware depth sensor, such as a time-of-flight
+            /// sensor (or ToF sensor), is not present, or is present but
             /// will not be used by ARCore.
             ///
             /// Most commonly used to filter camera configurations when the app requires exclusive
-            /// access to the depth sensor outside of ARCore, for example to support 3D mesh
-            /// reconstruction. Available on all ARCore supported devices.
+            /// access to the hardware depth sensor outside of ARCore, for example to support
+            /// 3D mesh reconstruction. Available on all ARCore supported devices.
             /// </summary>
-            [Tooltip("ARCore will not use the depth sensor, even if it is present. " +
+            [Tooltip("ARCore will not use the hardware depth sensor, such as a time-of-flight" +
+                     " sensor (or ToF sensor), even if it is present." +
+                     " Available on all supported devices.")]
+            public bool DoNotUse = true;
+        }
+
+        /// <summary>
+        /// This allows an app to use or disable a stereo camera if present on the device.
+        /// </summary>
+        [Serializable]
+        public class StereoCameraUsageFilter
+        {
+            /// <summary>
+            /// Filters for camera configs that require a stereo camera to be present on the device,
+            /// and that will be used by ARCore.
+            ///
+            /// See the <a href="https://developers.google.com/ar/devices">
+            /// ARCore supported devices</a> page for a list of devices that currently have
+            /// supported stereo cameras.
+            /// </summary>
+            [Tooltip("ARCore requires a stereo camera to be present on the device. " +
+                     "Not available on all ARCore supported devices.")]
+            public bool RequireAndUse = true;
+
+            /// <summary>
+            /// Filters for camera configs where a stereo camera is not present, or is present but
+            /// will not be used by ARCore. Available on all ARCore supported devices.
+            /// </summary>
+            [Tooltip("ARCore will not use the stereo camera, even if it is present. " +
                      "Available on all supported devices.")]
             public bool DoNotUse = true;
         }

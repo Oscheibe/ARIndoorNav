@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="ARCoreAnalyticsGUI.cs" company="Google">
+// <copyright file="ARCoreAnalyticsGUI.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ namespace GoogleARCoreInternal
         public static readonly GUIContent SDKAnalytics =
                     new GUIContent("Enable Google ARCore SDK Analytics");
 
-        private static float s_GroupLabelWidth = 260;
+        private static float _groupLabelWidth = 260;
 
         // Render ARCore Analytics Settings for ARCoreAnalyticsProvider and
         // ARCoreAnalyticsPreferences.
         internal static void OnGUI()
         {
-            EditorGUIUtility.labelWidth = s_GroupLabelWidth;
+            EditorGUIUtility.labelWidth = _groupLabelWidth;
             ARCoreAnalytics.Instance.EnableAnalytics =
                 EditorGUILayout.Toggle(SDKAnalytics, ARCoreAnalytics.Instance.EnableAnalytics);
 

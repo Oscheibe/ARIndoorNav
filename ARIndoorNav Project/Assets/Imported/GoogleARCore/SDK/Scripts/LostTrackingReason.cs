@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="LostTrackingReason.cs" company="Google">
+// <copyright file="LostTrackingReason.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ namespace GoogleARCore
         /// Motion tracking paused because the camera is in use by another application.
         /// Tracking will resume once this app regains priority, or once all apps with
         /// higher priority have stopped using the camera. Prior to ARCore SDK 1.13,
-        /// <see cref="LostTrackingReason"/>.<c>None</c> is returned in this case instead.
+        /// <c><see cref="LostTrackingReason"/></c>.<c>None</c> is returned in this case instead.
         /// </summary>
         CameraUnavailable = 5,
     }

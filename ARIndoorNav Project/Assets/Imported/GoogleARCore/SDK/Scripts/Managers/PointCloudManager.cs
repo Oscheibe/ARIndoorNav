@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="PointCloudManager.cs" company="Google">
+// <copyright file="PointCloudManager.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ namespace GoogleARCoreInternal
 
     internal class PointCloudManager
     {
-        private NativeSession m_NativeSession = null;
+        private NativeSession _nativeSession = null;
 
-        private float m_LastReleasedPointcloudTimestamp = 0.0f;
+        private float _lastReleasedPointcloudTimestamp = 0.0f;
 
         public PointCloudManager(NativeSession session)
         {
-            m_NativeSession = session;
+            _nativeSession = session;
         }
 
         public IntPtr PointCloudHandle { get; private set; }
@@ -42,8 +42,8 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                return m_NativeSession.PointCloudApi.GetTimestamp(PointCloudHandle) !=
-                    m_LastReleasedPointcloudTimestamp;
+                return _nativeSession.PointCloudApi.GetTimestamp(PointCloudHandle) !=
+                    _lastReleasedPointcloudTimestamp;
             }
         }
 
@@ -53,14 +53,14 @@ namespace GoogleARCoreInternal
             // After first frame, release previous frame's point cloud.
             if (PointCloudHandle != IntPtr.Zero)
             {
-                m_LastReleasedPointcloudTimestamp =
-                    m_NativeSession.PointCloudApi.GetTimestamp(PointCloudHandle);
-                m_NativeSession.PointCloudApi.Release(PointCloudHandle);
+                _lastReleasedPointcloudTimestamp =
+                    _nativeSession.PointCloudApi.GetTimestamp(PointCloudHandle);
+                _nativeSession.PointCloudApi.Release(PointCloudHandle);
                 PointCloudHandle = IntPtr.Zero;
             }
 
             IntPtr pointCloudHandle;
-            m_NativeSession.FrameApi.TryAcquirePointCloudHandle(out pointCloudHandle);
+            _nativeSession.FrameApi.TryAcquirePointCloudHandle(out pointCloudHandle);
             PointCloudHandle = pointCloudHandle;
 #endif
         }

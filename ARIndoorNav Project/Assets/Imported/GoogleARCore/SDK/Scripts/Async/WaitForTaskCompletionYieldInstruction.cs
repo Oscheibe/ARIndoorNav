@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
-// <copyright file="WaitForTaskCompletionYieldInstruction.cs" company="Google">
+// <copyright file="WaitForTaskCompletionYieldInstruction.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// The AsyncTask the yield instruction waits on.
         /// </summary>
-        private AsyncTask<T> m_Task;
+        private AsyncTask<T> _task;
 
         /// <summary>
         /// Constructor for WaitForTaskCompletionYieldInstruction.
@@ -41,20 +41,20 @@ namespace GoogleARCoreInternal
         /// <param name="task">The task to wait for completion.</param>
         public WaitForTaskCompletionYieldInstruction(AsyncTask<T> task)
         {
-            m_Task = task;
+            _task = task;
         }
 
         /// <summary>
         /// Gets a value indicating whether the coroutine instruction should keep waiting.
         /// </summary>
         /// <value><c>true</c> if the task is incomplete, otherwise <c>false</c>.</value>
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overridden method.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overridden method.")]
         public override bool keepWaiting
         {
             get
             {
-                return !m_Task.IsComplete;
+                return !_task.IsComplete;
             }
         }
     }
