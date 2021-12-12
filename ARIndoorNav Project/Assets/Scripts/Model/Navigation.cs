@@ -8,8 +8,8 @@ using UnityEngine.AI;
     The user and their position is model as a GameObject and accessed by NavMesh in the background.
     The destination and its information is chosen by the user. The position is also represented by a GameObject.
 
-
  */
+
 public class Navigation : MonoBehaviour
 {
     public NavMeshAgent _NavMeshAgent;
@@ -29,13 +29,13 @@ public class Navigation : MonoBehaviour
     private int stairsMask = 8;
     private int elevatorMask = 16;
 
-    void Start()
+    private void Start()
     {
         navigationInformation = new NavigationInformation();
     }
 
     // Sends periodic updates of the current navigation state
-    void Update()
+    private void Update()
     {
         if (destination == null || _NavMeshAgent == null || isPaused == true) return;
 
@@ -53,12 +53,15 @@ public class Navigation : MonoBehaviour
         ProcessCurrentArea();
     }
 
-    /** 
-        Sets the destination of the NavMesh agent and updates the local variable _destination that 
+    /**
+        Sets the destination of the NavMesh agent and updates the local variable _destination that
         stores more information than the position
     */
+
     public void UpdateDestination(Room destination)
     {
+        Debug.Log($"Setting destination room: {destination?.Name}");
+
         this.destination = destination;
         destinationFloor = destination.Floor;
         // Setting the destination height to the ground level
@@ -69,16 +72,17 @@ public class Navigation : MonoBehaviour
         }
         destinationPos = new Vector3(destination.Location.position.x, floorTransform.position.y, destination.Location.position.z);
 
+        Debug.Log($"Setting destination pos: {destinationPos}");
         _NavMeshAgent.SetDestination(destinationPos);
 
         SetDestinationInfos();
         navigationInformation.SetDestinationName(destination.Name);
-
     }
 
     /**
      * Used to update the destination of the Agent after a warp
      */
+
     private void UpdateDestination()
     {
         if (destination == null)
@@ -97,6 +101,7 @@ public class Navigation : MonoBehaviour
         This Method is used after the PoseEstimation has updated the user position to warp
         an eventually stuck NavMesh agent out of its stuck position
     */
+
     public bool ReportUserPosJump(Vector3 warpPosition)
     {
         var hasWarped = _NavMeshAgent.Warp(warpPosition);
@@ -108,6 +113,7 @@ public class Navigation : MonoBehaviour
         NavMesh constantly updates the path based on the user and destination position.
         The path that was updated during the current frame can be accessed here
      */
+
     private Vector3[] GetTotalPath()
     {
         return _NavMeshAgent.path.corners;
@@ -117,6 +123,7 @@ public class Navigation : MonoBehaviour
      * Returns the Vector3 of the next corner in the path.
      * If the corner count == 1, then the next corner is the destination
      */
+
     public Vector3 GetNextCorner()
     {
         return _NavMeshAgent.path.corners[0];
@@ -125,6 +132,7 @@ public class Navigation : MonoBehaviour
     /**
         Returns the distance between the user and the destination coordinate with its Y value on the floor
     */
+
     public float GetUnityDistanceToUser(Room room)
     {
         var floorY = _ModelDatabase.GetFloorTransform(room.Floor).position.y;
@@ -138,6 +146,7 @@ public class Navigation : MonoBehaviour
      * Sets destination to null which ends all destination related calculations.
      * Used when the user has reached their goal
      */
+
     public void StopNavigation()
     {
         _NavMeshAgent.ResetPath();
@@ -147,10 +156,11 @@ public class Navigation : MonoBehaviour
         destination = null;
     }
 
-    /** 
+    /**
      * only paused the navigation calculations
      * the current destination is not lost, but the user needs to reposition themselves
      */
+
     private void PauseNavigation()
     {
         isPaused = true;
@@ -161,10 +171,11 @@ public class Navigation : MonoBehaviour
         // Deactivate agent
     }
 
-    /** 
+    /**
      * only paused the navigation calculations
      * the current destination is not lost, but the user needs to reposition themselves
      */
+
     public void ContinueNavigation()
     {
         isPaused = false;
@@ -178,6 +189,7 @@ public class Navigation : MonoBehaviour
      * Only returns a value when a path is set. The NavMesh mask is a bitset representing the current area
      * 8 = Stairs / 16 = Elevator
      */
+
     private void ProcessCurrentArea()
     {
         NavMeshHit navMeshHit;
@@ -212,13 +224,12 @@ public class Navigation : MonoBehaviour
             _NavigationPresenter.SendObstacleMessage(currentFloor, destinationFloor, PoseEstimation.NewPosReason.EnteredElevator);
             _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.EnteredElevator);
         }
-
-
     }
 
     /**
      * returns the floor number of the last current destination
      */
+
     public int GetDestinationFloor()
     {
         return destinationFloor;
@@ -229,9 +240,13 @@ public class Navigation : MonoBehaviour
      * This method allows for navigation to stairs or elevators without displaying the path beyond them
      * and cleaning up visual clutter this way
      */
+
     private Vector3[] GetPathToNextFloor()
     {
         var totalPath = GetTotalPath();
+        if (totalPath == null || totalPath.Length == 0)
+            return new Vector3[0];
+
         List<Vector3> pathToFloor = new List<Vector3>();
         Vector3 lastCorner = totalPath[0];
         foreach (var corner in totalPath)

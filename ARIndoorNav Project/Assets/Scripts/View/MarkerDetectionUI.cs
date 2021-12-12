@@ -5,9 +5,13 @@ using UnityEngine;
 public class MarkerDetectionUI : MonoBehaviour
 {
     public SystemStatePresenter _SystemStatePresenter;
+    public TextDetection _TextDetection;
+    public MarkerDetection _MarkerDetection;
 
     public GameObject _loadingAnimationGO;
     public float _loadingTime = 1.0f;
+
+    public string DestinationRoomString { get; private set; }
 
     public void ShowLoadingAnimation()
     {
@@ -24,10 +28,20 @@ public class MarkerDetectionUI : MonoBehaviour
      * Called by a button
      * Method to start the marker detection process
      */
+
     public void StartMarkerDetection()
     {
-        _SystemStatePresenter.ConfirmMarkerTracking();
+        Debug.Log($"Pressed Marker detection button: {DestinationRoomString}");
+        if (!string.IsNullOrEmpty(DestinationRoomString))
+        {
+            _MarkerDetection.SaveUserPosition();
+            _TextDetection.ReceiveTextList(new List<string> { DestinationRoomString });
+        }
+        //_SystemStatePresenter.ConfirmMarkerTracking();
     }
 
-
+    public void SetDestinationRoomString(string input)
+    {
+        DestinationRoomString = input;
+    }
 }

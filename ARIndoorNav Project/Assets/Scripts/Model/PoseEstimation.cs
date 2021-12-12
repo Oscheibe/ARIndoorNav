@@ -13,40 +13,40 @@ public class PoseEstimation : MonoBehaviour
 
     private float rotationDegree = 2.5f;
 
-
     public enum NewPosReason
     {
-        Manual = 0,
+        MarkerDetection = 0,
         TooMuchError = 1,
         EnteredStairs = 2,
         EnteredElevator = 3,
+        ManualInput = 4,
     }
 
-    void Start()
+    private void Start()
     {
         _TrackingErrorHandling.AnnouncePositionJump(_ARPositionTracking.GetUnityPosition());
     }
 
-    void Update()
+    private void Update()
     {
         // Reporting the current position for error evaluation
         _TrackingErrorHandling.ReportCurrentUserPosition(_ARPositionTracking.GetUnityPosition());
     }
 
-
     /**
         Method to gather positional data to combine it and calculate the most likely user position
-        ARCore is constantly updating the position in the background 
+        ARCore is constantly updating the position in the background
         This method is used to counteract drift by scanning marker
      */
-    public void ReportMarkerPose(Transform virtualMarkerTransform, Pose worldMarkerPose)
+
+    public void ReportMarkerPose(Transform virtualMarkerTransform, Pose userPose)
     {
         var arPosBefore = _ARPositionTracking.GetUnityPosition();
-        UpdateUserRotation(virtualMarkerTransform, worldMarkerPose);
+        UpdateUserRotation(virtualMarkerTransform, userPose);
         var arPosAfter = _ARPositionTracking.GetUnityPosition();
 
         CorrectRotationOffset(arPosBefore, arPosAfter);
-        UpdateUserPosition(virtualMarkerTransform.position, worldMarkerPose.position);
+        UpdateUserPosition(virtualMarkerTransform.position, userPose.position);
 
         _Navigation.ReportUserPosJump(_ARPositionTracking.GetUnityPosition());
     }
@@ -54,19 +54,20 @@ public class PoseEstimation : MonoBehaviour
     /**
      * changes the current floor based on marker detection results
      */
+
     public void ReportCurrentFloor(int currentFloor)
     {
         Debug.Log("Changed current floor to: " + currentFloor);
         this.currentFloor = currentFloor;
     }
 
-    private void UpdateUserPosition(Vector3 virtualMarkerPosition, Vector3 worldMarkerPosition)
+    private void UpdateUserPosition(Vector3 virtualMarkerPosition, Vector3 userPoseVector)
     {
         var originPosition = _ARPositionTracking.GetOriginPosition();
         var fpsPos = _ARPositionTracking.GetUnityPosition();
 
         Vector3 targetPosDelta;
-        targetPosDelta = virtualMarkerPosition - worldMarkerPosition;
+        targetPosDelta = virtualMarkerPosition - userPoseVector;
 
         var newPosition = _ARPositionTracking.GetOriginPosition() + targetPosDelta;
         _TrackingErrorHandling.AnnouncePositionJump(newPosition);
@@ -107,23 +108,31 @@ public class PoseEstimation : MonoBehaviour
     * (5 optional) Initiate manual rotation adjustment
     * 6 Send confirmation message to user
     */
-    public void RequestNewPosition(NewPosReason reason)
-    {
 
+    public void RequestNewPosition(NewPosReason reason, string roomName = null)
+    {
         switch (reason)
         {
-            case NewPosReason.Manual:
+            case NewPosReason.ManualInput:
+                //TODO: Use input to set position
+                break;
+
+            case NewPosReason.MarkerDetection:
                 _MarkerDetection.StartDetection();
                 break;
+
             case NewPosReason.TooMuchError:
                 //TODO
                 break;
+
             case NewPosReason.EnteredStairs:
                 // TODO
                 break;
+
             case NewPosReason.EnteredElevator:
                 // TODO
                 break;
+
             default:
                 break;
         }
@@ -132,9 +141,10 @@ public class PoseEstimation : MonoBehaviour
     /**
      * The absolute position of the user relative to the unity origin is
      * the combined position of the ARCore origin and the relative movement of the user
-     * 
+     *
      * Returns the Unity world coordinates of the user
      */
+
     public Vector3 GetUserPosition()
     {
         return _ARPositionTracking.GetUnityPosition();
@@ -154,6 +164,7 @@ public class PoseEstimation : MonoBehaviour
      * Method to manually adjust the rotation of the user position
      * Rotates the user clockwise
      */
+
     public void RotateClockwise()
     {
         _ARPositionTracking.RotateAroundOrigin(rotationDegree); // positive for clockwise rotation
@@ -163,6 +174,7 @@ public class PoseEstimation : MonoBehaviour
      * Method to manually adjust the rotation of the user position
      * Rotates the user clockwise
      */
+
     public void RotateCounterClockwise()
     {
         _ARPositionTracking.RotateAroundOrigin(-rotationDegree); // negative for counter-clockwise rotation
@@ -172,13 +184,9 @@ public class PoseEstimation : MonoBehaviour
      * method to reset the state of ARCore
      * used when the user has to relocate themselves because of an error or when they change floor
      */
+
     private void ResetARCore()
     {
         //TODO
-
     }
-
 }
-
-
-

@@ -63,6 +63,6 @@ public class SystemStatePresenter : MonoBehaviour
      */
     public void ConfirmMarkerTracking()
     {
-        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.Manual);
+        _PoseEstimation.RequestNewPosition(PoseEstimation.NewPosReason.MarkerDetection);
     }
 }

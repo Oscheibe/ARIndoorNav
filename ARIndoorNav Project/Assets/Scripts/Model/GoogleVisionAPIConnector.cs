@@ -8,13 +8,14 @@ public class GoogleVisionAPIConnector : MonoBehaviour
 {
     public TextDetection _TextDetection;
 
-
     //public TextDetection _TextDetection;
     public string url = "https://vision.googleapis.com/v1/images:annotate?key=";
+
     public string apiKeyResourceLocation = "APIKeys/CloudVision";
 
     //public RawImage _texturePlane;
     private string apiKey = "";
+
     private Dictionary<string, string> headers;
     private FeatureType featureType = FeatureType.TEXT_DETECTION;
     private int maxResults = 10;
@@ -23,17 +24,16 @@ public class GoogleVisionAPIConnector : MonoBehaviour
     private byte[] jpg;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         TextAsset apiKeyText = Resources.Load(apiKeyResourceLocation) as TextAsset;
-        apiKey = apiKeyText.text;
+        apiKey = apiKeyText?.text;
 
         headers = new Dictionary<string, string>();
         headers.Add("Content-Type", "application/json; charset=UTF-8");
 
         if (apiKey == null || apiKey == "")
             Debug.LogError("No API key. Please set your API key into the \"GoogleVisionAPIConnector(Script)\" component.");
-
     }
 
     public void SendJPG(byte[] imageJPG)
@@ -41,7 +41,6 @@ public class GoogleVisionAPIConnector : MonoBehaviour
         jpg = imageJPG;
         StartCoroutine("SendAPIRequest");
     }
-
 
     public IEnumerator SendAPIRequest()
     {
@@ -94,7 +93,6 @@ public class GoogleVisionAPIConnector : MonoBehaviour
                         var nameList = GetDescriptionListFromJSON(response);
 
                         _TextDetection.ReceiveTextList(nameList);
-
                     }
                     else
                     {
@@ -112,7 +110,6 @@ public class GoogleVisionAPIConnector : MonoBehaviour
         }
     }
 
-
     private List<string> GetDescriptionListFromJSON(JSONNode response)
     {
         List<string> descriptionList = new List<string>();
@@ -129,30 +126,32 @@ public class GoogleVisionAPIConnector : MonoBehaviour
         return descriptionList;
     }
 
-
-
     [System.Serializable]
     public class AnnotateImageRequests
     {
         public List<AnnotateImageRequest> requests;
     }
+
     [System.Serializable]
     public class AnnotateImageRequest
     {
         public Image image;
         public List<Feature> features;
     }
+
     [System.Serializable]
     public class Feature
     {
         public string type;
         public int maxResults;
     }
+
     [System.Serializable]
     public class Image
     {
         public string content;
     }
+
     [System.Serializable]
     public enum FeatureType
     {
@@ -166,19 +165,17 @@ public class GoogleVisionAPIConnector : MonoBehaviour
         IMAGE_PROPERTIES
     }
 
-
 #if UNITY_WEBGL
 	void OnSuccessFromBrowser(string jsonString) {
-		Debug.Log(jsonString);	
+		Debug.Log(jsonString);
 		AnnotateImageResponses responses = JsonUtility.FromJson<AnnotateImageResponses>(jsonString);
 		Sample_OnAnnotateImageResponses(responses);
 	}
 
 	void OnErrorFromBrowser(string jsonString) {
-		Debug.Log(jsonString);	
+		Debug.Log(jsonString);
 	}
 #endif
-
 
     private void SendResponse(List<string> textList)
     {
@@ -187,6 +184,4 @@ public class GoogleVisionAPIConnector : MonoBehaviour
             Debug.Log("Text; " + text);
         }
     }
-
-
 }

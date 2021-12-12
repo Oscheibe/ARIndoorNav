@@ -13,19 +13,18 @@ public class RoomDatabase : MonoBehaviour
     private List<Room> roomList = new List<Room>();
     public string roomListFilePath = "Rooms/RoomList";
 
-
     // Awake is called before Start
-    void Start()
+    private void Start()
     {
         InitiateDatabase();
         var validatedList = _MarkerDatabase.ValidateMarkerList(roomList);
-        if(validatedList)
+        if (validatedList)
             Debug.Log("Validated room database successfully");
         _RoomListPresenter.UpdateRoomList(roomList);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         UpdateDistanceToUser();
     }
@@ -35,11 +34,17 @@ public class RoomDatabase : MonoBehaviour
         The marker name has to be the same as the room name
         If no room is found, null is returned.
      */
+
     public Room GetRoom(string roomName)
     {
+        var cleanedString = roomName.Replace(",", string.Empty).Replace(".", string.Empty);
         Room room = null;
 
-        Predicate<Room> roomFinder = (Room r) => { return r.Name == roomName; };
+        Predicate<Room> roomFinder = (Room r) =>
+        {
+            return r.Name.Replace(",", string.Empty).Replace(".", string.Empty)
+            .Equals(cleanedString, StringComparison.OrdinalIgnoreCase);
+        };
         room = roomList.Find(roomFinder);
 
         return room;
@@ -55,6 +60,7 @@ public class RoomDatabase : MonoBehaviour
         Reads a string that contains all room information and generates a List<Room>
         The values of each room are separated by ';' and each individual room by '\n'
      */
+
     private void InitiateDatabase()
     {
         TextAsset roomListJSON = Resources.Load(roomListFilePath) as TextAsset;
@@ -89,6 +95,7 @@ public class RoomDatabase : MonoBehaviour
     /**
         Updates all the DistanceToUser values within the database
     */
+
     private void UpdateDistanceToUser()
     {
         foreach (var room in roomList)
@@ -101,6 +108,7 @@ public class RoomDatabase : MonoBehaviour
      * Returns the first number from the room name.
      * Stairs should not be used as a target because of it
      */
+
     private int GetFloorNumber(string roomName)
     {
         int floorNumber = -1;
@@ -119,12 +127,12 @@ public class RoomDatabase : MonoBehaviour
     }
 
     /**
-    Searches the child components of the parent objects of all rooms within unity 
+    Searches the child components of the parent objects of all rooms within unity
     and returns a Transform of found object. Else returns null
      */
+
     public Transform GetRoomPosition(string roomName)
     {
         return _MarkerDatabase.RequestMarkerPosition(roomName);
     }
-
 }

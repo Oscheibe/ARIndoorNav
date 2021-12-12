@@ -10,6 +10,7 @@ using UnityEngine.UI;
     It uses AugmentedImages to scan for marker in the real world
     If a marker was found, it's relative position to it's virtual counterpart is sent to PoseEstimation
  */
+
 public class MarkerDetection : MonoBehaviour
 {
     public PoseEstimation _PoseEstimation;
@@ -26,7 +27,6 @@ public class MarkerDetection : MonoBehaviour
     private Pose userPose;
     private Room markerRoom;
 
-
     /**
         Starts the marker detection with ARCore AugmentedImages
         Step 1: Calculate and save the user pose during scanning
@@ -34,6 +34,7 @@ public class MarkerDetection : MonoBehaviour
         Step 3: Wait for result and process it when it arrives
         Called by: PoseEstimation
      */
+
     public void StartDetection()
     {
         SaveUserPosition();
@@ -41,10 +42,11 @@ public class MarkerDetection : MonoBehaviour
         WaitForResponse();
     }
 
-    /** 
+    /**
      * Saves the current user position for calculations done with the OCR image
      */
-    private void SaveUserPosition()
+
+    public void SaveUserPosition()
     {
         // Calculating the user position, parallel to the x-z axis
         var flatUserRotation = new Quaternion(0,
@@ -60,11 +62,12 @@ public class MarkerDetection : MonoBehaviour
     }
 
     /**
-     * Sends a snapshot of the current camera image and convert it into a JPG image 
+     * Sends a snapshot of the current camera image and convert it into a JPG image
      * to be processed by a OCR service.
      * The response can arrive at any time. The default timeout time is 10 seconds
      * The average response time from Google Cloud Vision is 1 second
      */
+
     private void InitiateOCRDetection()
     {
         image = Frame.CameraImage.AcquireCameraImageBytes();
@@ -90,6 +93,7 @@ public class MarkerDetection : MonoBehaviour
      * Indicate that the app is waiting for an external system.
      * SystemStatePresenter will get notified by this to display an appropriate message to the user
      */
+
     private void WaitForResponse()
     {
         _isWaiting = true;
@@ -100,6 +104,7 @@ public class MarkerDetection : MonoBehaviour
     /**
      * Receive a list of strings from the OCR that needs to be checked if they contain a room name
      */
+
     public void ReceiveResponse(List<string> potentialMarkerList)
     {
         _isWaiting = false;
@@ -143,5 +148,4 @@ public class MarkerDetection : MonoBehaviour
         if (_isTracking)
             _SystemStatePresenter.DisplayUserMessage("OCR service timed out. Please try again");
     }
-
 }
